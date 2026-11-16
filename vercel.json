@@ -1,0 +1,43 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "server.js",
+      "use": "@vercel/node",
+      "config": {
+        "includeFiles": [
+          "erp/views/**",
+          "erp/public/**",
+          "erp/config/**",
+          "erp/database/**",
+          "erp/routes/**",
+          "erp/controllers/**",
+          "erp/middleware/**",
+          "erp/models/**",
+          "erp/services/**",
+          "erp/utils/**",
+          "erp/cert/**",
+          "erp/attendance/**",
+          "erp/offerletter/**",
+          "erp/project/**",
+          "*.html",
+          "css/**",
+          "js/**",
+          "assets/**",
+          "images/**",
+          "components/**",
+          "documents/**",
+          "public/**",
+          "service-video/**",
+          "syllabi/**"
+        ]
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "server.js"
+    }
+  ]
+}
