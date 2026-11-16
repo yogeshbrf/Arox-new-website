@@ -1578,29 +1578,29 @@ html:not(.dark) .google-btn-back:hover {
         font-size: 10px !important;
     }
 
-    /* 4. Hero Content - Perfectly Proportioned & Centered */
+    /* 4. Hero Content - Top-to-Bottom Flow: Title -> Content -> Image -> Features -> Buttons */
     .detail-hero .hero-grid {
         display: flex !important;
         flex-direction: column !important;
         align-items: center !important;
         justify-content: center !important;
         text-align: center !important;
-        gap: 6px !important;
+        gap: 0 !important;
         width: 100% !important;
         max-width: 100% !important;
         margin: 0 auto !important;
     }
     .detail-hero .hero-grid > div:first-child {
-        display: flex !important;
-        flex-direction: column !important;
-        align-items: center !important;
-        justify-content: center !important;
-        text-align: center !important;
-        width: 100% !important;
-        max-width: 100% !important;
-        margin: 0 auto !important;
+        display: contents !important;
+        opacity: 1 !important;
+        transform: none !important;
+    }
+    .detail-hero .hero-visual {
+        opacity: 1 !important;
+        transform: none !important;
     }
     .detail-hero .hero-title {
+        order: 1 !important;
         font-size: clamp(19px, 5.2vw, 23px) !important;
         line-height: 1.18 !important;
         font-weight: 700 !important;
@@ -1610,6 +1610,7 @@ html:not(.dark) .google-btn-back:hover {
         width: 100% !important;
     }
     .detail-hero .hero-desc {
+        order: 2 !important;
         font-size: 12px !important;
         line-height: 1.4 !important;
         text-align: center !important;
@@ -1619,8 +1620,36 @@ html:not(.dark) .google-btn-back:hover {
         color: var(--muted) !important;
     }
 
-    /* 5. Hero Features List - Compact 2-Column Grid Fitting Viewport */
+    /* 7. Hero Visual Image - Positioned 3rd (Between Description and Features) */
+    .detail-hero .hero-visual {
+        order: 3 !important;
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        width: 100% !important;
+        margin: 4px auto 10px auto !important;
+    }
+    .detail-hero .hero-visual-inner {
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        max-width: 180px !important;
+        width: 100% !important;
+        margin: 0 auto !important;
+    }
+    .detail-hero .hero-floating-img {
+        max-width: 160px !important;
+        max-height: clamp(85px, 15vh, 130px) !important;
+        width: auto !important;
+        height: auto !important;
+        object-fit: contain !important;
+        margin: 0 auto !important;
+        filter: drop-shadow(0 6px 16px rgba(0, 102, 255, 0.22)) !important;
+    }
+
+    /* 5. Hero Features List - Positioned 4th Below Image */
     .detail-hero .hero-features {
+        order: 4 !important;
         display: grid !important;
         grid-template-columns: repeat(2, 1fr) !important;
         gap: 4px 10px !important;
@@ -1648,8 +1677,9 @@ html:not(.dark) .google-btn-back:hover {
         flex-shrink: 0 !important;
     }
 
-    /* 6. Dual Action Buttons in a Single Row */
+    /* 6. Dual Action Buttons - Positioned 5th Below Features */
     .detail-hero .hero-btns {
+        order: 5 !important;
         display: flex !important;
         flex-direction: row !important;
         flex-wrap: nowrap !important;
@@ -1678,32 +1708,6 @@ html:not(.dark) .google-btn-back:hover {
         width: 12px !important;
         height: 12px !important;
         margin-left: 3px !important;
-    }
-
-    /* 7. Hero Visual 3D Graphic - Scaled to Fit First Screen View */
-    .detail-hero .hero-visual {
-        display: flex !important;
-        justify-content: center !important;
-        align-items: center !important;
-        width: 100% !important;
-        margin: 4px auto 0 auto !important;
-    }
-    .detail-hero .hero-visual-inner {
-        display: flex !important;
-        justify-content: center !important;
-        align-items: center !important;
-        max-width: 180px !important;
-        width: 100% !important;
-        margin: 0 auto !important;
-    }
-    .detail-hero .hero-floating-img {
-        max-width: 160px !important;
-        max-height: clamp(90px, 16vh, 140px) !important;
-        width: auto !important;
-        height: auto !important;
-        object-fit: contain !important;
-        margin: 0 auto !important;
-        filter: drop-shadow(0 6px 16px rgba(0, 102, 255, 0.22)) !important;
     }
 
     /* 6. What Our Students Say - Single Line Continuous Left Marquee */

@@ -9005,6 +9005,16 @@ html.dark .magic-bento-card__arrow {
   /* 1. Mobile Top Navbar Hamburger (Transparent, No Border, 3 Lines Always Visible) */
   #site-header {
     z-index: 1000 !important;
+    pointer-events: auto !important;
+    transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), background 0.25s ease !important;
+  }
+  #site-header.hidden-nav {
+    transform: translateY(-100%) !important;
+    pointer-events: none !important;
+  }
+  #site-header:not(.hidden-nav) {
+    transform: translateY(0) !important;
+    pointer-events: auto !important;
   }
   #site-header .nav-hamburger,
   .nav-hamburger {

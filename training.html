@@ -7128,13 +7128,15 @@
       start: 'top top',
       end: () => `+=${scrollAmt + window.innerHeight * 0.95}`,
       onEnter: () => {
-        const header = document.getElementById('site-header');
-        if (header) {
-          header.classList.add('hidden-nav');
-          header.style.pointerEvents = 'none';
+        if (window.innerWidth > 768) {
+          const header = document.getElementById('site-header');
+          if (header) {
+            header.classList.add('hidden-nav');
+            header.style.pointerEvents = 'none';
+          }
+          if (pillNav) pillNav.classList.add('is-visible');
+          window.isHScrollActive = true;
         }
-        if (pillNav) pillNav.classList.add('is-visible');
-        window.isHScrollActive = true;
       },
       onLeave: () => {
         if (window._isSectionTransitionLocked) return;
@@ -7147,13 +7149,15 @@
         window.isHScrollActive = false;
       },
       onEnterBack: () => {
-        const header = document.getElementById('site-header');
-        if (header) {
-          header.classList.add('hidden-nav');
-          header.style.pointerEvents = 'none';
+        if (window.innerWidth > 768) {
+          const header = document.getElementById('site-header');
+          if (header) {
+            header.classList.add('hidden-nav');
+            header.style.pointerEvents = 'none';
+          }
+          if (pillNav) pillNav.classList.add('is-visible');
+          window.isHScrollActive = true;
         }
-        if (pillNav) pillNav.classList.add('is-visible');
-        window.isHScrollActive = true;
       },
       onLeaveBack: () => {
         if (window._isSectionTransitionLocked) return;
@@ -7167,7 +7171,7 @@
       }
     });
 
-    if (pillNavTrigger && pillNavTrigger.isActive) {
+    if (window.innerWidth > 768 && pillNavTrigger && pillNavTrigger.isActive) {
       const header = document.getElementById('site-header');
       if (header) {
         header.classList.add('hidden-nav');
@@ -7176,7 +7180,7 @@
       if (pillNav) pillNav.classList.add('is-visible');
       window.isHScrollActive = true;
     } else {
-      if (pillNav) pillNav.classList.remove('is-visible');
+      if (pillNav && window.innerWidth <= 768) pillNav.classList.remove('is-visible');
     }
   }
 
@@ -7503,13 +7507,15 @@
           }
         },
         onEnter: () => {
-          window.isHScrollActive = true;
-          const header = document.getElementById('site-header');
-          if (header) {
-            header.classList.add('hidden-nav');
-            header.style.pointerEvents = 'none';
+          if (window.innerWidth > 768) {
+            window.isHScrollActive = true;
+            const header = document.getElementById('site-header');
+            if (header) {
+              header.classList.add('hidden-nav');
+              header.style.pointerEvents = 'none';
+            }
+            if (pillNav) pillNav.classList.add('is-visible');
           }
-          if (pillNav) pillNav.classList.add('is-visible');
         },
         onLeave: () => {
           if (window._isSectionTransitionLocked) return;
@@ -7522,13 +7528,15 @@
           if (pillNav) pillNav.classList.remove('is-visible');
         },
         onEnterBack: () => {
-          window.isHScrollActive = true;
-          const header = document.getElementById('site-header');
-          if (header) {
-            header.classList.add('hidden-nav');
-            header.style.pointerEvents = 'none';
+          if (window.innerWidth > 768) {
+            window.isHScrollActive = true;
+            const header = document.getElementById('site-header');
+            if (header) {
+              header.classList.add('hidden-nav');
+              header.style.pointerEvents = 'none';
+            }
+            if (pillNav) pillNav.classList.add('is-visible');
           }
-          if (pillNav) pillNav.classList.add('is-visible');
         },
         onLeaveBack: () => {
           if (window._isSectionTransitionLocked) return;
@@ -7551,7 +7559,7 @@
       }
     }
 
-    if (internTrigger && internTrigger.isActive) {
+    if (window.innerWidth > 768 && internTrigger && internTrigger.isActive) {
       const header = document.getElementById('site-header');
       if (header) {
         header.classList.add('hidden-nav');
@@ -7560,7 +7568,7 @@
       if (pillNav) pillNav.classList.add('is-visible');
       window.isHScrollActive = true;
     } else {
-      if (pillNav) pillNav.classList.remove('is-visible');
+      if (pillNav && window.innerWidth <= 768) pillNav.classList.remove('is-visible');
     }
   }
 
@@ -7917,12 +7925,14 @@
       }
 
       if (!isInitialLoad && (prevScrollY >= heroBottom - 20 || window.scrollY >= heroBottom - 20)) {
-        if (header) {
-          header.classList.add('hidden-nav');
-          header.style.pointerEvents = 'none';
+        if (window.innerWidth > 768) {
+          if (header) {
+            header.classList.add('hidden-nav');
+            header.style.pointerEvents = 'none';
+          }
+          if (pillNav) pillNav.classList.add('is-visible');
+          window.isHScrollActive = true;
         }
-        if (pillNav) pillNav.classList.add('is-visible');
-        window.isHScrollActive = true;
       } else if (isInitialLoad) {
         if (pillNav) pillNav.classList.remove('is-visible');
         window.isHScrollActive = false;
@@ -7992,12 +8002,14 @@
       }
 
       if (!isInitialLoad && (prevScrollY >= heroBottom - 20 || window.scrollY >= heroBottom - 20)) {
-        if (header) {
-          header.classList.add('hidden-nav');
-          header.style.pointerEvents = 'none';
+        if (window.innerWidth > 768) {
+          if (header) {
+            header.classList.add('hidden-nav');
+            header.style.pointerEvents = 'none';
+          }
+          if (pillNav) pillNav.classList.add('is-visible');
+          window.isHScrollActive = true;
         }
-        if (pillNav) pillNav.classList.add('is-visible');
-        window.isHScrollActive = true;
       } else if (isInitialLoad) {
         if (pillNav) pillNav.classList.remove('is-visible');
         window.isHScrollActive = false;
@@ -8058,16 +8070,18 @@
         updateMobileDiagonalStage(0);
       }
 
-      const pillNavEl = document.getElementById('coursesPillNav');
-      const catPills = document.getElementById('internshipCategoryPills');
-      const header = document.getElementById('site-header');
-      if (header) {
-        header.classList.add('hidden-nav');
-        header.style.pointerEvents = 'none';
+      if (window.innerWidth > 768) {
+        const pillNavEl = document.getElementById('coursesPillNav');
+        const catPills = document.getElementById('internshipCategoryPills');
+        const header = document.getElementById('site-header');
+        if (header) {
+          header.classList.add('hidden-nav');
+          header.style.pointerEvents = 'none';
+        }
+        if (pillNavEl) pillNavEl.classList.add('is-visible');
+        if (catPills) catPills.classList.remove('is-visible');
+        window.isHScrollActive = true;
       }
-      if (pillNavEl) pillNavEl.classList.add('is-visible');
-      if (catPills) catPills.classList.remove('is-visible');
-      window.isHScrollActive = true;
     } else {
       const chosenDomain = targetDomainParam || window.currentActiveDomain || 'cse_it';
       window.currentActiveDomain = chosenDomain;
@@ -8110,16 +8124,18 @@
         if (typeof st.progress === 'function') st.progress(0);
       }
 
-      const pillNavEl = document.getElementById('coursesPillNav');
-      const catPills = document.getElementById('internshipCategoryPills');
-      const header = document.getElementById('site-header');
-      if (header) {
-        header.classList.add('hidden-nav');
-        header.style.pointerEvents = 'none';
+      if (window.innerWidth > 768) {
+        const pillNavEl = document.getElementById('coursesPillNav');
+        const catPills = document.getElementById('internshipCategoryPills');
+        const header = document.getElementById('site-header');
+        if (header) {
+          header.classList.add('hidden-nav');
+          header.style.pointerEvents = 'none';
+        }
+        if (pillNavEl) pillNavEl.classList.add('is-visible');
+        if (catPills) catPills.classList.add('is-visible');
+        window.isHScrollActive = true;
       }
-      if (pillNavEl) pillNavEl.classList.add('is-visible');
-      if (catPills) catPills.classList.add('is-visible');
-      window.isHScrollActive = true;
     }
 
     if (typeof ScrollTrigger !== 'undefined') {
@@ -10808,16 +10824,18 @@
             ScrollTrigger.refresh();
           }
 
-          const header = document.getElementById('site-header');
-          const pillNav = document.getElementById('coursesPillNav');
-          if (header) {
-            header.classList.add('hidden-nav');
-            header.style.pointerEvents = 'none';
+          if (window.innerWidth > 768) {
+            const header = document.getElementById('site-header');
+            const pillNav = document.getElementById('coursesPillNav');
+            if (header) {
+              header.classList.add('hidden-nav');
+              header.style.pointerEvents = 'none';
+            }
+            if (pillNav) {
+              pillNav.classList.add('is-visible');
+            }
+            window.isHScrollActive = true;
           }
-          if (pillNav) {
-            pillNav.classList.add('is-visible');
-          }
-          window.isHScrollActive = true;
         }, 80);
       }
     }

@@ -216,11 +216,21 @@
     const y = window.scrollY;
     if (header) {
       header.classList.toggle('scrolled', y > 40);
-      if (window.isHScrollActive || window.isServicesScrollActive) {
-        header.classList.add('hidden-nav');
+      const isMobile = window.innerWidth <= 768;
+      if (isMobile) {
+        if (mobileOpen || y <= 40 || y < lastScrollY) {
+          header.classList.remove('hidden-nav');
+          header.style.pointerEvents = '';
+        } else if (y > lastScrollY && y > 60) {
+          header.classList.add('hidden-nav');
+        }
       } else {
-        if (y > lastScrollY && y > 100) header.classList.add('hidden-nav');
-        else header.classList.remove('hidden-nav');
+        if (window.isHScrollActive || window.isServicesScrollActive) {
+          header.classList.add('hidden-nav');
+        } else {
+          if (y > lastScrollY && y > 100) header.classList.add('hidden-nav');
+          else header.classList.remove('hidden-nav');
+        }
       }
     }
     lastScrollY = y;

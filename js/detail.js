@@ -39,56 +39,137 @@
         'java-fsd': 'assets/detail page images/Neon 3D Software Development Hub.png',
         'devops-engineering': 'assets/detail page images/Neon DevOps Engineering Infinity Loop.png',
         'cloud-aws': 'assets/detail page images/Neon DevOps Engineering Infinity Loop.png',
-        'cloud-devops-internship': 'assets/detail page images/Neon DevOps Engineering Infinity Loop.png',
+        'cloud-devops-internship': 'assets/internships/cards/devops.png',
         'digital-marketing': 'assets/detail page images/Neon Digital Marketing Megaphone Icons.png',
         'full-stack-web-development': 'assets/detail page images/Neon Full-Stack Developer Workspace.png',
         'mern-stack': 'assets/detail page images/Neon Full-Stack Developer Workspace.png',
-        'full-stack-internship': 'assets/detail page images/Neon Full-Stack Developer Workspace.png',
+        'full-stack-internship': 'assets/internships/cards/python-full-stack.png',
         'embedded-systems-and-iot': 'assets/detail page images/Neon IoT Rover Technology Hub.png',
         'app-development': 'assets/detail page images/Neon Mobile App Development Ecosystem.png',
-        'mobile-app-internship': 'assets/detail page images/Neon Mobile App Development Ecosystem.png',
+        'mobile-app-internship': 'assets/internships/cards/iot.png',
         'data-science-and-ai': 'assets/detail page images/Neon Python Analytics Laptop Ecosystem.png',
         'python-dev': 'assets/detail page images/Neon Python Analytics Laptop Ecosystem.png',
-        'python-backend-internship': 'assets/detail page images/Neon Python Analytics Laptop Ecosystem.png',
-        'ai-agent-internship': 'assets/detail page images/Neon Python Analytics Laptop Ecosystem.png',
+        'python-backend-internship': 'assets/internships/cards/python-full-stack.png',
+        'ai-agent-internship': 'assets/internships/cards/generative-ai.png',
         'ui-ux-designing': 'assets/detail page images/Neon UI_UX Design Workspace.png',
-        'ui-ux-design-internship': 'assets/detail page images/Neon UI_UX Design Workspace.png'
+        'ui-ux-design-internship': 'assets/internships/cards/ui-ux-design.png'
+    };
+
+    // ─── Outside Internship Card Images (Exact 1:1 Matching with Training/Internship Cards) ───
+    const INTERNSHIP_CARD_IMAGES = {
+        'python-full-stack': 'assets/internships/cards/python-full-stack.png',
+        'java-full-stack': 'assets/internships/cards/java-full-stack.png',
+        'aws-cloud-computing': 'assets/internships/cards/aws-cloud-computing.png',
+        'devops': 'assets/internships/cards/devops.png',
+        'data-analytics-data-science': 'assets/internships/cards/data-analytics-data-science.png',
+        'generative-ai': 'assets/internships/cards/generative-ai.png',
+        'ai-ml': 'assets/internships/cards/ai-ml.png',
+        'cyber-security': 'assets/internships/cards/cyber-security.png',
+        'selenium-testing': 'assets/internships/cards/selenium-testing.png',
+        'ui-ux-design': 'assets/internships/cards/ui-ux-design.png',
+        'salesforce': 'assets/internships/cards/salesforce.png',
+        'investment-banking': 'assets/internships/cards/investment-banking.png',
+        'supply-chain': 'assets/internships/cards/supply-chain.png',
+        'sap-fico': 'assets/internships/cards/sap-fico.png',
+        'digital-marketing': 'assets/internships/cards/digital-marketing.png',
+        'power-bi': 'assets/internships/cards/power-bi.png',
+        'advanced-excel': 'assets/internships/cards/advanced-excel.png',
+        'stock-market': 'assets/internships/cards/stock-market.png',
+        'business-analytics': 'assets/internships/cards/business-analytics.png',
+        'hr-finance': 'assets/internships/cards/hr-finance.png',
+        'vlsi-design': 'assets/internships/cards/vlsi-design.png',
+        'embedded-system': 'assets/internships/cards/embedded-system.png',
+        'iot': 'assets/internships/cards/iot.png',
+        'iot-robotics': 'assets/internships/cards/iot-robotics.png',
+        'hybrid-ev': 'assets/internships/cards/hybrid-ev.png',
+        'nptel-aircraft': 'assets/internships/cards/nptel-aircraft.png',
+        'catia-english': 'assets/internships/cards/catia-english.png',
+        'ic-engine-design': 'assets/internships/cards/ic-engine-design.png',
+        'autocad': 'assets/internships/cards/autocad.png',
+        'car-design': 'assets/internships/cards/car-design.png',
+        'industrial-robotics': 'assets/internships/cards/industrial-robotics.png',
+        'full-stack-internship': 'assets/internships/cards/python-full-stack.png',
+        'python-backend-internship': 'assets/internships/cards/python-full-stack.png',
+        'ai-agent-internship': 'assets/internships/cards/generative-ai.png',
+        'cloud-devops-internship': 'assets/internships/cards/devops.png',
+        'ui-ux-design-internship': 'assets/internships/cards/ui-ux-design.png',
+        'mobile-app-internship': 'assets/internships/cards/iot.png',
+        // Internal slug aliases from courses-detail-data
+        'python-dev': 'assets/internships/cards/python-full-stack.png',
+        'java-fsd': 'assets/internships/cards/java-full-stack.png',
+        'cloud-aws': 'assets/internships/cards/aws-cloud-computing.png',
+        'devops-engineering': 'assets/internships/cards/devops.png',
+        'data-science-and-ai': 'assets/internships/cards/data-analytics-data-science.png',
+        'data-science-ai-systems': 'assets/internships/cards/data-analytics-data-science.png',
+        'ui-ux-designing': 'assets/internships/cards/ui-ux-design.png',
+        'embedded-systems-and-iot': 'assets/internships/cards/embedded-system.png',
+        'software-development': 'assets/internships/cards/selenium-testing.png',
+        'app-development': 'assets/internships/cards/iot.png'
     };
 
     function getDetailHeroImage(course) {
         if (!course) return 'assets/detail page images/Neon Full-Stack Developer Workspace.png';
+        const urlParams = new URLSearchParams(window.location.search);
+        const fromParam = (urlParams.get('from') || '').toLowerCase();
+        const querySlug = (urlParams.get('course') || urlParams.get('internship') || urlParams.get('track') || urlParams.get('id') || '').toLowerCase().trim();
         const slug = (course.slug || course.id || '').toLowerCase();
+        const isInternship = fromParam === 'internship' ||
+                             (course.category && course.category.toLowerCase().includes('internship')) ||
+                             Boolean(course.isInternship) ||
+                             (Boolean(INTERNSHIP_CARD_IMAGES[querySlug]) && fromParam !== 'training') ||
+                             (Boolean(INTERNSHIP_CARD_IMAGES[slug]) && fromParam !== 'training');
+
+        // Exact match with outside internship card
+        if (isInternship) {
+            if (querySlug && INTERNSHIP_CARD_IMAGES[querySlug]) {
+                return INTERNSHIP_CARD_IMAGES[querySlug];
+            }
+            if (slug && INTERNSHIP_CARD_IMAGES[slug]) {
+                return INTERNSHIP_CARD_IMAGES[slug];
+            }
+            if (querySlug) {
+                return `assets/internships/cards/${querySlug}.png`;
+            }
+            if (slug) {
+                return `assets/internships/cards/${slug}.png`;
+            }
+        }
+
         if (DETAIL_HERO_IMAGES[slug]) {
             return DETAIL_HERO_IMAGES[slug];
+        }
+        if (querySlug && DETAIL_HERO_IMAGES[querySlug]) {
+            return DETAIL_HERO_IMAGES[querySlug];
         }
         const title = (course.title || '').toLowerCase();
 
         if (slug.includes('cyber') || title.includes('cyber') || title.includes('security')) {
-            return 'assets/detail page images/Glowing 3D Cybersecurity Shield Network.png';
+            return isInternship ? 'assets/internships/cards/cyber-security.png' : 'assets/detail page images/Glowing 3D Cybersecurity Shield Network.png';
         }
         if (slug.includes('ui-ux') || title.includes('ui') || title.includes('ux') || title.includes('design')) {
-            return 'assets/detail page images/Neon UI_UX Design Workspace.png';
+            return isInternship ? 'assets/internships/cards/ui-ux-design.png' : 'assets/detail page images/Neon UI_UX Design Workspace.png';
         }
         if (slug.includes('python') || slug.includes('data') || slug.includes('ai') || title.includes('python') || title.includes('data') || title.includes('ai') || title.includes('analytics')) {
-            return 'assets/detail page images/Neon Python Analytics Laptop Ecosystem.png';
+            return isInternship ? 'assets/internships/cards/python-full-stack.png' : 'assets/detail page images/Neon Python Analytics Laptop Ecosystem.png';
         }
         if (slug.includes('devops') || slug.includes('cloud') || slug.includes('aws') || title.includes('devops') || title.includes('cloud') || title.includes('aws')) {
-            return 'assets/detail page images/Neon DevOps Engineering Infinity Loop.png';
+            return isInternship ? 'assets/internships/cards/devops.png' : 'assets/detail page images/Neon DevOps Engineering Infinity Loop.png';
         }
         if (slug.includes('mobile') || slug.includes('app') || title.includes('mobile') || title.includes('app') || title.includes('android') || title.includes('flutter')) {
             return 'assets/detail page images/Neon Mobile App Development Ecosystem.png';
         }
         if (slug.includes('iot') || slug.includes('embedded') || title.includes('iot') || title.includes('embedded') || title.includes('rover')) {
-            return 'assets/detail page images/Neon IoT Rover Technology Hub.png';
+            return isInternship ? 'assets/internships/cards/embedded-system.png' : 'assets/detail page images/Neon IoT Rover Technology Hub.png';
         }
         if (slug.includes('market') || title.includes('marketing') || title.includes('digital market')) {
-            return 'assets/detail page images/Neon Digital Marketing Megaphone Icons.png';
+            return isInternship ? 'assets/internships/cards/digital-marketing.png' : 'assets/detail page images/Neon Digital Marketing Megaphone Icons.png';
         }
         if (slug.includes('software') || slug.includes('java') || title.includes('software') || title.includes('java')) {
-            return 'assets/detail page images/Neon 3D Software Development Hub.png';
+            return isInternship ? 'assets/internships/cards/java-full-stack.png' : 'assets/detail page images/Neon 3D Software Development Hub.png';
         }
         return 'assets/detail page images/Neon Full-Stack Developer Workspace.png';
     }
+    window.getDetailHeroImage = getDetailHeroImage;
 
     // ─── 2. DOM Population Helpers ───
     function renderHero(course) {
@@ -159,6 +240,10 @@
         if (heroCourseImg) {
             heroCourseImg.src = getDetailHeroImage(course);
             heroCourseImg.alt = `${course.title} Visual Graphic`;
+            heroCourseImg.onerror = function () {
+                this.onerror = null;
+                this.src = 'assets/internships/3d_laptop_dark.png';
+            };
         }
 
         // Back to Courses Link
