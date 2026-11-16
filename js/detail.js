@@ -258,6 +258,11 @@
                 targetPage = 'training.html';
             }
             backBtn.href = `${targetPage}?tab=${targetTab}&section=courses#hscrollSection`;
+            backBtn.innerHTML = `<i class="fa-solid fa-arrow-left-long"></i> Back to ${isInternship ? 'Internships' : 'Courses'}`;
+            const mobileBreadcrumb = document.querySelector('.mobile-breadcrumb-current');
+            if (mobileBreadcrumb && isInternship) {
+                mobileBreadcrumb.textContent = 'Internship';
+            }
         }
     }
 
