@@ -2896,28 +2896,40 @@ const courseSlugAliases = {
 // Helper function to find a course by slug, id, or alias
 function getCourseBySlug(slug) {
     if (!slug) return coursesData[0];
-    const cleanSlug = String(slug).toLowerCase().trim();
+    const raw = String(slug).toLowerCase().trim();
+    const hyphenated = raw.replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+    const spaced = raw.replace(/[-_]+/g, ' ').replace(/\s+/g, ' ').trim();
     
-    // Check direct slug/id match
-    let match = coursesData.find(c => c.slug.toLowerCase() === cleanSlug || (c.id && c.id.toLowerCase() === cleanSlug));
+    // 1. Direct slug, id, or title match
+    let match = coursesData.find(c => {
+        const cSlug = (c.slug || '').toLowerCase();
+        const cId = (c.id || '').toLowerCase();
+        const cTitle = (c.title || '').toLowerCase();
+        return cSlug === hyphenated || cSlug === raw || cId === hyphenated || cId === raw || cTitle === spaced || cTitle === raw;
+    });
     if (match) return match;
 
-    // Check aliases
-    const aliasedSlug = courseSlugAliases[cleanSlug];
+    // 2. Check aliases
+    const aliasedSlug = courseSlugAliases[hyphenated] || courseSlugAliases[raw];
     if (aliasedSlug) {
-        match = coursesData.find(c => c.slug.toLowerCase() === aliasedSlug || (c.id && c.id.toLowerCase() === aliasedSlug));
+        match = coursesData.find(c => (c.slug && c.slug.toLowerCase() === aliasedSlug) || (c.id && c.id.toLowerCase() === aliasedSlug));
         if (match) return match;
     }
 
-    // Fallback: match partial
-    match = coursesData.find(c => cleanSlug.includes(c.slug.toLowerCase()) || c.slug.toLowerCase().includes(cleanSlug));
+    // 3. Fallback: match partial
+    match = coursesData.find(c => {
+        const cSlug = (c.slug || '').toLowerCase();
+        const cTitle = (c.title || '').toLowerCase();
+        return (cSlug && (hyphenated.includes(cSlug) || cSlug.includes(hyphenated))) ||
+               (cTitle && (spaced.includes(cTitle) || cTitle.includes(spaced)));
+    });
     if (match) return match;
 
     // Dynamic Generator for all course IDs (e.g. power-bi, salesforce, vlsi-design, etc.)
-    const titleWords = cleanSlug.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+    const titleWords = spaced.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
     return {
-        slug: cleanSlug,
-        id: cleanSlug,
+        slug: hyphenated || cleanSlug,
+        id: hyphenated || cleanSlug,
         title: titleWords,
         category: 'Professional Track',
         badge: 'CERTIFIED PROGRAM',

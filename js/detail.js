@@ -10,7 +10,14 @@
     // ─── 1. URL & Course Extraction ───
     function getSelectedCourse() {
         const urlParams = new URLSearchParams(window.location.search);
-        let slug = urlParams.get('course');
+        let slug = urlParams.get('course') || urlParams.get('program') || urlParams.get('internship') || urlParams.get('track') || urlParams.get('id') || urlParams.get('name');
+
+        if (!slug && window.location.pathname) {
+            const pathMatch = window.location.pathname.match(/\/(?:course|training|internship)\/([a-zA-Z0-9_-]+)/i);
+            if (pathMatch) {
+                slug = pathMatch[1];
+            }
+        }
 
         if (!slug && window.location.hash) {
             // Check if hash matches card-xyz or xyz
@@ -119,24 +126,31 @@
             `).join('');
         }
 
-        // Apply links - open in-page modal without navigating away
+        // Apply links - navigates to apply.html or opens in-page modal
+        const targetCourseParam = encodeURIComponent(course.title || course.slug || course.id);
+        const applyUrl = `apply.html?course=${targetCourseParam}`;
+
         const applyLink = document.getElementById('apply-link');
         if (applyLink) {
-            applyLink.href = 'javascript:void(0)';
+            applyLink.href = applyUrl;
             applyLink.setAttribute('role', 'button');
             applyLink.addEventListener('click', (e) => {
-                e.preventDefault();
-                if (typeof window.openStudentModal === 'function') window.openStudentModal();
+                if (!e.ctrlKey && !e.metaKey && !e.shiftKey && e.button === 0 && typeof window.openStudentModal === 'function') {
+                    e.preventDefault();
+                    window.openStudentModal();
+                }
             });
         }
 
         const ctaApplyLink = document.getElementById('cta-apply-link');
         if (ctaApplyLink) {
-            ctaApplyLink.href = 'javascript:void(0)';
+            ctaApplyLink.href = applyUrl;
             ctaApplyLink.setAttribute('role', 'button');
             ctaApplyLink.addEventListener('click', (e) => {
-                e.preventDefault();
-                if (typeof window.openStudentModal === 'function') window.openStudentModal();
+                if (!e.ctrlKey && !e.metaKey && !e.shiftKey && e.button === 0 && typeof window.openStudentModal === 'function') {
+                    e.preventDefault();
+                    window.openStudentModal();
+                }
             });
         }
 
@@ -645,6 +659,10 @@
             }
             if (selectedCourseInput) {
                 selectedCourseInput.value = course.title || 'Selected Program';
+            }
+            const fullApplyLink = document.getElementById('detail-modal-full-apply');
+            if (fullApplyLink) {
+                fullApplyLink.href = `apply.html?course=${encodeURIComponent(course.title || course.slug || course.id)}`;
             }
             setStep(1);
             backdrop.classList.add('is-open');

@@ -6422,6 +6422,9 @@
           <button class="modal-apply-trigger-btn" id="modal-apply-trigger-btn" style="background: linear-gradient(135deg, #00D2FF 0%, #0066FF 100%); padding: 14px 30px; border-radius: 12px; font-size: 0.95rem; font-weight: 700; color: #ffffff; border: none; cursor: pointer; box-shadow: 0 10px 25px rgba(0, 210, 255, 0.35); transition: all 0.25s ease; display: inline-flex; align-items: center; gap: 8px;">
             Apply Now &rarr;
           </button>
+          <a href="detail.html" id="modal-view-details-btn" class="modal-view-details-btn" style="padding: 13px 22px; border-radius: 12px; font-size: 0.95rem; font-weight: 700; color: #0066FF; background: rgba(0, 102, 255, 0.08); border: 1.5px solid rgba(0, 102, 255, 0.25); cursor: pointer; text-decoration: none; transition: all 0.25s ease; display: inline-flex; align-items: center; gap: 8px;">
+            <span>View Full Details</span> &rarr;
+          </a>
           <a href="#" id="modal-download-syllabus-btn" class="modal-syllabus-download-btn" download style="padding: 13px 22px; border-radius: 12px; font-size: 0.95rem; font-weight: 700; color: var(--heading); background: rgba(99, 102, 241, 0.08); border: 1.5px solid var(--border); cursor: pointer; text-decoration: none; transition: all 0.25s ease; display: inline-flex; align-items: center; gap: 8px;">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;">
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
@@ -6434,7 +6437,10 @@
       </div>
 
       <!-- STEPPER HEADER INDICATOR -->
-      <div class="modal-stepper-header hidden" id="modal-stepper-header" style="margin-bottom: 1.25rem; padding-bottom: 0.75rem; padding-right: 44px; border-bottom: 1px solid var(--border);">
+      <div class="modal-stepper-header hidden" id="modal-stepper-header" style="margin-bottom: 0.75rem; padding-bottom: 0.75rem; padding-right: 44px; border-bottom: 1px solid var(--border);">
+        <div style="display: flex; justify-content: flex-end; margin-bottom: 8px;">
+          <a id="modal-prefer-full-apply" href="apply.html" style="font-size: 0.775rem; color: #0066ff; font-weight: 600; text-decoration: underline;">Prefer full-page form? Open application page &rarr;</a>
+        </div>
         <div style="display: flex; align-items: center; justify-content: space-between; position: relative;">
           <div class="modal-step-node active" id="mstep-node-1" style="display: flex; flex-direction: column; align-items: center; gap: 4px; z-index: 2;">
             <div class="mstep-circle" id="mstep-circle-1" style="width: 28px; height: 28px; border-radius: 50%; background: #0066ff; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; transition: all 0.3s ease;">1</div>
@@ -7005,6 +7011,11 @@
                 </div>
                 <div class="tech-icons">
                   ${techIconsHTML}
+                </div>
+                <div style="margin-top: 14px;">
+                  <button class="card-action-btn" style="width: 100%; justify-content: center;" onclick="window.location.href='apply.html?course=${encodeURIComponent(course.title)}'; event.stopPropagation();">
+                    Apply Now &rarr;
+                  </button>
                 </div>
               </div>
             </div>
@@ -8276,11 +8287,11 @@
           </div>
         </div>
         <div class="exp-cta">
-          <button class="btn-explore" onclick="openModal('${c.title.replace(/'/g, "\\'")}')">
+          <button class="btn-explore" onclick="window.location.href='detail.html?course=${encodeURIComponent(c.id)}&from=training'">
             Explore Course
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
           </button>
-          <button class="btn-curriculum" onclick="openModal('${c.title.replace(/'/g, "\\'")}')">View Curriculum</button>
+          <button class="btn-curriculum" onclick="openModal('${c.title.replace(/'/g, "\\'")}')">Quick Enroll / Details</button>
         </div>
       </div>
     `;
@@ -8353,9 +8364,14 @@
             <div class="exp-learn-label"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> What You'll Learn</div>
             <ul class="exp-learn-list">${c.learnItems.map(it => `<li>${it}</li>`).join('')}</ul>
           </div>
-          <button class="btn-explore" onclick="openModal('${c.title.replace(/'/g, "\\'")}')">
-            Explore Course <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-          </button>
+          <div style="display: flex; gap: 10px; margin-top: 12px;">
+            <button class="btn-explore" style="flex: 1;" onclick="window.location.href='detail.html?course=${encodeURIComponent(c.id)}&from=training'">
+              Explore Course <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </button>
+            <button class="btn-explore" style="flex: 1; background: rgba(99, 102, 241, 0.12); color: var(--heading); border: 1px solid var(--border);" onclick="openModal('${c.title.replace(/'/g, "\\'")}')">
+              Quick Enroll
+            </button>
+          </div>
         </div>` : ''}
       </div>
     `).join('');
@@ -10406,6 +10422,20 @@
         syllabusBtn.setAttribute('download', `${syllabusSlug}.pdf`);
       }
 
+      const viewDetailsBtn = document.getElementById('modal-view-details-btn');
+      if (viewDetailsBtn) {
+        const isIntern = (item.badge && item.badge.toLowerCase().includes('internship')) ||
+                         (item.category && item.category.toLowerCase().includes('internship')) ||
+                         Boolean(window.currentActiveDomain);
+        const courseId = item.id || (item.title ? item.title.toLowerCase().replace(/[^a-z0-9]+/g, '-') : '');
+        viewDetailsBtn.href = `detail.html?course=${encodeURIComponent(courseId)}&from=${isIntern ? 'internship' : 'training'}`;
+      }
+
+      const fullApplyLink = document.getElementById('modal-prefer-full-apply');
+      if (fullApplyLink) {
+        fullApplyLink.href = `apply.html?course=${encodeURIComponent(item.title || item.id)}`;
+      }
+
       const coverImg = document.getElementById('modal-left-cover-img');
       if (coverImg) {
         const applySrc = item.applyGraphic || `assets/apply/${item.id.replace(/-/g, '_')}.png`;
@@ -11381,11 +11411,7 @@
       if (exploreBtn) {
         exploreBtn.addEventListener('click', (e) => {
           e.stopPropagation();
-          if (typeof window.openInternshipModal === 'function') {
-            window.openInternshipModal(item);
-          } else if (typeof openModal === 'function') {
-            openModal(item);
-          }
+          window.location.href = `detail.html?course=${encodeURIComponent(item.id)}&from=internship`;
         });
       }
 

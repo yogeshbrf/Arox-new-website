@@ -1383,7 +1383,62 @@ select:-webkit-autofill {
     const SPECS_CS = ['Computer Applications', 'Data Science', 'Cloud Computing', 'Cyber Security', 'AI & ML', 'Other'];
     const SPECS_OTHER = ['General', 'Other'];
     const GRAD_YEARS = ['2026', '2027', '2028', '2029', '2030', 'Other'];
-    const COURSES = ['Java Full Stack Development', 'Python Full Stack Development', 'Web Development', 'Mobile App Development', 'UI/UX Design', 'Data Science', 'Data Analytics', 'Artificial Intelligence', 'Machine Learning', 'Cloud Computing', 'Cyber Security', 'Digital Marketing', 'Software Testing', 'Database Management', 'Other'];
+    const COURSES = [
+      'Full Stack Web Development',
+      'Java Full Stack Development',
+      'Python Full Stack Development',
+      'Python Development',
+      'Python Backend Engineering',
+      'MERN Stack Web Development',
+      'UI/UX Design',
+      'UI & UX Designing',
+      'UI/UX Product Design',
+      'Data Science & AI',
+      'Data Science',
+      'Data Analytics & Data Science',
+      'Data Analytics',
+      'Artificial Intelligence & Machine Learning',
+      'AI & Machine Learning',
+      'Generative AI',
+      'AI Agent Engineering',
+      'Cyber Security',
+      'Cyber Security Professional',
+      'Cloud Computing with AWS',
+      'AWS Cloud Computing',
+      'Cloud & DevOps Engineering',
+      'DevOps Engineering',
+      'DevOps',
+      'Software Development',
+      'Software Testing',
+      'Selenium Testing with Java',
+      'Mobile App Development',
+      'App Development',
+      'Mobile App Engineering',
+      'Embedded Systems & IoT',
+      'Embedded System',
+      'Internet of Things (IoT)',
+      'IoT/Robotics',
+      'Digital Marketing',
+      'Salesforce Development',
+      'Investment Banking & Finance',
+      'Supply Chain Management',
+      'SAP FICO',
+      'Power BI & Data Analytics',
+      'Advanced Excel',
+      'Stock Market Full Stack Development',
+      'Business Analytics',
+      'HR & Finance',
+      'VLSI Design',
+      'Hybrid Electric Vehicle',
+      'NPTEL Aircraft',
+      'CATIA English',
+      'IC Engine Design',
+      'AutoCAD',
+      'Car Design',
+      'Industrial Robotics & Automation',
+      'Database Management',
+      'Other'
+    ];
     const DURATIONS = ['15 Days', '1 Month', '2 Months', '3 Months', '4 Months', '6 Months', '1 Year'];
     const REQUIREMENTS = ['Graduation Certificate', 'Attendance Certificate', 'Project Completion Certificate', 'Internship Report', 'Course Completion Certificate', 'Bonafide Certificate', 'College ID Card', 'Resume'];
 
@@ -1399,16 +1454,107 @@ select:-webkit-autofill {
 
       // Auto-fill course from URL params
       const params = new URLSearchParams(window.location.search);
-      const courseName = params.get('course');
-      if (courseName) {
-        const decoded = decodeURIComponent(courseName);
-        const match = COURSES.find(c => c.toLowerCase() === decoded.toLowerCase());
-        if (match) {
-          formData.course = match;
-          const sel = searchableSelects['course'];
-          if (sel) sel.setValue(match);
+      let rawCourse = params.get('course') || params.get('program') || params.get('internship') || params.get('track') || params.get('id') || params.get('name');
+      if (!rawCourse && window.location.hash) {
+        rawCourse = window.location.hash.replace('#card-', '').replace('#', '');
+      }
+
+      if (rawCourse) {
+        const decoded = decodeURIComponent(rawCourse).replace(/[+]/g, ' ').trim();
+        const spaced = decoded.replace(/[-_]+/g, ' ').replace(/\s+/g, ' ').trim();
+
+        // 1. Check exact or case-insensitive match
+        let match = COURSES.find(c => c.toLowerCase() === decoded.toLowerCase() || c.toLowerCase() === spaced.toLowerCase());
+
+        // 2. Check alias map
+        if (!match) {
+          const ALIAS_MAP = {
+            'full-stack-web-development': 'Full Stack Web Development',
+            'full stack web development': 'Full Stack Web Development',
+            'full-stack-internship': 'Full Stack Web Development',
+            'java-fsd': 'Java Full Stack Development',
+            'java-full-stack': 'Java Full Stack Development',
+            'python-dev': 'Python Development',
+            'python-full-stack': 'Python Full Stack Development',
+            'python-backend-internship': 'Python Backend Engineering',
+            'mern-stack': 'MERN Stack Web Development',
+            'ui-ux-design': 'UI/UX Design',
+            'ui-ux-designing': 'UI & UX Designing',
+            'ui-ux-design-internship': 'UI/UX Product Design',
+            'data-science-ai': 'Data Science & AI',
+            'data-science-and-ai': 'Data Science & AI',
+            'data-analytics-data-science': 'Data Analytics & Data Science',
+            'cyber-security': 'Cyber Security',
+            'cloud-aws': 'Cloud Computing with AWS',
+            'aws-cloud-computing': 'AWS Cloud Computing',
+            'devops-engineering': 'DevOps Engineering',
+            'devops': 'DevOps',
+            'cloud-devops-internship': 'Cloud & DevOps Engineering',
+            'ai-agent-internship': 'AI Agent Engineering',
+            'generative-ai': 'Generative AI',
+            'ai-ml': 'Artificial Intelligence & Machine Learning',
+            'embedded-systems-and-iot': 'Embedded Systems & IoT',
+            'embedded-systems-iot': 'Embedded Systems & IoT',
+            'embedded-system': 'Embedded System',
+            'iot': 'Internet of Things (IoT)',
+            'iot-robotics': 'IoT/Robotics',
+            'software-development': 'Software Development',
+            'selenium-testing': 'Selenium Testing with Java',
+            'app-development': 'Mobile App Development',
+            'mobile-app-internship': 'Mobile App Engineering',
+            'digital-marketing': 'Digital Marketing',
+            'salesforce': 'Salesforce Development',
+            'investment-banking': 'Investment Banking & Finance',
+            'supply-chain': 'Supply Chain Management',
+            'sap-fico': 'SAP FICO',
+            'power-bi': 'Power BI & Data Analytics',
+            'advanced-excel': 'Advanced Excel',
+            'stock-market': 'Stock Market Full Stack Development',
+            'business-analytics': 'Business Analytics',
+            'hr-finance': 'HR & Finance',
+            'vlsi-design': 'VLSI Design',
+            'hybrid-ev': 'Hybrid Electric Vehicle',
+            'nptel-aircraft': 'NPTEL Aircraft',
+            'catia-english': 'CATIA English',
+            'ic-engine-design': 'IC Engine Design',
+            'autocad': 'AutoCAD',
+            'car-design': 'Car Design',
+            'industrial-robotics': 'Industrial Robotics & Automation'
+          };
+          const cleanKey = decoded.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+          if (ALIAS_MAP[cleanKey]) {
+            match = ALIAS_MAP[cleanKey];
+          }
         }
-        document.getElementById('breadcrumbCourse').textContent = match || decoded;
+
+        // 3. Substring / partial match
+        if (!match) {
+          match = COURSES.find(c => {
+            const cl = c.toLowerCase();
+            const sl = spaced.toLowerCase();
+            return cl.includes(sl) || sl.includes(cl);
+          });
+        }
+
+        // 4. Dynamic generator if still no match
+        if (!match) {
+          match = spaced.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
+          if (!COURSES.includes(match)) {
+            COURSES.unshift(match);
+            const courseSelect = searchableSelects['course'];
+            if (courseSelect && typeof courseSelect.setOptions === 'function') {
+              courseSelect.setOptions(COURSES);
+            }
+          }
+        }
+
+        formData.course = match;
+        const sel = searchableSelects['course'];
+        if (sel) {
+          sel.setValue(match);
+        }
+        const breadcrumbEl = document.getElementById('breadcrumbCourse');
+        if (breadcrumbEl) breadcrumbEl.textContent = match;
       }
 
       lucide.createIcons();

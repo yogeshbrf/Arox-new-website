@@ -90,7 +90,7 @@ app.get(['/services', '/services.html'], (req, res) => res.sendFile(path.join(__
 app.get(['/courses', '/courses.html', '/training', '/training.html'], (req, res) => res.sendFile(path.join(__dirname, 'training.html')));
 app.get(['/contact', '/contact.html'], (req, res) => res.sendFile(path.join(__dirname, 'contact.html')));
 app.get(['/apply', '/apply.html'], (req, res) => res.sendFile(path.join(__dirname, 'apply.html')));
-app.get('/course/:slug', (req, res) => res.sendFile(path.join(__dirname, 'detail.html')));
+app.get(['/detail', '/detail.html', '/course/:slug', '/training/:slug', '/internship/:slug'], (req, res) => res.sendFile(path.join(__dirname, 'detail.html')));
 app.get(['/internships', '/internships.html'], (req, res) => res.redirect('/training.html?tab=internship#hscrollSection'));
 app.get('/footer.html', (req, res) => res.sendFile(path.join(__dirname, 'footer.html')));
 
