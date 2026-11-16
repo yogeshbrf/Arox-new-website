@@ -6117,10 +6117,16 @@
 
   @media (max-width: 768px) {
     .page-hero-pro.hero-courses {
-      min-height: auto !important;
-      padding-top: calc(85px + 2rem) !important;
-      padding-bottom: 3rem !important;
+      min-height: calc(100dvh - 16px) !important;
+      min-height: calc(100vh - 16px) !important;
+      height: auto !important;
+      padding-top: calc(64px + 12px) !important;
+      padding-bottom: 1.5rem !important;
+      display: flex !important;
+      flex-direction: column !important;
+      justify-content: center !important;
       background-position: center top !important;
+      box-sizing: border-box !important;
     }
     .training-hero-inner {
       padding: 0 1.25rem !important;

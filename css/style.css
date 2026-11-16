@@ -9268,15 +9268,17 @@ html.dark .magic-bento-card__arrow {
   .hero-contact,
   .hero-services,
   .hero-courses {
-    min-height: auto !important;
+    min-height: calc(100dvh - 16px) !important;
+    min-height: calc(100vh - 16px) !important;
     height: auto !important;
-    padding-top: calc(85px + 2rem) !important;
-    padding-bottom: 1.5rem !important;
+    padding-top: calc(64px + 12px) !important;
+    padding-bottom: 1.25rem !important;
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
-    justify-content: flex-start !important;
+    justify-content: center !important;
     text-align: center !important;
+    box-sizing: border-box !important;
   }
   #hero .hero-inner,
   .hero-inner,
