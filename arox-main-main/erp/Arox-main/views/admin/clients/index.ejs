@@ -1,0 +1,432 @@
+<div class="erp-h1" style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; color: #000000;">
+  <div>
+    <div style="font-size: 24px; font-weight: 750;">Corporate & Institutional Clients</div>
+    <div style="font-size: 13px; color: #64748B; font-weight: 500; margin-top: 2px;">Company directory, institutional partnerships, and staff allocation</div>
+  </div>
+  <button onclick="openClientModal()" class="erp-btn erp-btn-sm" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; background: #000; color: #fff; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; border: none;">
+    <i data-lucide="plus" style="width: 15px; height: 15px;"></i>
+    <span>Add New Client</span>
+  </button>
+</div>
+
+<!-- Interactive Catalogue Filter Toolbar (Apple + Google Material 3) -->
+<!-- Summary Metric Cards -->
+<%
+  const totalClients = clients ? clients.length : 0;
+  const activePartners = clients ? clients.filter(c => (c.status || '').toLowerCase() === 'partner').length : 0;
+  const prospectsCount = clients ? clients.filter(c => (c.status || '').toLowerCase() === 'prospect' || (c.status || '').toLowerCase() === 'contacted').length : 0;
+  const industriesCount = clients ? new Set(clients.map(c => (c.industry || c.category || '').trim()).filter(Boolean)).size : 0;
+%>
+<div class="erp-grid-4" style="margin-bottom: 24px;">
+  <div class="erp-card" style="background: #FFFFFF; border: 1px solid #E2E8F0; padding: 20px;">
+    <div class="erp-card-header">
+      <div class="erp-card-icon" style="background: #000000; color: #FFFFFF;">
+        <i data-lucide="building-2"></i>
+      </div>
+      <div class="erp-card-title" style="color: #64748B;">Total Clients</div>
+    </div>
+    <div class="erp-card-value" style="color: #000000;"><%= totalClients %></div>
+    <div class="erp-p" style="margin-top: 6px; color: #64748B; font-size: 12px;">Enterprise & Colleges</div>
+  </div>
+
+  <div class="erp-card" style="background: #FFFFFF; border: 1px solid #E2E8F0; padding: 20px;">
+    <div class="erp-card-header">
+      <div class="erp-card-icon" style="background: #000000; color: #FFFFFF;">
+        <i data-lucide="handshake"></i>
+      </div>
+      <div class="erp-card-title" style="color: #64748B;">Active Partners</div>
+    </div>
+    <div class="erp-card-value" style="color: #000000;"><%= activePartners %></div>
+    <div class="erp-p" style="margin-top: 6px; color: #16A34A; font-weight: 600; font-size: 12px;">MoUs & Contracts</div>
+  </div>
+
+  <div class="erp-card" style="background: #FFFFFF; border: 1px solid #E2E8F0; padding: 20px;">
+    <div class="erp-card-header">
+      <div class="erp-card-icon" style="background: #000000; color: #FFFFFF;">
+        <i data-lucide="target"></i>
+      </div>
+      <div class="erp-card-title" style="color: #64748B;">In Discussions</div>
+    </div>
+    <div class="erp-card-value" style="color: #000000;"><%= prospectsCount %></div>
+    <div class="erp-p" style="margin-top: 6px; color: #D97706; font-weight: 600; font-size: 12px;">Prospects & Outreach</div>
+  </div>
+
+  <div class="erp-card" style="background: #FFFFFF; border: 1px solid #E2E8F0; padding: 20px;">
+    <div class="erp-card-header">
+      <div class="erp-card-icon" style="background: #000000; color: #FFFFFF;">
+        <i data-lucide="layers"></i>
+      </div>
+      <div class="erp-card-title" style="color: #64748B;">Industry Sectors</div>
+    </div>
+    <div class="erp-card-value" style="color: #000000;"><%= industriesCount %></div>
+    <div class="erp-p" style="margin-top: 6px; color: #000000; font-weight: 600; font-size: 12px;">Diverse Domains</div>
+  </div>
+</div>
+<div class="catalogue-toolbar" data-catalogue="clients">
+  <div class="catalogue-filters-group">
+    <!-- Search Input -->
+    <div class="catalogue-search-wrap">
+      <i data-lucide="search"></i>
+      <input type="text" class="catalogue-search-input" placeholder="Search company, contact person, phone...">
+    </div>
+
+    <!-- Status Filter -->
+    <select class="catalogue-select" data-filter="status" title="Filter by Status">
+      <option value="all">All Statuses</option>
+      <option value="prospect">Prospect</option>
+      <option value="contacted">Contacted</option>
+      <option value="partner">Partner</option>
+      <option value="closed">Closed</option>
+    </select>
+
+    <!-- Industry Filter -->
+    <select class="catalogue-select" data-filter="category" title="Filter by Industry">
+      <option value="all">All Industries</option>
+      <option value="it & software">IT & Software</option>
+      <option value="education">Education & Colleges</option>
+      <option value="healthcare">Healthcare Tech</option>
+      <option value="financial">Financial Services</option>
+      <option value="manufacturing">Manufacturing</option>
+    </select>
+
+    <!-- Sort Dropdown -->
+    <select class="catalogue-select" data-filter="sort" title="Sort records">
+      <option value="name">Company (A - Z)</option>
+      <option value="name_desc">Company (Z - A)</option>
+      <option value="newest">Newest First</option>
+    </select>
+
+    <!-- Reset Button -->
+    <button type="button" class="catalogue-reset-btn" title="Reset all filters">
+      <i data-lucide="rotate-ccw" style="width: 13px; height: 13px;"></i>
+      <span>Reset</span>
+    </button>
+
+    <!-- Result Counter -->
+    <span class="catalogue-count-badge">Showing <%= clients ? clients.length : 0 %> clients</span>
+  </div>
+
+  <!-- Segmented View Switcher: List vs Kanban/Grid -->
+  <div class="catalogue-view-switcher">
+    <button type="button" class="view-btn active" data-view="list" title="Table List View">
+      <i data-lucide="list"></i>
+      <span>List</span>
+    </button>
+    <button type="button" class="view-btn" data-view="kanban" title="Kanban Card Grid View">
+      <i data-lucide="layout-grid"></i>
+      <span>Kanban</span>
+    </button>
+  </div>
+</div>
+
+<!-- 1. LIST VIEW (Data Table) -->
+<div class="catalogue-list-view" data-catalogue="clients">
+  <div class="erp-card" style="background: #fff; border: 1px solid #E2E8F0; border-radius: 12px; overflow-x: auto; padding: 0;">
+    <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 13px;">
+      <thead>
+        <tr style="background: #F8FAFC; border-bottom: 1px solid #E2E8F0; font-size: 11px; text-transform: uppercase; color: #64748B; font-weight: 700;">
+          <th style="padding: 12px 16px;">Code</th>
+          <th style="padding: 12px 16px;">Company Name</th>
+          <th style="padding: 12px 16px;">Contact Person</th>
+          <th style="padding: 12px 16px;">Industry & Location</th>
+          <th style="padding: 12px 16px;">Assigned Staff</th>
+          <th style="padding: 12px 16px;">Status</th>
+          <th style="padding: 12px 16px; text-align: right;">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (clients && clients.length > 0) { %>
+          <% clients.forEach(client => { %>
+            <tr style="border-bottom: 1px solid #E2E8F0;" id="client-row-<%= client.id %>"
+                data-search="<%= (client.company_name + ' ' + (client.client_code || '') + ' ' + (client.contact_person || '') + ' ' + (client.email || '') + ' ' + (client.phone || '') + ' ' + (client.industry || '') + ' ' + (client.location || '')).toLowerCase() %>"
+                data-status="<%= (client.status || 'prospect').toLowerCase() %>"
+                data-category="<%= (client.industry || '').toLowerCase() %>"
+                data-name="<%= (client.company_name || '').toLowerCase() %>"
+                data-newest="<%= client.id %>">
+              <td style="padding: 12px 16px; font-weight: 600; color: #64748B;"><%= client.client_code %></td>
+              <td style="padding: 12px 16px; font-weight: 700; color: #000;"><%= client.company_name %></td>
+              <td style="padding: 12px 16px; color: #334155;">
+                <div><%= client.contact_person %></div>
+                <div style="font-size: 11px; color: #64748B;"><%= client.phone %> &bull; <%= client.email %></div>
+              </td>
+              <td style="padding: 12px 16px; color: #475569;">
+                <div><%= client.industry %></div>
+                <div style="font-size: 11px; color: #64748B;"><%= client.location %></div>
+              </td>
+              <td style="padding: 12px 16px;">
+                <% if (client.assignee_first_name) { %>
+                  <span style="font-weight: 600; color: #000;"><%= client.assignee_first_name %> <%= client.assignee_last_name %></span>
+                <% } else { %>
+                  <span style="color: #94A3B8;">Unassigned</span>
+                <% } %>
+              </td>
+              <td style="padding: 12px 16px;">
+                <% if (client.status === 'partner') { %>
+                  <span style="font-size: 11px; font-weight: 700; padding: 2px 7px; background: #000; color: #fff; border-radius: 4px; text-transform: uppercase;">
+                    <%= client.status %>
+                  </span>
+                <% } else { %>
+                  <span style="font-size: 11px; font-weight: 700; padding: 2px 7px; background: #F1F5F9; color: #000; border-radius: 4px; text-transform: uppercase;">
+                    <%= client.status %>
+                  </span>
+                <% } %>
+              </td>
+              <td style="padding: 12px 16px; text-align: right;">
+                <div style="display: inline-flex; gap: 6px;">
+                  <button onclick="openEditClientById('<%= client.id %>')" class="erp-btn erp-btn-secondary" style="padding: 4px 8px; font-size: 11px; border: 1px solid #CBD5E1; color: #000; cursor: pointer;">
+                    Edit
+                  </button>
+                  <button onclick="deleteClientRecord('<%= client.id %>', '<%= client.company_name %>')" class="erp-btn" style="padding: 4px 8px; font-size: 11px; border: 1px solid #FECACA; background: #FEF2F2; color: #DC2626; cursor: pointer;">
+                    Delete
+                  </button>
+                </div>
+              </td>
+            </tr>
+          <% }) %>
+        <% } else { %>
+          <tr class="empty-state-row">
+            <td colspan="7" style="padding: 32px; text-align: center; color: #64748B;">No clients found.</td>
+          </tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- 2. KANBAN / GRID VIEW (Apple + Google Cards) -->
+<div class="catalogue-kanban-view" data-catalogue="clients" style="display: none;">
+  <% if (clients && clients.length > 0) { %>
+    <% clients.forEach(client => { %>
+      <div class="kanban-item-card"
+           data-search="<%= (client.company_name + ' ' + (client.client_code || '') + ' ' + (client.contact_person || '') + ' ' + (client.email || '') + ' ' + (client.phone || '') + ' ' + (client.industry || '') + ' ' + (client.location || '')).toLowerCase() %>"
+           data-status="<%= (client.status || 'prospect').toLowerCase() %>"
+           data-category="<%= (client.industry || '').toLowerCase() %>"
+           data-name="<%= (client.company_name || '').toLowerCase() %>"
+           data-newest="<%= client.id %>">
+        <div class="kanban-card-top">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <div style="width: 40px; height: 40px; border-radius: 12px; background: #000; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 15px;">
+              <%= (client.company_name || 'C').charAt(0).toUpperCase() %>
+            </div>
+            <div>
+              <div class="kanban-card-title"><%= client.company_name %></div>
+              <div class="kanban-card-subtitle"><%= client.client_code %></div>
+            </div>
+          </div>
+          <% if (client.status === 'partner') { %>
+            <span style="padding: 3px 8px; background: #000; color: #fff; border-radius: 4px; font-size: 11px; font-weight: 700; text-transform: uppercase;">Partner</span>
+          <% } else { %>
+            <span style="padding: 3px 8px; background: #F1F5F9; color: #000; border-radius: 4px; font-size: 11px; font-weight: 700; text-transform: uppercase;"><%= client.status || 'Prospect' %></span>
+          <% } %>
+        </div>
+
+        <div class="kanban-card-body">
+          <div class="kanban-chip-row">
+            <span class="kanban-chip"><i data-lucide="tag"></i> <%= client.industry || 'General' %></span>
+            <span class="kanban-chip"><i data-lucide="map-pin"></i> <%= client.location || 'HQ' %></span>
+            <% if (client.assignee_first_name) { %>
+              <span class="kanban-chip" style="background:#000; color:#fff;"><i data-lucide="user-check" style="color:#fff;"></i> <%= client.assignee_first_name %></span>
+            <% } %>
+          </div>
+          <div style="margin-top: 8px; font-size: 12px; color: #475569; display: flex; flex-direction: column; gap: 3px;">
+            <div style="font-weight: 600; color: #000;"><%= client.contact_person %></div>
+            <div><i data-lucide="mail" style="width: 12px; height: 12px; display: inline-block; vertical-align: middle;"></i> <%= client.email %></div>
+            <div><i data-lucide="phone" style="width: 12px; height: 12px; display: inline-block; vertical-align: middle;"></i> <%= client.phone %></div>
+          </div>
+        </div>
+
+        <div class="kanban-card-footer">
+          <a href="tel:<%= client.phone %>" class="erp-btn erp-btn-secondary" style="padding: 6px 12px; font-size: 12px; border: 1px solid #CBD5E1; color: #000; text-decoration: none; border-radius: 8px;">
+            <i data-lucide="phone" style="width: 12px; height: 12px;"></i> Call
+          </a>
+          <div style="display: inline-flex; gap: 6px;">
+            <button onclick="openEditClientById('<%= client.id %>')" class="erp-btn erp-btn-secondary" style="padding: 6px 12px; font-size: 12px; border: 1px solid #CBD5E1; color: #000; border-radius: 8px; cursor: pointer;">
+              Edit
+            </button>
+            <button onclick="deleteClientRecord('<%= client.id %>', '<%= client.company_name %>')" class="erp-btn" style="padding: 6px 12px; font-size: 12px; border: 1px solid #FECACA; background: #FEF2F2; color: #DC2626; border-radius: 8px; cursor: pointer;">
+              Delete
+            </button>
+          </div>
+        </div>
+      </div>
+    <% }) %>
+  <% } else { %>
+    <div class="kanban-empty-state">
+      <i data-lucide="building-2" style="width: 32px; height: 32px; margin-bottom: 8px; color: #94A3B8;"></i>
+      <div>No clients found.</div>
+    </div>
+  <% } %>
+</div>
+
+<!-- Modal: Create / Edit Client -->
+<div id="clientModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 99999; align-items: center; justify-content: center; padding: 16px;">
+  <div style="background: #FFFFFF; border-radius: 12px; width: 100%; max-width: 520px; padding: 24px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+      <h3 id="clientModalTitle" style="margin: 0; font-size: 18px; font-weight: 700; color: #000;">Add Client</h3>
+      <button onclick="closeClientModal()" style="border: none; background: transparent; font-size: 20px; cursor: pointer; color: #64748B;">&times;</button>
+    </div>
+
+    <form id="clientForm" onsubmit="handleClientSubmit(event)">
+      <input type="hidden" id="modalClientId" value="">
+
+      <div style="margin-bottom: 12px;">
+        <label style="display: block; font-size: 12px; font-weight: 700; color: #000; margin-bottom: 4px;">Company / Institution Name *</label>
+        <input type="text" id="modalClientCompany" required style="width: 100%; padding: 8px 12px; border: 1px solid #CBD5E1; border-radius: 6px;">
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+        <div>
+          <label style="display: block; font-size: 12px; font-weight: 700; color: #000; margin-bottom: 4px;">Contact Person *</label>
+          <input type="text" id="modalClientPerson" required style="width: 100%; padding: 8px 12px; border: 1px solid #CBD5E1; border-radius: 6px;">
+        </div>
+        <div>
+          <label style="display: block; font-size: 12px; font-weight: 700; color: #000; margin-bottom: 4px;">Contact Phone *</label>
+          <input type="tel" id="modalClientPhone" required style="width: 100%; padding: 8px 12px; border: 1px solid #CBD5E1; border-radius: 6px;">
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+        <div>
+          <label style="display: block; font-size: 12px; font-weight: 700; color: #000; margin-bottom: 4px;">Email Address *</label>
+          <input type="email" id="modalClientEmail" required style="width: 100%; padding: 8px 12px; border: 1px solid #CBD5E1; border-radius: 6px;">
+        </div>
+        <div>
+          <label style="display: block; font-size: 12px; font-weight: 700; color: #000; margin-bottom: 4px;">Location</label>
+          <input type="text" id="modalClientLocation" placeholder="Chennai" style="width: 100%; padding: 8px 12px; border: 1px solid #CBD5E1; border-radius: 6px;">
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+        <div>
+          <label style="display: block; font-size: 12px; font-weight: 700; color: #000; margin-bottom: 4px;">Industry</label>
+          <select id="modalClientIndustry" style="width: 100%; padding: 8px 12px; border: 1px solid #CBD5E1; border-radius: 6px; background: #fff;">
+            <option value="IT & Software">IT & Software</option>
+            <option value="Education & Colleges">Education & Colleges</option>
+            <option value="Healthcare Tech">Healthcare Tech</option>
+            <option value="Financial Services">Financial Services</option>
+            <option value="Manufacturing">Manufacturing</option>
+          </select>
+        </div>
+        <div>
+          <label style="display: block; font-size: 12px; font-weight: 700; color: #000; margin-bottom: 4px;">Relationship Status</label>
+          <select id="modalClientStatus" style="width: 100%; padding: 8px 12px; border: 1px solid #CBD5E1; border-radius: 6px; background: #fff;">
+            <option value="prospect">Prospect</option>
+            <option value="contacted">Contacted</option>
+            <option value="partner">Partner</option>
+            <option value="closed">Closed</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="margin-bottom: 20px;">
+        <label style="display: block; font-size: 12px; font-weight: 700; color: #000; margin-bottom: 4px;">Assigned Account Manager</label>
+        <select id="modalClientAssignee" style="width: 100%; padding: 8px 12px; border: 1px solid #CBD5E1; border-radius: 6px; background: #fff;">
+          <option value="">Unassigned</option>
+          <% if (employees && employees.length > 0) { %>
+            <% employees.forEach(emp => { %>
+              <option value="<%= emp.id %>"><%= emp.first_name %> <%= emp.last_name %></option>
+            <% }) %>
+          <% } %>
+        </select>
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; gap: 10px;">
+        <button type="button" onclick="closeClientModal()" class="erp-btn erp-btn-secondary" style="padding: 8px 16px; border: 1px solid #CBD5E1; color: #000; cursor: pointer;">Cancel</button>
+        <button type="submit" id="clientSubmitBtn" class="erp-btn erp-btn-primary" style="padding: 8px 20px; background: #000; color: #fff; border-radius: 6px; font-weight: 600; cursor: pointer;">Save Client</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  const allClientsMap = <%- JSON.stringify((clients || []).reduce((acc, c) => ({ ...acc, [c.id]: c }), {})) %>;
+
+  function openEditClientById(id) {
+    const c = allClientsMap[id];
+    if (c) {
+      openEditClientModal(id, c);
+    } else {
+      console.warn('Client not found in client map:', id);
+    }
+  }
+
+  function openClientModal() {
+    document.getElementById('clientModalTitle').textContent = 'Add New Client';
+    document.getElementById('modalClientId').value = '';
+    document.getElementById('modalClientCompany').value = '';
+    document.getElementById('modalClientPerson').value = '';
+    document.getElementById('modalClientPhone').value = '';
+    document.getElementById('modalClientEmail').value = '';
+    document.getElementById('modalClientLocation').value = 'Chennai';
+    document.getElementById('modalClientIndustry').value = 'IT & Software';
+    document.getElementById('modalClientStatus').value = 'prospect';
+    document.getElementById('modalClientAssignee').value = '';
+    document.getElementById('clientModal').style.display = 'flex';
+  }
+
+  function openEditClientModal(id, c) {
+    document.getElementById('clientModalTitle').textContent = `Edit Client: ${c.company_name}`;
+    document.getElementById('modalClientId').value = id;
+    document.getElementById('modalClientCompany').value = c.company_name || '';
+    document.getElementById('modalClientPerson').value = c.contact_person || '';
+    document.getElementById('modalClientPhone').value = c.phone || '';
+    document.getElementById('modalClientEmail').value = c.email || '';
+    document.getElementById('modalClientLocation').value = c.location || '';
+    document.getElementById('modalClientIndustry').value = c.industry || 'IT & Software';
+    document.getElementById('modalClientStatus').value = c.status || 'prospect';
+    document.getElementById('modalClientAssignee').value = c.assigned_to || '';
+    document.getElementById('clientModal').style.display = 'flex';
+  }
+
+  function closeClientModal() {
+    document.getElementById('clientModal').style.display = 'none';
+  }
+
+  async function handleClientSubmit(e) {
+    e.preventDefault();
+    const id = document.getElementById('modalClientId').value;
+    const company_name = document.getElementById('modalClientCompany').value.trim();
+    const contact_person = document.getElementById('modalClientPerson').value.trim();
+    const phone = document.getElementById('modalClientPhone').value.trim();
+    const email = document.getElementById('modalClientEmail').value.trim();
+    const location = document.getElementById('modalClientLocation').value.trim();
+    const industry = document.getElementById('modalClientIndustry').value;
+    const status = document.getElementById('modalClientStatus').value;
+    const assigned_to = document.getElementById('modalClientAssignee').value || null;
+
+    const payload = { company_name, contact_person, phone, email, location, industry, status, assigned_to };
+    const btn = document.getElementById('clientSubmitBtn');
+    btn.disabled = true;
+
+    try {
+      const url = id ? `/api/employee/clients/${id}` : '/api/employee/clients';
+      const method = id ? 'PUT' : 'POST';
+      const res = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Operation failed');
+
+      closeClientModal();
+      window.location.reload();
+    } catch (err) {
+      alert(err.message);
+    } finally {
+      btn.disabled = false;
+    }
+  }
+
+  async function deleteClientRecord(id, name) {
+    if (!confirm(`Are you sure you want to remove client "${name}"? (Safe soft-delete preserves references)`)) return;
+    try {
+      const res = await fetch(`/api/employee/clients/${id}`, { method: 'DELETE' });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Failed to delete client');
+      window.location.reload();
+    } catch (err) {
+      alert(err.message);
+    }
+  }
+</script>

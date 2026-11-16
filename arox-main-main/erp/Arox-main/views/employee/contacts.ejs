@@ -1,0 +1,255 @@
+<div class="erp-h1" style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; color: #000000;">
+  <div>
+    <div style="font-size: 24px; font-weight: 750;">Contacts Directory</div>
+    <div style="font-size: 13px; color: #64748B; font-weight: 500; margin-top: 2px;">Unified directory of student and corporate contacts with click-to-call & WhatsApp links</div>
+  </div>
+  <div style="font-size: 13px; color: #64748B; font-weight: 500; display: inline-flex; align-items: center; gap: 6px;">
+    <i data-lucide="phone-call" style="width: 15px; height: 15px;"></i>
+    <span>Instant Communication Hub</span>
+  </div>
+</div>
+
+<!-- Interactive Catalogue Filter Toolbar (Apple + Google Material 3) -->
+<!-- Summary Metric Cards -->
+<%
+  const totalContacts = contacts ? contacts.length : 0;
+  const studentContacts = contacts ? contacts.filter(c => c.type === 'student').length : 0;
+  const clientContacts = contacts ? contacts.filter(c => c.type === 'client').length : 0;
+  const verifiedPhones = contacts ? contacts.filter(c => c.phone).length : 0;
+%>
+<div class="erp-grid-4" style="margin-bottom: 24px;">
+  <div class="erp-card" style="background: #FFFFFF; border: 1px solid #E2E8F0; padding: 20px;">
+    <div class="erp-card-header">
+      <div class="erp-card-icon" style="background: #000000; color: #FFFFFF;">
+        <i data-lucide="address-book"></i>
+      </div>
+      <div class="erp-card-title" style="color: #64748B;">Total Directory</div>
+    </div>
+    <div class="erp-card-value" style="color: #000000;"><%= totalContacts %></div>
+    <div class="erp-p" style="margin-top: 6px; color: #64748B; font-size: 12px;">All reachable profiles</div>
+  </div>
+
+  <div class="erp-card" style="background: #FFFFFF; border: 1px solid #E2E8F0; padding: 20px;">
+    <div class="erp-card-header">
+      <div class="erp-card-icon" style="background: #000000; color: #FFFFFF;">
+        <i data-lucide="graduation-cap"></i>
+      </div>
+      <div class="erp-card-title" style="color: #64748B;">Student Contacts</div>
+    </div>
+    <div class="erp-card-value" style="color: #000000;"><%= studentContacts %></div>
+    <div class="erp-p" style="margin-top: 6px; color: #2563EB; font-weight: 600; font-size: 12px;">Learners & Interns</div>
+  </div>
+
+  <div class="erp-card" style="background: #FFFFFF; border: 1px solid #E2E8F0; padding: 20px;">
+    <div class="erp-card-header">
+      <div class="erp-card-icon" style="background: #000000; color: #FFFFFF;">
+        <i data-lucide="building-2"></i>
+      </div>
+      <div class="erp-card-title" style="color: #64748B;">Corporate Clients</div>
+    </div>
+    <div class="erp-card-value" style="color: #000000;"><%= clientContacts %></div>
+    <div class="erp-p" style="margin-top: 6px; color: #16A34A; font-weight: 600; font-size: 12px;">Enterprise & Colleges</div>
+  </div>
+
+  <div class="erp-card" style="background: #FFFFFF; border: 1px solid #E2E8F0; padding: 20px;">
+    <div class="erp-card-header">
+      <div class="erp-card-icon" style="background: #000000; color: #FFFFFF;">
+        <i data-lucide="phone"></i>
+      </div>
+      <div class="erp-card-title" style="color: #64748B;">Direct Dial / WhatsApp</div>
+    </div>
+    <div class="erp-card-value" style="color: #000000;"><%= verifiedPhones %></div>
+    <div class="erp-p" style="margin-top: 6px; color: #000000; font-weight: 600; font-size: 12px;">Verified phone numbers</div>
+  </div>
+</div>
+<div class="catalogue-toolbar" data-catalogue="emp_contacts">
+  <div class="catalogue-filters-group">
+    <!-- Search Input -->
+    <div class="catalogue-search-wrap">
+      <i data-lucide="search"></i>
+      <input type="text" class="catalogue-search-input" placeholder="Search name, phone, email, college or company...">
+    </div>
+
+    <!-- Type Filter -->
+    <select class="catalogue-select" data-filter="category" title="Filter by Type">
+      <option value="all">All Contacts</option>
+      <option value="student">Students Only</option>
+      <option value="client">Clients Only</option>
+    </select>
+
+    <!-- Sort Dropdown -->
+    <select class="catalogue-select" data-filter="sort" title="Sort records">
+      <option value="name">Name (A - Z)</option>
+      <option value="name_desc">Name (Z - A)</option>
+      <option value="newest">Newest First</option>
+    </select>
+
+    <!-- Reset Button -->
+    <button type="button" class="catalogue-reset-btn" title="Reset all filters">
+      <i data-lucide="rotate-ccw" style="width: 13px; height: 13px;"></i>
+      <span>Reset</span>
+    </button>
+
+    <!-- Result Counter -->
+    <span class="catalogue-count-badge">Showing <%= contacts ? contacts.length : 0 %> contacts</span>
+  </div>
+
+  <!-- Segmented View Switcher: List vs Kanban/Grid -->
+  <div class="catalogue-view-switcher">
+    <button type="button" class="view-btn active" data-view="list" title="Table List View">
+      <i data-lucide="list"></i>
+      <span>List</span>
+    </button>
+    <button type="button" class="view-btn" data-view="kanban" title="Kanban Card Grid View">
+      <i data-lucide="layout-grid"></i>
+      <span>Kanban</span>
+    </button>
+  </div>
+</div>
+
+<!-- 1. LIST VIEW (Data Table) -->
+<div class="catalogue-list-view" data-catalogue="emp_contacts">
+  <div class="erp-card" style="background: #fff; border: 1px solid #E2E8F0; border-radius: 12px; overflow-x: auto; padding: 0;">
+    <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 13px;">
+      <thead>
+        <tr style="background: #F8FAFC; border-bottom: 1px solid #E2E8F0; font-size: 11px; text-transform: uppercase; color: #64748B; font-weight: 700;">
+          <th style="padding: 12px 16px;">Contact Name</th>
+          <th style="padding: 12px 16px;">Type</th>
+          <th style="padding: 12px 16px;">Organization / College</th>
+          <th style="padding: 12px 16px;">Phone Number</th>
+          <th style="padding: 12px 16px;">Email</th>
+          <th style="padding: 12px 16px; text-align: right;">Instant Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (contacts && contacts.length > 0) { %>
+          <% contacts.forEach(c => { 
+            const cleanPhone = (c.phone || '').replace(/[^0-9]/g, '');
+            const typeStr = (c.contact_type || 'student').toLowerCase();
+          %>
+            <tr style="border-bottom: 1px solid #E2E8F0;"
+                data-search="<%= (c.name + ' ' + (c.phone || '') + ' ' + (c.email || '') + ' ' + (c.affiliation || '') + ' ' + (c.details || '') + ' ' + typeStr).toLowerCase() %>"
+                data-category="<%= typeStr %>"
+                data-name="<%= (c.name || '').toLowerCase() %>"
+                data-newest="<%= c.id || 0 %>">
+              <td style="padding: 12px 16px;">
+                <div style="font-weight: 700; color: #000; font-size: 13px;"><%= c.name %></div>
+                <div style="font-size: 11px; color: #64748B;"><%= c.details || '' %></div>
+              </td>
+              <td style="padding: 12px 16px;">
+                <span style="display: inline-block; padding: 2px 8px; font-size: 11px; font-weight: 700; border-radius: 4px; text-transform: uppercase; background: <%= c.contact_type === 'student' ? '#E0F2FE; color: #0369A1;' : '#FEF3C7; color: #B45309;' %>">
+                  <%= c.contact_type %>
+                </span>
+              </td>
+              <td style="padding: 12px 16px;">
+                <div style="font-size: 13px; color: #334155; font-weight: 500;"><%= c.affiliation || '—' %></div>
+              </td>
+              <td style="padding: 12px 16px;">
+                <% if (c.phone) { %>
+                  <a href="tel:<%= c.phone %>" style="font-weight: 600; color: #000; text-decoration: none; font-size: 13px; display: inline-flex; align-items: center; gap: 4px;">
+                    <i data-lucide="phone" style="width: 12px; height: 12px;"></i> <%= c.phone %>
+                  </a>
+                <% } else { %>
+                  <span style="color: #94A3B8; font-size: 12px;">No phone</span>
+                <% } %>
+              </td>
+              <td style="padding: 12px 16px;">
+                <% if (c.email) { %>
+                  <a href="mailto:<%= c.email %>" style="color: #64748B; text-decoration: none; font-size: 12px; display: inline-flex; align-items: center; gap: 4px;">
+                    <i data-lucide="mail" style="width: 12px; height: 12px;"></i> <%= c.email %>
+                  </a>
+                <% } else { %>
+                  <span style="color: #94A3B8; font-size: 12px;">No email</span>
+                <% } %>
+              </td>
+              <td style="padding: 12px 16px; text-align: right;">
+                <div style="display: inline-flex; gap: 6px;">
+                  <% if (c.phone) { %>
+                    <a href="tel:<%= c.phone %>" class="erp-btn erp-btn-secondary" style="padding: 5px 9px; font-size: 11px; font-weight: 600; color: #000; border: 1px solid #CBD5E1; text-decoration: none; border-radius: 6px;" title="Call">
+                      <i data-lucide="phone" style="width: 12px; height: 12px;"></i> Call
+                    </a>
+                    <a href="https://wa.me/<%= cleanPhone.startsWith('91') ? cleanPhone : '91' + cleanPhone %>" target="_blank" rel="noopener noreferrer" class="erp-btn" style="padding: 5px 9px; font-size: 11px; font-weight: 600; background: #25D366; color: #FFFFFF; border-radius: 6px; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;" title="WhatsApp Chat">
+                      <i data-lucide="message-circle" style="width: 12px; height: 12px;"></i> WhatsApp
+                    </a>
+                  <% } %>
+                  <a href="/employee/call-reports" class="erp-btn" style="padding: 5px 9px; font-size: 11px; font-weight: 600; background: #000; color: #fff; border-radius: 6px; text-decoration: none;" title="Log Call Report">
+                    Log Call
+                  </a>
+                </div>
+              </td>
+            </tr>
+          <% }); %>
+        <% } %>
+        <tr class="empty-state-row" style="display: <%= (!contacts || contacts.length === 0) ? '' : 'none' %>;">
+          <td colspan="6" style="padding: 32px; text-align: center; color: #64748B;">No contacts matching current filters.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- 2. KANBAN / GRID VIEW (Material 3 Cards) -->
+<div class="catalogue-kanban-view" data-catalogue="emp_contacts">
+  <% if (contacts && contacts.length > 0) { %>
+    <% contacts.forEach(c => { 
+      const cleanPhone = (c.phone || '').replace(/[^0-9]/g, '');
+      const typeStr = (c.contact_type || 'student').toLowerCase();
+    %>
+      <div class="kanban-item-card"
+           data-search="<%= (c.name + ' ' + (c.phone || '') + ' ' + (c.email || '') + ' ' + (c.affiliation || '') + ' ' + (c.details || '') + ' ' + typeStr).toLowerCase() %>"
+           data-category="<%= typeStr %>"
+           data-name="<%= (c.name || '').toLowerCase() %>"
+           data-newest="<%= c.id || 0 %>">
+        <div class="kanban-card-top">
+          <div>
+            <div class="kanban-card-title"><%= c.name %></div>
+            <div class="kanban-card-subtitle"><%= c.affiliation || 'Direct Contact' %></div>
+          </div>
+          <span style="font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 4px; text-transform: uppercase; background: <%= c.contact_type === 'student' ? '#E0F2FE; color: #0369A1;' : '#FEF3C7; color: #B45309;' %>">
+            <%= c.contact_type %>
+          </span>
+        </div>
+
+        <div class="kanban-card-body">
+          <% if (c.details) { %>
+            <div style="font-size: 12px; color: #64748B;">
+              <%= c.details %>
+            </div>
+          <% } %>
+
+          <div style="font-size: 12px; color: #334155; line-height: 1.6; padding: 8px 10px; background: #F8FAFC; border-radius: 8px; border: 1px solid #F1F5F9; margin-top: 4px;">
+            <% if (c.phone) { %>
+              <div><i data-lucide="phone" style="width: 12px; height: 12px; display: inline-block;"></i> <%= c.phone %></div>
+            <% } %>
+            <% if (c.email) { %>
+              <div><i data-lucide="mail" style="width: 12px; height: 12px; display: inline-block;"></i> <%= c.email %></div>
+            <% } %>
+          </div>
+        </div>
+
+        <div class="kanban-card-footer">
+          <div style="display: flex; gap: 6px; width: 100%; justify-content: space-between; align-items: center;">
+            <div style="display: flex; gap: 6px;">
+              <% if (c.phone) { %>
+                <a href="tel:<%= c.phone %>" class="erp-btn erp-btn-secondary" style="padding: 5px 10px; font-size: 11px; text-decoration: none; border-radius: 6px; display: inline-flex; align-items: center; gap: 4px; border: 1px solid #CBD5E1; color: #000;">
+                  <i data-lucide="phone" style="width: 11px; height: 11px;"></i> Call
+                </a>
+                <a href="https://wa.me/<%= cleanPhone.startsWith('91') ? cleanPhone : '91' + cleanPhone %>" target="_blank" rel="noopener noreferrer" class="erp-btn" style="padding: 5px 10px; font-size: 11px; background: #25D366; color: #FFFFFF; border-radius: 6px; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;">
+                  <i data-lucide="message-circle" style="width: 11px; height: 11px;"></i> WA
+                </a>
+              <% } %>
+            </div>
+            <a href="/employee/call-reports" class="erp-btn" style="padding: 5px 10px; font-size: 11px; background: #000; color: #fff; border-radius: 6px; text-decoration: none;">
+              Log Call
+            </a>
+          </div>
+        </div>
+      </div>
+    <% }) %>
+  <% } %>
+  <div class="kanban-empty-state" style="display: <%= (!contacts || contacts.length === 0) ? 'block' : 'none' %>;">
+    <i data-lucide="contact" style="width: 36px; height: 36px; margin: 0 auto 10px; color: #94A3B8;"></i>
+    <div style="font-weight: 700; font-size: 15px; color: #000;">No Contacts Found</div>
+    <div style="font-size: 12px; color: #64748B; margin-top: 4px;">Try searching with a different name, college, or company.</div>
+  </div>
+</div>

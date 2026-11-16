@@ -1,0 +1,188 @@
+<div class="animate-fade-slide-up" style="display: flex; flex-direction: column; gap: 20px;">
+  <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+    <div>
+      <h1 style="font-size: 1.5rem; font-weight: 700; margin: 0; color: #0f172a;">Student Registrations</h1>
+      <p style="font-size: 0.85rem; color: #64748b; margin: 4px 0 0 0;">All course enrollments and program registration records.</p>
+    </div>
+    <div style="display: flex; gap: 10px;">
+      <a href="/admin/internships" class="erp-btn erp-btn-secondary" style="text-decoration: none; font-size: 0.85rem;">
+        Switch to Internships View
+      </a>
+    </div>
+  </div>
+
+  <!-- Summary Metric Cards -->
+  <%
+    const totalRegistrations = registrations ? registrations.length : 0;
+    const activeRegistrations = registrations ? registrations.filter(r => r.status === 'completed' || r.status === 'active').length : 0;
+    const pendingRegistrations = registrations ? registrations.filter(r => r.status === 'pending_payment' || r.status === 'pending').length : 0;
+    const uniqueCourses = registrations ? new Set(registrations.map(r => r.course_title).filter(Boolean)).size : 0;
+  %>
+  <div class="erp-grid-4">
+    <div class="erp-card" style="background: #FFFFFF; border: 1px solid #E2E8F0; padding: 20px;">
+      <div class="erp-card-header">
+        <div class="erp-card-icon" style="background: #000000; color: #FFFFFF;">
+          <i data-lucide="clipboard-list"></i>
+        </div>
+        <div class="erp-card-title" style="color: #64748B;">Total Registrations</div>
+      </div>
+      <div class="erp-card-value" style="color: #000000;"><%= totalRegistrations %></div>
+      <div class="erp-p" style="margin-top: 6px; color: #64748B; font-size: 12px;">All student course enrollments</div>
+    </div>
+
+    <div class="erp-card" style="background: #FFFFFF; border: 1px solid #E2E8F0; padding: 20px;">
+      <div class="erp-card-header">
+        <div class="erp-card-icon" style="background: #000000; color: #FFFFFF;">
+          <i data-lucide="check-circle-2"></i>
+        </div>
+        <div class="erp-card-title" style="color: #64748B;">Active Enrollments</div>
+      </div>
+      <div class="erp-card-value" style="color: #000000;"><%= activeRegistrations %></div>
+      <div class="erp-p" style="margin-top: 6px; color: #16A34A; font-weight: 600; font-size: 12px;">Confirmed & in-progress</div>
+    </div>
+
+    <div class="erp-card" style="background: #FFFFFF; border: 1px solid #E2E8F0; padding: 20px;">
+      <div class="erp-card-header">
+        <div class="erp-card-icon" style="background: #000000; color: #FFFFFF;">
+          <i data-lucide="clock"></i>
+        </div>
+        <div class="erp-card-title" style="color: #64748B;">Pending Payment</div>
+      </div>
+      <div class="erp-card-value" style="color: #D97706;"><%= pendingRegistrations %></div>
+      <div class="erp-p" style="margin-top: 6px; color: #D97706; font-weight: 600; font-size: 12px;">Awaiting verification</div>
+    </div>
+
+    <div class="erp-card" style="background: #FFFFFF; border: 1px solid #E2E8F0; padding: 20px;">
+      <div class="erp-card-header">
+        <div class="erp-card-icon" style="background: #000000; color: #FFFFFF;">
+          <i data-lucide="book-open"></i>
+        </div>
+        <div class="erp-card-title" style="color: #64748B;">Active Programs</div>
+      </div>
+      <div class="erp-card-value" style="color: #000000;"><%= uniqueCourses %></div>
+      <div class="erp-p" style="margin-top: 6px; color: #64748B; font-size: 12px;">Unique courses enrolled</div>
+    </div>
+  </div>
+
+  <div class="erp-card" style="padding: 0; overflow: hidden;">
+    <!-- Catalogue Toolbar -->
+    <div class="catalogue-toolbar" style="padding: 16px 20px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; background: #fafafa;">
+      <div style="position: relative; min-width: 280px; flex: 1; max-width: 400px;">
+        <input type="text" id="regSearchInput" oninput="filterRegistrations()" placeholder="Search by ID, student name, email..." class="erp-input" style="padding-left: 36px; font-size: 0.85rem; width: 100%;">
+        <span style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #94a3b8; pointer-events: none; font-size: 0.9rem;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </span>
+      </div>
+
+      <div style="display: flex; gap: 10px; align-items: center;">
+        <select id="regStatusFilter" onchange="filterRegistrations()" class="erp-input" style="font-size: 0.85rem; width: auto; min-width: 160px;">
+          <option value="all">All Statuses</option>
+          <option value="active">Active / Completed</option>
+          <option value="pending_payment">Pending Payment</option>
+          <option value="cancelled">Cancelled</option>
+          <option value="rejected">Rejected</option>
+        </select>
+        <span id="regCountBadge" class="erp-badge erp-badge-secondary" style="font-weight: 600;"><%= registrations.length %> Records</span>
+      </div>
+    </div>
+
+    <!-- Registrations Table -->
+    <div style="overflow-x: auto;">
+      <table class="erp-table" id="registrationsTable">
+        <thead>
+          <tr>
+            <th>Registration ID / Date</th>
+            <th>Student Profile</th>
+            <th>Enrolled Program</th>
+            <th>Status</th>
+            <th style="text-align: right;">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (registrations && registrations.length > 0) { %>
+            <% registrations.forEach(reg => { %>
+              <tr class="reg-row" data-search="<%= (reg.registration_id + ' ' + reg.first_name + ' ' + reg.last_name + ' ' + reg.email + ' ' + reg.course_title).toLowerCase() %>" data-status="<%= (reg.status || '').toLowerCase() %>">
+                <td>
+                  <code style="font-family: monospace; font-weight: 700; color: #0f172a; background: #f1f5f9; padding: 3px 8px; border-radius: 4px;"><%= reg.registration_id %></code>
+                  <div style="font-size: 0.75rem; color: #64748b; margin-top: 4px;">
+                    <%= reg.created_at ? new Date(reg.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : 'N/A' %>
+                  </div>
+                </td>
+                <td>
+                  <div style="font-weight: 600; color: #0f172a; font-size: 0.92rem;"><%= reg.first_name %> <%= reg.last_name %></div>
+                  <div style="font-size: 0.8rem; color: #64748b;"><%= reg.email %></div>
+                </td>
+                <td>
+                  <div style="font-weight: 600; color: #0f172a; max-width: 280px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="<%= reg.course_title %>">
+                    <%= reg.course_title %>
+                  </div>
+                  <span class="erp-badge erp-badge-secondary" style="font-size: 0.68rem; margin-top: 4px; text-transform: uppercase;">
+                    <%= reg.course_type || 'General' %>
+                  </span>
+                </td>
+                <td>
+                  <% if (reg.status === 'completed' || reg.status === 'active') { %>
+                    <span class="erp-badge erp-badge-success">Active</span>
+                  <% } else if (reg.status === 'pending_payment' || reg.status === 'pending') { %>
+                    <span class="erp-badge erp-badge-warning">Pending Payment</span>
+                  <% } else if (reg.status === 'rejected' || reg.status === 'cancelled') { %>
+                    <span class="erp-badge erp-badge-danger"><%= reg.status %></span>
+                  <% } else { %>
+                    <span class="erp-badge erp-badge-secondary"><%= reg.status %></span>
+                  <% } %>
+                </td>
+                <td style="text-align: right; white-space: nowrap;">
+                  <a href="/admin/registrations/<%= reg.id %>" class="erp-btn erp-btn-secondary" style="padding: 6px 14px; font-size: 0.82rem; text-decoration: none; font-weight: 600;">
+                    Review & Edit →
+                  </a>
+                </td>
+              </tr>
+            <% }) %>
+          <% } else { %>
+            <tr id="emptyRow">
+              <td colspan="5" style="text-align: center; padding: 48px 20px; color: #64748b;">
+                <div style="font-size: 2rem; margin-bottom: 8px;">📋</div>
+                <p style="margin: 0; font-weight: 600; color: #334155;">No Registrations Found</p>
+                <p style="margin: 4px 0 0 0; font-size: 0.82rem;">No registration records match the current database view.</p>
+              </td>
+            </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+  function filterRegistrations() {
+    const query = document.getElementById('regSearchInput').value.toLowerCase().trim();
+    const status = document.getElementById('regStatusFilter').value.toLowerCase();
+    const rows = document.querySelectorAll('.reg-row');
+    let visibleCount = 0;
+
+    rows.forEach(row => {
+      const rowSearch = row.getAttribute('data-search') || '';
+      const rowStatus = row.getAttribute('data-status') || '';
+
+      const matchesQuery = !query || rowSearch.includes(query);
+      let matchesStatus = true;
+      if (status !== 'all') {
+        if (status === 'active') {
+          matchesStatus = rowStatus === 'completed' || rowStatus === 'active';
+        } else {
+          matchesStatus = rowStatus === status;
+        }
+      }
+
+      if (matchesQuery && matchesStatus) {
+        row.style.display = '';
+        visibleCount++;
+      } else {
+        row.style.display = 'none';
+      }
+    });
+
+    const countBadge = document.getElementById('regCountBadge');
+    if (countBadge) countBadge.textContent = `${visibleCount} Records`;
+  }
+</script>

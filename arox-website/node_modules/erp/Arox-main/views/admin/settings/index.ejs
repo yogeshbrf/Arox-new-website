@@ -1,0 +1,377 @@
+<div class="erp-h1" style="margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; color: #000000;">
+  <div>
+    <div style="font-size: 26px; font-weight: 750;">System Settings & ERP Preferences</div>
+    <div style="font-size: 13px; color: #64748B; font-weight: 500; margin-top: 4px;">Configure corporate identity, document generation defaults, CRM automations, and platform security</div>
+  </div>
+  <div style="display: flex; align-items: center; gap: 8px;">
+    <span style="display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; padding: 4px 10px; background: #DCFCE7; color: #166534; border-radius: 99px;">
+      <span style="width: 7px; height: 7px; border-radius: 50%; background: #16A34A;"></span> SQLite DB Synchronized
+    </span>
+  </div>
+</div>
+
+<!-- Tab Navigation -->
+<div class="erp-tab-nav" style="margin-bottom: 24px;">
+  <button type="button" class="erp-tab-btn active" onclick="switchSettingsTab('tab-org', this)">
+    <i data-lucide="building-2" style="width: 15px; height: 15px;"></i> Organization Profile
+  </button>
+  <button type="button" class="erp-tab-btn" onclick="switchSettingsTab('tab-crm', this)">
+    <i data-lucide="filter" style="width: 15px; height: 15px;"></i> CRM & Leads
+  </button>
+  <button type="button" class="erp-tab-btn" onclick="switchSettingsTab('tab-generator', this)">
+    <i data-lucide="award" style="width: 15px; height: 15px;"></i> Document Defaults
+  </button>
+  <button type="button" class="erp-tab-btn" onclick="switchSettingsTab('tab-security', this)">
+    <i data-lucide="shield-check" style="width: 15px; height: 15px;"></i> Platform Security
+  </button>
+  <button type="button" class="erp-tab-btn" onclick="switchSettingsTab('tab-notifications', this)">
+    <i data-lucide="bell" style="width: 15px; height: 15px;"></i> Notification Rules
+  </button>
+</div>
+
+<!-- TAB 1: Organization Profile -->
+<div id="tab-org" class="settings-tab-panel" style="display: block;">
+  <div class="erp-card" style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 12px; padding: 24px; max-width: 900px; margin-bottom: 24px;">
+    <div style="border-bottom: 1px solid #E2E8F0; padding-bottom: 14px; margin-bottom: 20px;">
+      <h3 style="font-size: 16px; font-weight: 750; color: #000; margin: 0 0 4px 0;">Corporate Identity & Invoicing Details</h3>
+      <p style="font-size: 12px; color: #64748B; margin: 0;">These credentials appear across all generated certificates, student receipts, and portal headers.</p>
+    </div>
+
+    <form id="orgSettingsForm" onsubmit="handleSaveSettings(event, 'org')">
+      <div style="display: flex; flex-direction: column; gap: 16px;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+          <div>
+            <label style="font-size: 12px; font-weight: 700; color: #000; display: block; margin-bottom: 6px;">Legal Entity Name *</label>
+            <input type="text" name="name" value="<%= settings.org.name || '' %>" required class="erp-input" style="font-size: 13px;">
+          </div>
+          <div>
+            <label style="font-size: 12px; font-weight: 700; color: #000; display: block; margin-bottom: 6px;">Corporate Tagline</label>
+            <input type="text" name="tagline" value="<%= settings.org.tagline || '' %>" placeholder="e.g. Enterprise Training & Software Solutions" class="erp-input" style="font-size: 13px;">
+          </div>
+        </div>
+
+        <div>
+          <label style="font-size: 12px; font-weight: 700; color: #000; display: block; margin-bottom: 6px;">Registered Address *</label>
+          <input type="text" name="address" value="<%= settings.org.address || '' %>" required class="erp-input" style="font-size: 13px;">
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+          <div>
+            <label style="font-size: 12px; font-weight: 700; color: #000; display: block; margin-bottom: 6px;">Official Email *</label>
+            <input type="email" name="email" value="<%= settings.org.email || '' %>" required class="erp-input" style="font-size: 13px;">
+          </div>
+          <div>
+            <label style="font-size: 12px; font-weight: 700; color: #000; display: block; margin-bottom: 6px;">Support Phone *</label>
+            <input type="text" name="phone" value="<%= settings.org.phone || '' %>" required class="erp-input" style="font-size: 13px;">
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+          <div>
+            <label style="font-size: 12px; font-weight: 700; color: #000; display: block; margin-bottom: 6px;">GSTIN / Tax ID</label>
+            <input type="text" name="gstin" value="<%= settings.org.gstin || '' %>" placeholder="33AABCU9603R1ZM" class="erp-input" style="font-size: 13px; font-family: monospace;">
+          </div>
+          <div>
+            <label style="font-size: 12px; font-weight: 700; color: #000; display: block; margin-bottom: 6px;">Official Website URL</label>
+            <input type="url" name="website" value="<%= settings.org.website || '' %>" placeholder="https://aroxtech.com" class="erp-input" style="font-size: 13px;">
+          </div>
+        </div>
+
+        <div>
+          <label style="font-size: 12px; font-weight: 700; color: #000; display: block; margin-bottom: 6px;">Operating / Support Hours</label>
+          <input type="text" name="support_hours" value="<%= settings.org.support_hours || 'Mon - Sat: 9:00 AM - 6:00 PM' %>" class="erp-input" style="font-size: 13px;">
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; padding-top: 14px; border-top: 1px solid #E2E8F0; margin-top: 6px;">
+          <button type="submit" class="erp-btn erp-btn-primary" style="padding: 10px 22px; background: #000; color: #fff; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+            <i data-lucide="save" style="width: 14px; height: 14px;"></i> Save Organization Details
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- TAB 2: CRM & Lead Pipeline -->
+<div id="tab-crm" class="settings-tab-panel" style="display: none;">
+  <div class="erp-card" style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 12px; padding: 24px; max-width: 900px; margin-bottom: 24px;">
+    <div style="border-bottom: 1px solid #E2E8F0; padding-bottom: 14px; margin-bottom: 20px;">
+      <h3 style="font-size: 16px; font-weight: 750; color: #000; margin: 0 0 4px 0;">CRM & Pipeline Rules</h3>
+      <p style="font-size: 12px; color: #64748B; margin: 0;">Automations for lead assignment, follow-up SLA monitors, and sales notifications.</p>
+    </div>
+
+    <form id="crmSettingsForm" onsubmit="handleSaveSettings(event, 'crm')">
+      <div style="display: flex; flex-direction: column; gap: 16px;">
+        <label style="display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; cursor: pointer;">
+          <div>
+            <div style="font-size: 13px; font-weight: 700; color: #000;">Auto-Assign Inbound Leads</div>
+            <div style="font-size: 12px; color: #64748B; margin-top: 2px;">Round-robin assign new registrations & applications to active employees</div>
+          </div>
+          <input type="checkbox" name="auto_assign_leads" value="true" <%= settings.crm.auto_assign_leads ? 'checked' : '' %> style="accent-color: #000; width: 18px; height: 18px;">
+        </label>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+          <div>
+            <label style="font-size: 12px; font-weight: 700; color: #000; display: block; margin-bottom: 6px;">Overdue Follow-up Threshold (Hours)</label>
+            <input type="number" name="overdue_alert_hours" value="<%= settings.crm.overdue_alert_hours || 24 %>" min="1" max="168" class="erp-input" style="font-size: 13px;">
+          </div>
+          <div>
+            <label style="font-size: 12px; font-weight: 700; color: #000; display: block; margin-bottom: 6px;">Currency Symbol</label>
+            <input type="text" name="currency_symbol" value="<%= settings.crm.currency_symbol || '₹' %>" class="erp-input" style="font-size: 13px;">
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+          <div>
+            <label style="font-size: 12px; font-weight: 700; color: #000; display: block; margin-bottom: 6px;">Default Pipeline Entry Stage</label>
+            <select name="default_pipeline_stage" class="erp-input" style="font-size: 13px;">
+              <option value="new" <%= settings.crm.default_pipeline_stage === 'new' ? 'selected' : '' %>>New Lead</option>
+              <option value="contacted" <%= settings.crm.default_pipeline_stage === 'contacted' ? 'selected' : '' %>>Contacted</option>
+              <option value="discussion" <%= settings.crm.default_pipeline_stage === 'discussion' ? 'selected' : '' %>>Discussion</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size: 12px; font-weight: 700; color: #000; display: block; margin-bottom: 6px;">Sales Notifications Routing Email</label>
+            <input type="email" name="notify_sales_email" value="<%= settings.crm.notify_sales_email || 'sales@aroxtech.com' %>" class="erp-input" style="font-size: 13px;">
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; padding-top: 14px; border-top: 1px solid #E2E8F0; margin-top: 6px;">
+          <button type="submit" class="erp-btn erp-btn-primary" style="padding: 10px 22px; background: #000; color: #fff; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+            <i data-lucide="save" style="width: 14px; height: 14px;"></i> Save CRM Preferences
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- TAB 3: Document Generator Defaults -->
+<div id="tab-generator" class="settings-tab-panel" style="display: none;">
+  <div class="erp-card" style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 12px; padding: 24px; max-width: 900px; margin-bottom: 24px;">
+    <div style="border-bottom: 1px solid #E2E8F0; padding-bottom: 14px; margin-bottom: 20px;">
+      <h3 style="font-size: 16px; font-weight: 750; color: #000; margin: 0 0 4px 0;">Certificate & Offer Letter Defaults</h3>
+      <p style="font-size: 12px; color: #64748B; margin: 0;">Default signatories, verification parameters, and location settings for generated PDFs.</p>
+    </div>
+
+    <form id="generatorSettingsForm" onsubmit="handleSaveSettings(event, 'generator')">
+      <div style="display: flex; flex-direction: column; gap: 16px;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+          <div>
+            <label style="font-size: 12px; font-weight: 700; color: #000; display: block; margin-bottom: 6px;">Authorized Signatory Name *</label>
+            <input type="text" name="signatory_name" value="<%= settings.generator.signatory_name || 'R. Kavitha' %>" required class="erp-input" style="font-size: 13px;">
+          </div>
+          <div>
+            <label style="font-size: 12px; font-weight: 700; color: #000; display: block; margin-bottom: 6px;">Signatory Designation / Title *</label>
+            <input type="text" name="signatory_title" value="<%= settings.generator.signatory_title || 'Director of Operations' %>" required class="erp-input" style="font-size: 13px;">
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+          <div>
+            <label style="font-size: 12px; font-weight: 700; color: #000; display: block; margin-bottom: 6px;">Default Issuing City</label>
+            <input type="text" name="issuer_city" value="<%= settings.generator.issuer_city || 'Salem' %>" class="erp-input" style="font-size: 13px;">
+          </div>
+          <div>
+            <label style="font-size: 12px; font-weight: 700; color: #000; display: block; margin-bottom: 6px;">Standard Internship Duration</label>
+            <input type="text" name="default_internship_duration" value="<%= settings.generator.default_internship_duration || '3 Months' %>" class="erp-input" style="font-size: 13px;">
+          </div>
+        </div>
+
+        <label style="display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; cursor: pointer;">
+          <div>
+            <div style="font-size: 13px; font-weight: 700; color: #000;">Embed Cryptographic QR Code Verification</div>
+            <div style="font-size: 12px; color: #64748B; margin-top: 2px;">Renders scannable tamper-proof verification QR code on certificates & offer letters</div>
+          </div>
+          <input type="checkbox" name="qr_verification" value="true" <%= settings.generator.qr_verification ? 'checked' : '' %> style="accent-color: #000; width: 18px; height: 18px;">
+        </label>
+
+        <div style="display: flex; justify-content: flex-end; padding-top: 14px; border-top: 1px solid #E2E8F0; margin-top: 6px;">
+          <button type="submit" class="erp-btn erp-btn-primary" style="padding: 10px 22px; background: #000; color: #fff; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+            <i data-lucide="save" style="width: 14px; height: 14px;"></i> Save Document Defaults
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- TAB 4: Platform Security -->
+<div id="tab-security" class="settings-tab-panel" style="display: none;">
+  <div class="erp-card" style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 12px; padding: 24px; max-width: 900px; margin-bottom: 24px;">
+    <div style="border-bottom: 1px solid #E2E8F0; padding-bottom: 14px; margin-bottom: 20px;">
+      <h3 style="font-size: 16px; font-weight: 750; color: #000; margin: 0 0 4px 0;">Platform Security & Session Policy</h3>
+      <p style="font-size: 12px; color: #64748B; margin: 0;">Session lifetime, registration gates, and role privilege safeguards.</p>
+    </div>
+
+    <form id="securitySettingsForm" onsubmit="handleSaveSettings(event, 'security')">
+      <div style="display: flex; flex-direction: column; gap: 16px;">
+        <div>
+          <label style="font-size: 12px; font-weight: 700; color: #000; display: block; margin-bottom: 6px;">Session Token Lifetime (Days)</label>
+          <input type="number" name="session_duration_days" value="<%= settings.security.session_duration_days || 7 %>" min="1" max="90" class="erp-input" style="font-size: 13px; max-width: 300px;">
+          <div style="font-size: 11px; color: #64748B; margin-top: 4px;">Controls automatic logout timeout for administrator and employee sessions.</div>
+        </div>
+
+        <label style="display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; cursor: pointer;">
+          <div>
+            <div style="font-size: 13px; font-weight: 700; color: #000;">Allow Public Student Self-Registration</div>
+            <div style="font-size: 12px; color: #64748B; margin-top: 2px;">When enabled, prospective interns can sign up directly via the public website</div>
+          </div>
+          <input type="checkbox" name="allow_registrations" value="true" <%= settings.security.allow_registrations ? 'checked' : '' %> style="accent-color: #000; width: 18px; height: 18px;">
+        </label>
+
+        <label style="display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; cursor: pointer;">
+          <div>
+            <div style="font-size: 13px; font-weight: 700; color: #000;">Require Email Verification for New Accounts</div>
+            <div style="font-size: 12px; color: #64748B; margin-top: 2px;">Enforces one-time email OTP verification before granting student portal access</div>
+          </div>
+          <input type="checkbox" name="require_email_verification" value="true" <%= settings.security.require_email_verification ? 'checked' : '' %> style="accent-color: #000; width: 18px; height: 18px;">
+        </label>
+
+        <label style="display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; background: #FEF2F2; border: 1px solid #FECACA; border-radius: 8px; cursor: pointer;">
+          <div>
+            <div style="font-size: 13px; font-weight: 700; color: #DC2626;">System Maintenance Mode</div>
+            <div style="font-size: 12px; color: #991B1B; margin-top: 2px;">Temporarily display maintenance banner to students and employees</div>
+          </div>
+          <input type="checkbox" name="maintenance_mode" value="true" <%= settings.security.maintenance_mode ? 'checked' : '' %> style="accent-color: #DC2626; width: 18px; height: 18px;">
+        </label>
+
+        <div style="display: flex; justify-content: flex-end; padding-top: 14px; border-top: 1px solid #E2E8F0; margin-top: 6px;">
+          <button type="submit" class="erp-btn erp-btn-primary" style="padding: 10px 22px; background: #000; color: #fff; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+            <i data-lucide="save" style="width: 14px; height: 14px;"></i> Save Security Policies
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- TAB 5: Notification Rules -->
+<div id="tab-notifications" class="settings-tab-panel" style="display: none;">
+  <div class="erp-card" style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 12px; padding: 24px; max-width: 900px; margin-bottom: 24px;">
+    <div style="border-bottom: 1px solid #E2E8F0; padding-bottom: 14px; margin-bottom: 20px;">
+      <h3 style="font-size: 16px; font-weight: 750; color: #000; margin: 0 0 4px 0;">Automated Email Triggers & Alerts</h3>
+      <p style="font-size: 12px; color: #64748B; margin: 0;">Configure transactional event emails sent to administrators and stakeholders.</p>
+    </div>
+
+    <form id="notificationSettingsForm" onsubmit="handleSaveSettings(event, 'notifications')">
+      <div style="display: flex; flex-direction: column; gap: 14px;">
+        <label style="display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; cursor: pointer;">
+          <div>
+            <div style="font-size: 13px; font-weight: 700; color: #000;">Email on New Inbound Lead / Application</div>
+            <div style="font-size: 12px; color: #64748B; margin-top: 2px;">Dispatch instant alert to sales team upon student submission</div>
+          </div>
+          <input type="checkbox" name="email_on_lead" value="true" <%= settings.notifications.email_on_lead ? 'checked' : '' %> style="accent-color: #000; width: 18px; height: 18px;">
+        </label>
+
+        <label style="display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; cursor: pointer;">
+          <div>
+            <div style="font-size: 13px; font-weight: 700; color: #000;">Email on Fee Payment Proof Upload</div>
+            <div style="font-size: 12px; color: #64748B; margin-top: 2px;">Notify finance admin when an intern uploads a bank transaction UTR</div>
+          </div>
+          <input type="checkbox" name="email_on_payment" value="true" <%= settings.notifications.email_on_payment ? 'checked' : '' %> style="accent-color: #000; width: 18px; height: 18px;">
+        </label>
+
+        <label style="display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; cursor: pointer;">
+          <div>
+            <div style="font-size: 13px; font-weight: 700; color: #000;">Email on Review or Grievance Submission</div>
+            <div style="font-size: 12px; color: #64748B; margin-top: 2px;">Notify operations manager immediately upon institutional review</div>
+          </div>
+          <input type="checkbox" name="email_on_review" value="true" <%= settings.notifications.email_on_review ? 'checked' : '' %> style="accent-color: #000; width: 18px; height: 18px;">
+        </label>
+
+        <label style="display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; cursor: pointer;">
+          <div>
+            <div style="font-size: 13px; font-weight: 700; color: #000;">Daily Executive Operations Digest</div>
+            <div style="font-size: 12px; color: #64748B; margin-top: 2px;">Send daily 9:00 AM summary of pending follow-ups, payments, and tasks</div>
+          </div>
+          <input type="checkbox" name="daily_digest" value="true" <%= settings.notifications.daily_digest ? 'checked' : '' %> style="accent-color: #000; width: 18px; height: 18px;">
+        </label>
+
+        <div style="display: flex; justify-content: flex-end; padding-top: 14px; border-top: 1px solid #E2E8F0; margin-top: 6px;">
+          <button type="submit" class="erp-btn erp-btn-primary" style="padding: 10px 22px; background: #000; color: #fff; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+            <i data-lucide="save" style="width: 14px; height: 14px;"></i> Save Notification Rules
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Toast element -->
+<div id="settingsToast" class="erp-toast">
+  <i data-lucide="check-circle-2" style="width: 16px; height: 16px;"></i>
+  <span id="settingsToastMsg">Settings updated successfully!</span>
+</div>
+
+<script>
+  function switchSettingsTab(tabId, btn) {
+    document.querySelectorAll('.settings-tab-panel').forEach(p => p.style.display = 'none');
+    document.querySelectorAll('.erp-tab-btn').forEach(b => b.classList.remove('active'));
+    
+    const panel = document.getElementById(tabId);
+    if (panel) panel.style.display = 'block';
+    if (btn) btn.classList.add('active');
+  }
+
+  function showToast(msg, isError = false) {
+    const toast = document.getElementById('settingsToast');
+    const toastMsg = document.getElementById('settingsToastMsg');
+    toastMsg.textContent = msg;
+    
+    if (isError) {
+      toast.className = 'erp-toast error show';
+    } else {
+      toast.className = 'erp-toast success show';
+    }
+    
+    setTimeout(() => {
+      toast.classList.remove('show');
+    }, 3500);
+  }
+
+  async function handleSaveSettings(e, section) {
+    e.preventDefault();
+    const form = e.target;
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const origHtml = submitBtn.innerHTML;
+    
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<span style="display:inline-block; animation: spin 1s infinite linear;">↻</span> Saving...';
+
+    const formData = new FormData(form);
+    const payload = { section };
+
+    // Capture standard text & select fields
+    for (const [key, val] of formData.entries()) {
+      payload[key] = val;
+    }
+
+    // Capture checkboxes (false when unchecked)
+    const checkboxes = form.querySelectorAll('input[type="checkbox"]');
+    checkboxes.forEach(cb => {
+      payload[cb.name] = cb.checked;
+    });
+
+    try {
+      const res = await fetch('/admin/settings/update', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Role': 'admin' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      
+      if (!res.ok || !data.success) {
+        throw new Error(data.message || 'Failed to update settings');
+      }
+
+      showToast(data.message || `${section.toUpperCase()} settings saved successfully!`);
+    } catch (err) {
+      showToast(err.message, true);
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = origHtml;
+      if (window.lucide) lucide.createIcons();
+    }
+  }
+</script>

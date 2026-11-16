@@ -1,0 +1,2769 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style id="arox-critical-theme">
+        html { background-color: #000000; }
+        html.theme-light, html.theme-light body, html:not(.dark) { background-color: #FFFFFF !important; color-scheme: light; }
+        html.theme-dark, html.theme-dark body, html.dark { background-color: #000000 !important; color-scheme: dark; }
+    </style>
+    <script>
+        (function () {
+            try {
+                var storedTheme = localStorage.getItem('arox-theme') || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+                var isDark = storedTheme === 'dark';
+                var root = document.documentElement;
+                root.className = (root.className ? root.className.replace(/theme-[a-z]+|dark/g, '').trim() + ' ' : '') + 'theme-' + storedTheme + (isDark ? ' dark' : '');
+                root.style.colorScheme = storedTheme;
+                root.style.backgroundColor = isDark ? '#000000' : '#FFFFFF';
+
+                var logoSrc = isDark ? 'public/assets/logo/logo-dark.png' : 'public/assets/logo/logo-light.png';
+                var syncElements = function () {
+                    var logo = document.getElementById('nav-logo-img');
+                    if (logo && logo.getAttribute('src') !== logoSrc) logo.src = logoSrc;
+                    var fLogo = document.getElementById('footer-logo-img');
+                    if (fLogo && fLogo.getAttribute('src') !== logoSrc) fLogo.src = logoSrc;
+                    var cb = document.getElementById('theme-checkbox') || document.getElementById('checkbox');
+                    if (cb && cb.checked !== !isDark) cb.checked = !isDark;
+                };
+
+                var obs = new MutationObserver(syncElements);
+                obs.observe(root, { childList: true, subtree: true });
+
+                document.addEventListener('DOMContentLoaded', function () {
+                    obs.disconnect();
+                    document.querySelectorAll('#nav-logo-img, #footer-logo-img, .nav-logo img, .footer-brand-logo img').forEach(function (el) {
+                        if (el) el.src = logoSrc;
+                    });
+                    document.querySelectorAll('#checkbox, #theme-checkbox, .theme-switch-checkbox').forEach(function (cb) {
+                        cb.checked = !isDark;
+                    });
+                });
+            } catch (e) {
+                document.documentElement.className = 'theme-dark dark';
+            }
+        })();
+    </script>
+    <link rel="stylesheet" href="css/style.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arox - Premium Services</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    
+    <!-- React & ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <!-- Babel for JSX -->
+    <script crossorigin src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- TailwindCSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        muted: "var(--muted)",
+                        heading: "var(--heading)",
+                        body: "var(--body)",
+                        border: "var(--border)",
+                        background: "var(--background)",
+                        surface: "var(--surface)",
+                        "surface-elevated": "var(--surface-elevated)",
+                        primary: "var(--primary)"
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- GSAP & ScrollTrigger -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <!-- Lenis Smooth Scroll -->
+    <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+    
+    <!-- Framer Motion -->
+    <script src="https://unpkg.com/framer-motion@10.12.16/dist/framer-motion.js"></script>
+    
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            background-color: var(--background);
+            font-family: 'Montserrat', sans-serif;
+            color: var(--body);
+            overflow-x: hidden;
+            scroll-behavior: auto;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--heading);
+        }
+
+        p {
+            color: var(--body);
+        }
+
+
+
+        .tech-pill {
+            background-color: var(--surface);
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+        }
+        .tech-pill:hover {
+            border-color: var(--primary);
+            box-shadow: 0 0 15px var(--glow-color);
+        }
+
+        .fade-mask-left {
+            background: linear-gradient(to right, var(--background), transparent);
+        }
+        .fade-mask-right {
+            background: linear-gradient(to left, var(--background), transparent);
+        }
+
+        .nav-button-custom:hover {
+            background-color: rgba(93, 76, 247, 0.08);
+        }
+
+        @keyframes moveRightSlow {
+            0% { transform: translateX(-50%); }
+            100% { transform: translateX(0%); }
+        }
+
+        @keyframes moveLeftSlow {
+            0% { transform: translateX(0%); }
+            100% { transform: translateX(-50%); }
+        }
+
+        .animate-slow-right {
+            animation: moveRightSlow 28s linear infinite;
+        }
+
+        .animate-slow-left {
+            animation: moveLeftSlow 28s linear infinite;
+        }
+
+        :root:not(.theme-light) .theme-nextjs-logo {
+            filter: invert(1);
+        }
+
+        /* Page Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #000;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #222;
+            border-radius: 4px;
+        }
+
+        /* Hide Scrollbar for native horizontal scroll containers */
+        .hide-scroll::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scroll {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* =========================================================
+           REFINED SERVICE DOMAINS & CARDS (Dark & Light Theme)
+        ========================================================= */
+        /* =========================================================
+           STICKY DOMAIN CARD STACKING SYSTEM (Dark & Light Theme)
+        ========================================================= */
+        .services-stack-stage {
+            position: relative;
+            width: 100%;
+            max-width: 1320px;
+            height: 80vh;
+            min-height: 600px;
+            max-height: 700px;
+        }
+
+        .domain-section-card.domain-folder-card {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000000;
+            border-radius: 36px;
+            padding: 44px 40px 32px 40px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 -12px 36px rgba(0, 0, 0, 0.7), 0 24px 60px rgba(0, 0, 0, 0.85);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            will-change: transform;
+            transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+                /* Floating Service Nav Bar & Primary Nav Transition */
+        #site-header.services-nav-hidden {
+            transform: translateY(-100%) !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
+            transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s ease !important;
+        }
+
+#services-floating-nav {
+            position: fixed;
+            top: 20px;
+            left: 0;
+            right: 0;
+            z-index: 998;
+            display: flex;
+            justify-content: center;
+            pointer-events: none !important;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-1rem);
+            transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s ease;
+        }
+
+        #services-floating-nav.is-nav-visible {
+            opacity: 1 !important;
+            visibility: visible !important;
+            pointer-events: auto !important;
+            transform: translateY(0) !important;
+        }
+
+        #services-floating-nav.nav-hidden,
+        #services-floating-nav:not(.is-nav-visible) {
+            opacity: 0 !important;
+            visibility: hidden !important;
+            pointer-events: none !important;
+            transform: translateY(-1rem) !important;
+        }
+
+        #services-floating-nav.nav-hidden *,
+        #services-floating-nav:not(.is-nav-visible) * {
+            pointer-events: none !important;
+            cursor: default !important;
+        }
+
+        /* Category Filter Pills Nav Bar (Appears strictly between Card 0 and Card 3) */
+        .services-category-pills-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(18, 21, 29, 0.88);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 999px;
+            padding: 6px 10px;
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45);
+        }
+        .services-category-pill-btn {
+            padding: 8px 20px;
+            border-radius: 999px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #94A3B8;
+            transition: all 0.25s ease;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            font-family: inherit;
+            white-space: nowrap;
+        }
+        .services-category-pill-btn:hover {
+            color: #FFFFFF;
+            background: rgba(255, 255, 255, 0.06);
+        }
+        .services-category-pill-btn.active {
+            background: #00D2FF;
+            color: #000000;
+            font-weight: 700;
+            box-shadow: 0 4px 16px rgba(0, 210, 255, 0.45);
+        }
+
+        /* Light Theme Adaptations */
+        .theme-light .domain-section-card.domain-folder-card,
+        html.theme-light .domain-section-card.domain-folder-card,
+        html:not(.dark) .domain-section-card.domain-folder-card {
+            background: #FFFFFF;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.05), 0 20px 48px rgba(0, 0, 0, 0.08);
+        }
+        .theme-light .services-category-pills-bar,
+        html.theme-light .services-category-pills-bar,
+        html:not(.dark) .services-category-pills-bar {
+            background: rgba(255, 255, 255, 0.94);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        }
+        .theme-light .services-category-pill-btn,
+        html.theme-light .services-category-pill-btn,
+        html:not(.dark) .services-category-pill-btn {
+            color: #64748B;
+        }
+        .theme-light .services-category-pill-btn:hover,
+        html.theme-light .services-category-pill-btn:hover,
+        html:not(.dark) .services-category-pill-btn:hover {
+            color: #0F172A;
+            background: rgba(0, 0, 0, 0.05);
+        }
+        .theme-light .services-category-pill-btn.active,
+        html.theme-light .services-category-pill-btn.active,
+        html:not(.dark) .services-category-pill-btn.active {
+            background: #0284C7;
+            color: #FFFFFF;
+            box-shadow: 0 4px 16px rgba(2, 132, 199, 0.35);
+        }
+
+        /* Tech Stack Previous Design Styles */
+        .tech-pill {
+            background-color: var(--surface);
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+        }
+        .tech-pill:hover {
+            border-color: var(--primary);
+            box-shadow: 0 0 15px var(--glow-color);
+        }
+        .fade-mask-left {
+            background: linear-gradient(to right, var(--background), transparent);
+        }
+        .fade-mask-right {
+            background: linear-gradient(to left, var(--background), transparent);
+        }
+        @keyframes moveRightSlow {
+            0% { transform: translateX(-50%); }
+            100% { transform: translateX(0%); }
+        }
+        @keyframes moveLeftSlow {
+            0% { transform: translateX(0%); }
+            100% { transform: translateX(-50%); }
+        }
+        .animate-slow-right {
+            animation: moveRightSlow 28s linear infinite;
+        }
+        .animate-slow-left {
+            animation: moveLeftSlow 28s linear infinite;
+        }
+        :root:not(.theme-light) .theme-nextjs-logo {
+            filter: invert(1);
+        }
+
+        @media (max-width: 768px) {
+            .services-stack-stage {
+                position: relative !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                height: calc(100vh - 90px) !important;
+                min-height: 520px !important;
+                max-height: 650px !important;
+            }
+            .domain-section-card.domain-folder-card {
+                position: absolute !important;
+                top: 0 !important;
+                left: 0 !important;
+                width: 100% !important;
+                height: 100% !important;
+                border-radius: 26px !important;
+                padding: 14px 12px 12px 12px !important;
+                margin-bottom: 0 !important;
+                display: flex !important;
+                flex-direction: column !important;
+                overflow: hidden !important;
+                will-change: transform, opacity !important;
+                box-sizing: border-box !important;
+            }
+            #services-stack-wrapper {
+                height: 400vh !important;
+                position: relative !important;
+                width: 100% !important;
+            }
+            #services-stack-pinned {
+                height: 100vh !important;
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: center !important;
+                justify-content: center !important;
+                padding: 62px 10px 14px 10px !important;
+                box-sizing: border-box !important;
+                z-index: 30 !important;
+            }
+        }
+
+        .domain-title {
+            color: #FFFFFF;
+            transition: color 0.3s ease;
+        }
+        .domain-tagline {
+            color: #A0A5AD;
+            transition: color 0.3s ease;
+        }
+        .domain-divider {
+            background-color: rgba(255, 255, 255, 0.15);
+            transition: background-color 0.3s ease;
+        }
+        .theme-light .domain-title,
+        html.theme-light .domain-title,
+        html:not(.dark) .domain-title {
+            color: #0F172A;
+        }
+        .theme-light .domain-tagline,
+        html.theme-light .domain-tagline,
+        html:not(.dark) .domain-tagline {
+            color: #64748B;
+        }
+        .theme-light .domain-divider,
+        html.theme-light .domain-divider,
+        html:not(.dark) .domain-divider {
+            background-color: rgba(0, 0, 0, 0.08);
+        }
+
+        /* Individual Service Card (Streamlined Reference Design) */
+        .arox-service-card {
+            background: #111319;
+            border-radius: 28px;
+            padding: 22px 20px 20px 20px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.35s ease, border-color 0.3s ease, background 0.3s ease;
+            cursor: pointer;
+            user-select: none;
+            width: 350px;
+            min-width: 350px;
+            max-width: 350px;
+            height: 400px;
+            flex-shrink: 0;
+            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.5);
+        }
+
+        .arox-service-card:hover {
+            transform: translateY(-6px);
+            border-color: rgba(0, 210, 255, 0.4);
+            box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.7), 0 0 25px rgba(0, 210, 255, 0.15);
+        }
+
+        /* Light Theme Service Card */
+        .theme-light .arox-service-card,
+        html.theme-light .arox-service-card,
+        html:not(.dark) .arox-service-card {
+            background: #FFFFFF;
+            border: 1px solid rgba(0, 0, 0, 0.09);
+            box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.06);
+        }
+
+        .theme-light .arox-service-card:hover,
+        html.theme-light .arox-service-card:hover,
+        html:not(.dark) .arox-service-card:hover {
+            border-color: rgba(0, 102, 255, 0.35);
+            box-shadow: 0 18px 36px -8px rgba(0, 0, 0, 0.12), 0 0 20px rgba(0, 102, 255, 0.12);
+        }
+
+        /* Card Header */
+        .card-header-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            width: 100%;
+        }
+
+        .card-title-text {
+            color: #FFFFFF;
+            font-weight: 700;
+            font-size: 1.35rem;
+            line-height: 1.25;
+            transition: color 0.3s ease;
+            flex: 1;
+        }
+
+        .theme-light .card-title-text,
+        html.theme-light .card-title-text,
+        html:not(.dark) .card-title-text {
+            color: #0F172A;
+        }
+
+        .card-arrow-circle {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: #1C1E26;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #FFFFFF;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all 0.3s ease;
+        }
+
+        .arox-service-card:hover .card-arrow-circle {
+            background: #00D2FF;
+            color: #000000;
+            border-color: #00D2FF;
+            box-shadow: 0 0 18px rgba(0, 210, 255, 0.5);
+        }
+
+        .theme-light .card-arrow-circle,
+        html.theme-light .card-arrow-circle,
+        html:not(.dark) .card-arrow-circle {
+            background: #0F172A;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            color: #FFFFFF;
+        }
+
+        .theme-light .arox-service-card:hover .card-arrow-circle,
+        html.theme-light .arox-service-card:hover .card-arrow-circle,
+        html:not(.dark) .arox-service-card:hover .card-arrow-circle {
+            background: #0066FF;
+            color: #FFFFFF;
+            border-color: #0066FF;
+            box-shadow: 0 0 18px rgba(0, 102, 255, 0.4);
+        }
+
+        /* Horizontal Divider below Title/Arrow */
+        .card-divider {
+            width: 100%;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.1);
+            margin: 12px 0 10px 0;
+            transition: background-color 0.3s ease;
+        }
+
+        .theme-light .card-divider,
+        html.theme-light .card-divider,
+        html:not(.dark) .card-divider {
+            background: rgba(0, 0, 0, 0.08);
+        }
+
+        /* Service Related Tagline (Directly Below Divider, Matching Reference Image) */
+        .card-tagline {
+            font-size: 0.86rem;
+            line-height: 1.45;
+            color: #94A3B8;
+            margin: 0 0 12px 0;
+            font-weight: 400;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            transition: color 0.3s ease;
+        }
+
+        .theme-light .card-tagline,
+        html.theme-light .card-tagline,
+        html:not(.dark) .card-tagline {
+            color: #64748B;
+        }
+
+        /* Video Box (Replaces photo from reference image) */
+        .card-video-box {
+            position: relative;
+            width: 100%;
+            flex: 1;
+            min-height: 220px;
+            background: #000000;
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .theme-light .card-video-box,
+        html.theme-light .card-video-box,
+        html:not(.dark) .card-video-box {
+            background: #000000;
+            border: 1px solid rgba(0, 0, 0, 0.08);
+        }
+
+        .service-card-video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            border-radius: 19px;
+        }
+
+        @media (max-width: 768px) {
+            /* Domain Title and Header Row */
+            .domain-title {
+                font-size: 1.35rem !important;
+                line-height: 1.15 !important;
+            }
+            .domain-tagline {
+                font-size: 10.5px !important;
+                line-height: 1.25 !important;
+                opacity: 0.75 !important;
+                margin-top: 2px !important;
+                white-space: nowrap !important;
+                overflow: hidden !important;
+                text-overflow: ellipsis !important;
+                max-width: 100% !important;
+            }
+            .domain-divider {
+                margin-top: 6px !important;
+                margin-bottom: 8px !important;
+            }
+
+            /* 2x2 Service Cards Grid Alignment matching Hand-drawn Mockup */
+            .domain-cards-grid {
+                display: grid !important;
+                grid-template-columns: repeat(2, 1fr) !important;
+                grid-template-rows: repeat(2, 1fr) !important;
+                gap: 8px !important;
+                width: 100% !important;
+                height: 100% !important;
+                flex: 1 1 auto !important;
+                min-height: 0 !important;
+                overflow: hidden !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                box-sizing: border-box !important;
+            }
+
+            .arox-service-card {
+                width: 100% !important;
+                min-width: 0 !important;
+                max-width: 100% !important;
+                height: 100% !important;
+                min-height: 0 !important;
+                padding: 12px 12px 10px 12px !important;
+                border-radius: 18px !important;
+                display: flex !important;
+                flex-direction: column !important;
+                justify-content: space-between !important;
+                box-sizing: border-box !important;
+            }
+
+            .card-header-row {
+                display: flex !important;
+                align-items: center !important;
+                justify-content: space-between !important;
+                gap: 6px !important;
+                margin-bottom: 6px !important;
+                width: 100% !important;
+            }
+
+            .card-title-text {
+                font-size: 12.5px !important;
+                line-height: 1.25 !important;
+                font-weight: 700 !important;
+                flex: 1 1 auto !important;
+                min-width: 0 !important;
+            }
+
+            .card-arrow-circle {
+                width: 26px !important;
+                height: 26px !important;
+                min-width: 26px !important;
+                border-radius: 50% !important;
+            }
+
+            .card-arrow-circle svg {
+                width: 12px !important;
+                height: 12px !important;
+            }
+
+            /* Remove explanation/tagline and divider on mobile view */
+            .card-divider,
+            .card-tagline {
+                display: none !important;
+            }
+
+            .card-video-box {
+                width: 100% !important;
+                flex: 1 1 auto !important;
+                min-height: 80px !important;
+                border-radius: 12px !important;
+                overflow: hidden !important;
+            }
+
+            .service-card-video {
+                border-radius: 11px !important;
+            }
+
+            .domain-scroll-arrow,
+            .domain-edge-fade {
+                display: none !important;
+            }
+
+            #services-floating-nav {
+                top: 10px !important;
+            }
+
+            .services-category-pills-bar {
+                padding: 3px 6px !important;
+                gap: 4px !important;
+                max-width: 96vw !important;
+                overflow-x: auto !important;
+                -webkit-overflow-scrolling: touch !important;
+            }
+
+            .services-category-pill-btn {
+                padding: 5px 11px !important;
+                font-size: 10.5px !important;
+            }
+        }
+
+        /* Carousel Navigation Arrow Buttons */
+        .domain-scroll-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 35;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            background: rgba(20, 22, 28, 0.88);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #FFFFFF;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+        }
+
+        .domain-scroll-arrow:hover {
+            background: #00D2FF;
+            color: #090C12;
+            border-color: #00D2FF;
+            transform: translateY(-50%) scale(1.1);
+            box-shadow: 0 0 24px rgba(0, 210, 255, 0.5);
+        }
+
+        .domain-scroll-arrow:active {
+            transform: translateY(-50%) scale(0.95);
+        }
+
+        .domain-scroll-arrow-left {
+            left: -18px;
+        }
+
+        .domain-scroll-arrow-right {
+            right: -18px;
+        }
+
+        @media (max-width: 768px) {
+            .domain-scroll-arrow {
+                width: 42px;
+                height: 42px;
+            }
+            .domain-scroll-arrow-left {
+                left: 4px;
+            }
+            .domain-scroll-arrow-right {
+                right: 4px;
+            }
+        }
+
+        .theme-light .domain-scroll-arrow,
+        html.theme-light .domain-scroll-arrow,
+        html:not(.dark) .domain-scroll-arrow {
+            background: rgba(255, 255, 255, 0.92);
+            border: 1px solid rgba(0, 0, 0, 0.12);
+            color: #0F172A;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+        }
+
+        .theme-light .domain-scroll-arrow:hover,
+        html.theme-light .domain-scroll-arrow:hover,
+        html:not(.dark) .domain-scroll-arrow:hover {
+            background: #0066FF;
+            color: #FFFFFF;
+            border-color: #0066FF;
+            box-shadow: 0 0 24px rgba(0, 102, 255, 0.4);
+        }
+
+        /* Edge Fades */
+        .domain-edge-fade {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 48px;
+            pointer-events: none;
+            z-index: 25;
+            transition: opacity 0.3s ease;
+        }
+
+        .domain-edge-fade-left {
+            left: 0;
+            background: linear-gradient(to right, #000000, transparent);
+        }
+
+        .domain-edge-fade-right {
+            right: 0;
+            background: linear-gradient(to left, #000000, transparent);
+        }
+
+        .theme-light .domain-edge-fade-left,
+        html.theme-light .domain-edge-fade-left,
+        html:not(.dark) .domain-edge-fade-left {
+            background: linear-gradient(to right, #F8FAFC, transparent);
+        }
+
+        .theme-light .domain-edge-fade-right,
+        html.theme-light .domain-edge-fade-right,
+        html:not(.dark) .domain-edge-fade-right {
+            background: linear-gradient(to left, #F8FAFC, transparent);
+        }
+
+    </style>
+
+  <!-- Modern Entire Width Services Hero Background & Theme Styles -->
+  <style id="services-hero-modern-styles">
+    /* Transparent Frosted Glass Navbar */
+    #site-header {
+      background: rgba(11, 12, 17, 0.20) !important;
+      backdrop-filter: blur(16px) !important;
+      -webkit-backdrop-filter: blur(16px) !important;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.08) !important;
+    }
+    .theme-light #site-header,
+    [data-theme="light"] #site-header,
+    html:not(.dark) #site-header {
+      background: transparent !important;
+      backdrop-filter: blur(8px) !important;
+      -webkit-backdrop-filter: blur(8px) !important;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.04) !important;
+      box-shadow: none !important;
+    }
+    #site-header.scrolled {
+      background: rgba(11, 12, 17, 0.70) !important;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+    }
+    .theme-light #site-header.scrolled,
+    [data-theme="light"] #site-header.scrolled,
+    html:not(.dark) #site-header.scrolled {
+      background: rgba(255, 255, 255, 0.78) !important;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.06) !important;
+    }
+
+    .page-hero-pro.hero-services {
+      min-height: 85vh !important;
+      min-height: 85dvh !important;
+      width: 100% !important;
+      position: relative !important;
+      overflow: hidden !important;
+      display: flex !important;
+      flex-direction: column !important;
+      justify-content: center !important;
+      align-items: stretch !important;
+      padding-top: calc(90px + 2rem) !important;
+      padding-bottom: 3.5rem !important;
+      background-color: #020617 !important;
+      background-image: url('assets/hero/service-dark.png') !important;
+      background-size: cover !important;
+      background-position: right center !important;
+      background-repeat: no-repeat !important;
+    }
+    .theme-dark .page-hero-pro.hero-services,
+    .dark .page-hero-pro.hero-services,
+    html.dark .page-hero-pro.hero-services,
+    body.theme-dark .page-hero-pro.hero-services {
+      background-color: #020617 !important;
+      background-image: url('assets/hero/service-dark.png') !important;
+      background-size: cover !important;
+      background-position: right center !important;
+      background-repeat: no-repeat !important;
+    }
+    .theme-light .page-hero-pro.hero-services,
+    [data-theme="light"] .page-hero-pro.hero-services,
+    html.theme-light .page-hero-pro.hero-services,
+    body.theme-light .page-hero-pro.hero-services,
+    html:not(.dark) .page-hero-pro.hero-services {
+      background-color: #EBF3FF !important;
+      background-image: url('assets/hero/service-light.png') !important;
+      background-size: cover !important;
+      background-position: right center !important;
+      background-repeat: no-repeat !important;
+    }
+
+    /* Entire Width Hero Background */
+    .services-hero-bg-wrapper {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .services-bg-img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: right center;
+      transition: opacity 0.4s ease;
+    }
+
+    .theme-dark .services-hero-img-dark,
+    .dark .services-hero-img-dark,
+    [data-theme="dark"] .services-hero-img-dark,
+    html.dark .services-hero-img-dark,
+    body.theme-dark .services-hero-img-dark {
+      display: block !important;
+    }
+    .theme-dark .services-hero-img-light,
+    .dark .services-hero-img-light,
+    [data-theme="dark"] .services-hero-img-light,
+    html.dark .services-hero-img-light,
+    body.theme-dark .services-hero-img-light {
+      display: none !important;
+    }
+
+    .theme-light .services-hero-img-dark,
+    [data-theme="light"] .services-hero-img-dark,
+    html.theme-light .services-hero-img-dark,
+    body.theme-light .services-hero-img-dark,
+    html:not(.dark) .services-hero-img-dark {
+      display: none !important;
+    }
+    .theme-light .services-hero-img-light,
+    [data-theme="light"] .services-hero-img-light,
+    html.theme-light .services-hero-img-light,
+    body.theme-light .services-hero-img-light,
+    html:not(.dark) .services-hero-img-light {
+      display: block !important;
+    }
+
+    .services-hero-gradient-overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      pointer-events: none;
+      background: none;
+    }
+
+    /* Content container - Left-aligned layout matching Premium Pro Standard */
+    .services-hero-inner {
+      max-width: 1360px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 0 clamp(2rem, 5vw, 4.5rem);
+      position: relative;
+      z-index: 10;
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+    }
+
+    .services-hero-left-content {
+      max-width: 480px !important;
+      margin: 0 !important;
+      text-align: left !important;
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: flex-start !important;
+    }
+
+    .services-hero-headline {
+      font-family: var(--font-display, 'Montserrat', sans-serif) !important;
+      font-size: clamp(2.2rem, 3.6vw, 3.5rem) !important;
+      font-weight: 800 !important;
+      line-height: 1.12 !important;
+      letter-spacing: -0.025em !important;
+      color: #FFFFFF !important;
+      margin: 0 0 1.25rem 0 !important;
+      text-align: left !important;
+    }
+    .theme-light .services-hero-headline,
+    [data-theme="light"] .services-hero-headline,
+    html.theme-light .services-hero-headline,
+    body.theme-light .services-hero-headline,
+    html:not(.dark) .services-hero-headline {
+      color: #0F172A !important;
+    }
+
+    .services-hero-headline .hero-gradient-text {
+      background: linear-gradient(135deg, #00D2FF 0%, #38bdf8 60%, #0070F3 100%) !important;
+      -webkit-background-clip: text !important;
+      -webkit-text-fill-color: transparent !important;
+      background-clip: text !important;
+      display: inline-block !important;
+    }
+    .theme-light .services-hero-headline .hero-gradient-text,
+    [data-theme="light"] .services-hero-headline .hero-gradient-text,
+    html.theme-light .services-hero-headline .hero-gradient-text,
+    html:not(.dark) .services-hero-headline .hero-gradient-text {
+      background: linear-gradient(135deg, #0070F3 0%, #0052CC 100%) !important;
+      -webkit-background-clip: text !important;
+      -webkit-text-fill-color: transparent !important;
+      background-clip: text !important;
+    }
+
+    .services-hero-desc {
+      font-family: var(--font-sans, 'Inter', sans-serif) !important;
+      font-size: clamp(0.95rem, 1.1vw, 1.05rem) !important;
+      line-height: 1.65 !important;
+      color: rgba(255, 255, 255, 0.72) !important;
+      font-weight: 400 !important;
+      max-width: 440px !important;
+      margin: 0 0 2rem 0 !important;
+      text-align: left !important;
+    }
+    .theme-light .services-hero-desc,
+    [data-theme="light"] .services-hero-desc,
+    html.theme-light .services-hero-desc,
+    body.theme-light .services-hero-desc,
+    html:not(.dark) .services-hero-desc {
+      color: #4B5563 !important;
+    }
+
+    .services-hero-btn-row {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: flex-start !important;
+      gap: 14px !important;
+      flex-wrap: wrap !important;
+      margin: 0 !important;
+      width: 100% !important;
+    }
+
+    .services-btn-primary {
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      gap: 10px !important;
+      height: 44px !important;
+      padding: 0 26px !important;
+      border-radius: 9999px !important;
+      background: #0070F3 !important;
+      color: #FFFFFF !important;
+      font-size: 0.92rem !important;
+      font-weight: 600 !important;
+      text-decoration: none !important;
+      border: none !important;
+      cursor: pointer !important;
+      box-shadow: 0 4px 18px rgba(0, 112, 243, 0.45) !important;
+      transition: all 0.25s ease !important;
+    }
+    .services-btn-primary:hover {
+      transform: translateY(-2px) !important;
+      box-shadow: 0 6px 24px rgba(0, 140, 255, 0.6) !important;
+      background: #0080FF !important;
+    }
+    .services-btn-primary svg {
+      width: 16px !important;
+      height: 16px !important;
+      stroke: currentColor !important;
+      stroke-width: 2.5 !important;
+      transition: transform 0.25s ease !important;
+    }
+    .services-btn-primary:hover svg {
+      transform: translateX(3px) !important;
+    }
+
+    .services-btn-secondary {
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      gap: 8px !important;
+      height: 44px !important;
+      padding: 0 24px !important;
+      border-radius: 9999px !important;
+      background: rgba(255, 255, 255, 0.06) !important;
+      color: #FFFFFF !important;
+      font-size: 0.92rem !important;
+      font-weight: 600 !important;
+      text-decoration: none !important;
+      border: 1px solid rgba(255, 255, 255, 0.22) !important;
+      backdrop-filter: blur(12px) !important;
+      cursor: pointer !important;
+      transition: all 0.25s ease !important;
+    }
+    .services-btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.12) !important;
+      border-color: rgba(0, 210, 255, 0.5) !important;
+      transform: translateY(-2px) !important;
+    }
+    .theme-light .services-btn-secondary,
+    [data-theme="light"] .services-btn-secondary,
+    html.theme-light .services-btn-secondary,
+    body.theme-light .services-btn-secondary,
+    html:not(.dark) .services-btn-secondary {
+      background: rgba(0, 0, 0, 0.04) !important;
+      border: 1px solid rgba(0, 0, 0, 0.18) !important;
+      color: #0F172A !important;
+    }
+    .theme-light .services-btn-secondary:hover,
+    [data-theme="light"] .services-btn-secondary:hover,
+    html.theme-light .services-btn-secondary:hover {
+      background: rgba(0, 0, 0, 0.08) !important;
+      border-color: #0070F3 !important;
+    }
+
+    /* Responsive Adjustments */
+    @media (max-width: 1024px) {
+      .page-hero-pro.hero-services {
+        padding-top: calc(90px + 1.5rem) !important;
+        padding-bottom: 2.5rem !important;
+      }
+      .services-hero-left-content {
+        max-width: 440px !important;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .page-hero-pro.hero-services {
+        min-height: auto !important;
+        padding-top: calc(85px + 2rem) !important;
+        padding-bottom: 3rem !important;
+        background-position: center top !important;
+      }
+      .services-hero-inner {
+        padding: 0 1.25rem !important;
+        display: flex !important;
+        justify-content: center !important;
+      }
+      .services-hero-left-content {
+        max-width: 100% !important;
+        text-align: center !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+      }
+      .services-hero-headline {
+        font-size: 2.2rem !important;
+        margin-bottom: 1rem !important;
+        text-align: center !important;
+      }
+      .services-hero-desc {
+        font-size: 0.95rem !important;
+        line-height: 1.6 !important;
+        margin-bottom: 1.5rem !important;
+        text-align: center !important;
+      }
+      .services-hero-btn-row {
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        justify-content: center !important;
+        align-items: center !important;
+        gap: 8px !important;
+        width: auto !important;
+        max-width: 100% !important;
+        margin: 0 auto !important;
+      }
+      .services-btn-primary,
+      .services-btn-secondary {
+        width: auto !important;
+        flex: 0 1 auto !important;
+        justify-content: center !important;
+        padding: 8px 14px !important;
+        font-size: 12px !important;
+        min-height: 36px !important;
+        height: 36px !important;
+        white-space: nowrap !important;
+        border-radius: 9999px !important;
+      }
+      .services-btn-primary svg,
+      .services-btn-secondary svg {
+        width: 14px !important;
+        height: 14px !important;
+      }
+    }
+  </style>
+
+
+  <!-- Clean Hero Image: Zero Overlay -->
+  <style id="clean-hero-no-overlay">
+/* ==========================================================================
+   Hero Sections & CTA Card Overlay Rules:
+   - Desktop: 50% black overlay on left-side content only in Dark Theme; None in Light Theme
+   - Mobile (<= 768px): 90% overlay across image in BOTH themes
+   ========================================================================== */
+
+.home-hero-bg-overlay,
+.about-hero-gradient-overlay,
+.services-hero-gradient-overlay,
+.contact-hero-gradient-overlay,
+.training-hero-gradient-overlay,
+.cta-card-gradient-overlay {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  z-index: 2 !important;
+  pointer-events: none !important;
+}
+
+/* --- DESKTOP (Default > 768px) --- */
+/* Dark Theme: 50% black overlay on left-side content only */
+.theme-dark .about-hero-gradient-overlay,
+.dark .about-hero-gradient-overlay,
+[data-theme="dark"] .about-hero-gradient-overlay,
+.theme-dark .services-hero-gradient-overlay,
+.dark .services-hero-gradient-overlay,
+[data-theme="dark"] .services-hero-gradient-overlay,
+.theme-dark .contact-hero-gradient-overlay,
+.dark .contact-hero-gradient-overlay,
+[data-theme="dark"] .contact-hero-gradient-overlay,
+.theme-dark .training-hero-gradient-overlay,
+.dark .training-hero-gradient-overlay,
+[data-theme="dark"] .training-hero-gradient-overlay,
+.theme-dark .home-hero-bg-overlay,
+.dark .home-hero-bg-overlay,
+[data-theme="dark"] .home-hero-bg-overlay,
+.theme-dark .cta-card-gradient-overlay,
+.dark .cta-card-gradient-overlay,
+[data-theme="dark"] .cta-card-gradient-overlay {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  background: linear-gradient(
+    to right,
+    rgba(0, 0, 0, 0.50) 0%,
+    rgba(0, 0, 0, 0.50) 42%,
+    rgba(0, 0, 0, 0.25) 56%,
+    rgba(0, 0, 0, 0.0) 70%
+  ) !important;
+}
+
+/* Light Theme: No overlay on desktop */
+.theme-light .home-hero-bg-overlay,
+[data-theme="light"] .home-hero-bg-overlay,
+.theme-light .about-hero-gradient-overlay,
+[data-theme="light"] .about-hero-gradient-overlay,
+.theme-light .services-hero-gradient-overlay,
+[data-theme="light"] .services-hero-gradient-overlay,
+.theme-light .contact-hero-gradient-overlay,
+[data-theme="light"] .contact-hero-gradient-overlay,
+.theme-light .training-hero-gradient-overlay,
+[data-theme="light"] .training-hero-gradient-overlay,
+.theme-light .cta-card-gradient-overlay,
+[data-theme="light"] .cta-card-gradient-overlay {
+  display: none !important;
+  background: none !important;
+  opacity: 0 !important;
+}
+
+/* --- MOBILE VIEW ONLY (<= 768px): 90% Overlay in BOTH Themes --- */
+@media (max-width: 768px) {
+  /* Dark Theme Mobile: 90% Black Overlay */
+  .theme-dark .home-hero-bg-overlay,
+  .dark .home-hero-bg-overlay,
+  [data-theme="dark"] .home-hero-bg-overlay,
+  .theme-dark .about-hero-gradient-overlay,
+  .dark .about-hero-gradient-overlay,
+  [data-theme="dark"] .about-hero-gradient-overlay,
+  .theme-dark .services-hero-gradient-overlay,
+  .dark .services-hero-gradient-overlay,
+  [data-theme="dark"] .services-hero-gradient-overlay,
+  .theme-dark .contact-hero-gradient-overlay,
+  .dark .contact-hero-gradient-overlay,
+  [data-theme="dark"] .contact-hero-gradient-overlay,
+  .theme-dark .training-hero-gradient-overlay,
+  .dark .training-hero-gradient-overlay,
+  [data-theme="dark"] .training-hero-gradient-overlay,
+  .theme-dark .cta-card-gradient-overlay,
+  .dark .cta-card-gradient-overlay,
+  [data-theme="dark"] .cta-card-gradient-overlay {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    background: rgba(0, 0, 0, 0.90) !important;
+  }
+
+  /* Light Theme Mobile: 90% Light/White Overlay */
+  .theme-light .home-hero-bg-overlay,
+  [data-theme="light"] .home-hero-bg-overlay,
+  html:not(.dark) .home-hero-bg-overlay,
+  .theme-light .about-hero-gradient-overlay,
+  [data-theme="light"] .about-hero-gradient-overlay,
+  html:not(.dark) .about-hero-gradient-overlay,
+  .theme-light .services-hero-gradient-overlay,
+  [data-theme="light"] .services-hero-gradient-overlay,
+  html:not(.dark) .services-hero-gradient-overlay,
+  .theme-light .contact-hero-gradient-overlay,
+  [data-theme="light"] .contact-hero-gradient-overlay,
+  html:not(.dark) .contact-hero-gradient-overlay,
+  .theme-light .training-hero-gradient-overlay,
+  [data-theme="light"] .training-hero-gradient-overlay,
+  html:not(.dark) .training-hero-gradient-overlay,
+  .theme-light .cta-card-gradient-overlay,
+  [data-theme="light"] .cta-card-gradient-overlay,
+  html:not(.dark) .cta-card-gradient-overlay {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    background: rgba(255, 255, 255, 0.90) !important;
+  }
+}
+  </style>
+
+
+  <!-- AROX MOBILE SERVICES: Native Mobile App Style (Training Page Alignment) -->
+  <style id="arox-mobile-services-native-styles">
+    /* Hide on Desktop */
+    .arox-mobile-services-view {
+      display: none !important;
+    }
+
+    @media (max-width: 768px) {
+      /* Completely disable and hide desktop 400vh sticky scroll on mobile */
+      #services-stack-wrapper {
+        display: none !important;
+        height: 0 !important;
+        max-height: 0 !important;
+        overflow: hidden !important;
+        pointer-events: none !important;
+      }
+      #services-floating-nav {
+        display: none !important;
+      }
+
+      /* Native App Mobile Services Feed */
+      .arox-mobile-services-view {
+        display: block !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 24px 16px 44px 16px !important;
+        box-sizing: border-box !important;
+        position: relative !important;
+        z-index: 10 !important;
+      }
+
+      .arox-mob-service-section {
+        width: 100% !important;
+        margin-bottom: 34px !important;
+      }
+      .arox-mob-service-section:last-child {
+        margin-bottom: 0 !important;
+      }
+
+      .arox-mob-service-header {
+        width: 100% !important;
+        margin-bottom: 12px !important;
+        padding-left: 2px !important;
+      }
+
+      .arox-mob-service-heading {
+        font-family: var(--font-display, 'Montserrat', sans-serif) !important;
+        font-size: clamp(22px, 5.8vw, 26px) !important;
+        font-weight: 800 !important;
+        letter-spacing: -0.015em !important;
+        margin: 0 0 4px 0 !important;
+        line-height: 1.18 !important;
+        transition: color 0.3s ease !important;
+      }
+
+      .arox-mob-service-sub {
+        font-family: var(--font-sans, 'Montserrat', sans-serif) !important;
+        font-size: 13px !important;
+        font-weight: 400 !important;
+        margin: 0 !important;
+        line-height: 1.4 !important;
+        transition: color 0.3s ease !important;
+      }
+
+      /* Dark mode text colors */
+      html.dark .arox-mob-service-heading,
+      html.theme-dark .arox-mob-service-heading,
+      body.theme-dark .arox-mob-service-heading {
+        color: #FFFFFF !important;
+      }
+      html.dark .arox-mob-service-sub,
+      html.theme-dark .arox-mob-service-sub,
+      body.theme-dark .arox-mob-service-sub {
+        color: #94A3B8 !important;
+      }
+
+      /* Light mode text colors */
+      html.theme-light .arox-mob-service-heading,
+      html:not(.dark) .arox-mob-service-heading,
+      body.theme-light .arox-mob-service-heading {
+        color: #0A1629 !important;
+      }
+      html.theme-light .arox-mob-service-sub,
+      html:not(.dark) .arox-mob-service-sub,
+      body.theme-light .arox-mob-service-sub {
+        color: #475569 !important;
+      }
+
+      /* Horizontal scrolling carousel track (Native App feel) */
+      .arox-mob-services-scroll-track {
+        display: flex !important;
+        gap: 14px !important;
+        overflow-x: auto !important;
+        overflow-y: hidden !important;
+        padding: 6px 2px 18px 2px !important;
+        margin: 0 -16px !important;
+        padding-left: 16px !important;
+        padding-right: 16px !important;
+        scroll-snap-type: x mandatory !important;
+        -webkit-overflow-scrolling: touch !important;
+        scrollbar-width: none !important;
+      }
+      .arox-mob-services-scroll-track::-webkit-scrollbar {
+        display: none !important;
+      }
+
+      /* Square Card (matching Reference Image media_1794580201838_fe975541.jpg) */
+      .arox-mob-service-card {
+        width: 214px !important;
+        min-width: 214px !important;
+        height: 214px !important;
+        min-height: 214px !important;
+        aspect-ratio: 1 / 1 !important;
+        position: relative !important;
+        border-radius: 22px !important;
+        overflow: hidden !important;
+        scroll-snap-align: start !important;
+        flex-shrink: 0 !important;
+        cursor: pointer !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: space-between !important;
+        padding: 13px 14px 13px 14px !important;
+        box-sizing: border-box !important;
+        transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease !important;
+        user-select: none !important;
+        -webkit-tap-highlight-color: transparent !important;
+      }
+      .arox-mob-service-card:active {
+        transform: scale(0.97) !important;
+      }
+
+      /* Square Card: DARK THEME */
+      html.dark .arox-mob-service-card,
+      html.theme-dark .arox-mob-service-card,
+      body.theme-dark .arox-mob-service-card {
+        background: linear-gradient(150deg, #101626 0%, #080d19 100%) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        box-shadow: 0 10px 28px rgba(0, 0, 0, 0.55) !important;
+      }
+
+      /* Square Card: LIGHT THEME */
+      html.theme-light .arox-mob-service-card,
+      html:not(.dark) .arox-mob-service-card,
+      body.theme-light .arox-mob-service-card {
+        background: linear-gradient(150deg, #FFFFFF 0%, #F3F7FD 100%) !important;
+        border: 1px solid rgba(218, 228, 244, 0.95) !important;
+        box-shadow: 0 8px 24px rgba(0, 60, 180, 0.08) !important;
+      }
+
+      /* Card Header: Title on Left, Circular Button on Right */
+      .arox-mob-card-head {
+        display: flex !important;
+        align-items: flex-start !important;
+        justify-content: space-between !important;
+        gap: 8px !important;
+        margin-bottom: 8px !important;
+        width: 100% !important;
+        flex-shrink: 0 !important;
+      }
+
+      .arox-mob-card-title {
+        font-family: var(--font-display, 'Montserrat', sans-serif) !important;
+        font-size: 14.5px !important;
+        font-weight: 700 !important;
+        line-height: 1.25 !important;
+        letter-spacing: -0.01em !important;
+        margin: 0 !important;
+        flex: 1 1 auto !important;
+        text-align: left !important;
+      }
+
+      html.dark .arox-mob-card-title,
+      html.theme-dark .arox-mob-card-title,
+      body.theme-dark .arox-mob-card-title {
+        color: #FFFFFF !important;
+      }
+      html.theme-light .arox-mob-card-title,
+      html:not(.dark) .arox-mob-card-title,
+      body.theme-light .arox-mob-card-title {
+        color: #0F172A !important;
+      }
+
+      /* Circular Arrow Button */
+      .arox-mob-card-arrow {
+        width: 28px !important;
+        height: 28px !important;
+        min-width: 28px !important;
+        min-height: 28px !important;
+        border-radius: 50% !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        flex-shrink: 0 !important;
+        border: 1px solid rgba(255, 255, 255, 0.14) !important;
+        background: rgba(255, 255, 255, 0.08) !important;
+        color: #CBD5E1 !important;
+        cursor: pointer !important;
+        padding: 0 !important;
+        transition: transform 0.2s ease, background 0.2s ease !important;
+      }
+      .arox-mob-service-card:hover .arox-mob-card-arrow,
+      .arox-mob-service-card:active .arox-mob-card-arrow {
+        transform: translate(1px, -1px) !important;
+      }
+      html.theme-light .arox-mob-card-arrow,
+      html:not(.dark) .arox-mob-card-arrow,
+      body.theme-light .arox-mob-card-arrow {
+        background: rgba(0, 102, 255, 0.08) !important;
+        border-color: rgba(0, 102, 255, 0.18) !important;
+        color: #0066FF !important;
+      }
+
+      /* Video Box (Square Proportions, Crisp Placement) */
+      .arox-mob-card-video-wrap {
+        flex: 1 1 auto !important;
+        width: 100% !important;
+        min-height: 0 !important;
+        border-radius: 14px !important;
+        overflow: hidden !important;
+        position: relative !important;
+        background: #000000 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+      }
+
+      .arox-mob-card-video {
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: cover !important;
+        display: block !important;
+        border-radius: 14px !important;
+        pointer-events: none !important;
+      }
+    }
+  </style>
+
+</head>
+<body>
+    <div class="noise-overlay" aria-hidden="true"></div>
+    <header id="site-header">
+      <div class="nav-inner">
+        <div class="nav-left">
+          <a href="index.html" class="nav-logo">
+            <img id="nav-logo-img" src="public/assets/logo/logo-dark.png" alt="Arox Tech Logo"
+              onerror="this.style.display='none';document.getElementById('nav-logo-text').style.display='block'" />
+            <span id="nav-logo-text"
+              style="display:none;font-family:var(--font-display);font-weight:800;font-size:1.25rem;color:var(--heading);letter-spacing:-.03em;">AROX</span>
+            <span class="mobile-breadcrumb-sep">/</span>
+            <span class="mobile-breadcrumb-current">Services</span>
+          </a>
+          <div class="nav-divider">/</div>
+          <nav class="nav-links" aria-label="Main navigation">
+            <a href="index.html" class="nav-link">Home</a>
+            <a href="about.html" class="nav-link">About</a>
+            <a href="services.html" class="nav-link active">Services</a>
+            <a href="courses.html" class="nav-link">Training</a>
+            <a href="contact.html" class="nav-link">Contact</a>
+          </nav>
+        </div>
+        <div class="nav-right">
+          <a href="/login" class="nav-login">Sign In</a>
+        <label class="switch" title="Toggle theme">
+          <input id="theme-checkbox" type="checkbox" aria-label="Toggle theme" />
+          <span class="slider">
+            <div class="star star_1"></div>
+            <div class="star star_2"></div>
+            <div class="star star_3"></div>
+            <svg viewBox="0 0 16 16" class="cloud_1 cloud">
+              <path
+                transform="matrix(.77976 0 0 .78395-299.99-418.63)"
+                fill="#fff"
+                d="m391.84 540.91c-.421-.329-.949-.524-1.523-.524-1.351 0-2.451 1.084-2.485 2.435-1.395.526-2.388 1.88-2.388 3.466 0 1.874 1.385 3.423 3.182 3.667v.034h12.73v-.006c1.775-.104 3.182-1.584 3.182-3.395 0-1.747-1.309-3.186-2.994-3.379.007-.106.011-.214.011-.322 0-2.707-2.271-4.901-5.072-4.901-2.073 0-3.856 1.202-4.643 2.925"
+              ></path>
+            </svg>
+          </span>
+        </label>
+          <button id="hamburger-btn" class="nav-hamburger" aria-label="Toggle mobile menu">
+            <svg id="hamburger-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24"
+              fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <line class="line-1" x1="4" y1="6" x2="20" y2="6"></line>
+              <line class="line-2" x1="4" y1="12" x2="20" y2="12"></line>
+              <line class="line-3" x1="4" y1="18" x2="20" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </header>
+    <div id="mobile-menu" aria-hidden="true">
+      <div class="mobile-menu-panel">
+        <nav class="mobile-nav">
+          <a href="index.html" class="mobile-nav-link">
+            <svg class="mobile-nav-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            <span>Home</span>
+          </a>
+          <a href="about.html" class="mobile-nav-link">
+            <svg class="mobile-nav-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+            <span>About</span>
+          </a>
+          <a href="services.html" class="mobile-nav-link active">
+            <svg class="mobile-nav-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="7" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+            <span>Services</span>
+          </a>
+          <a href="courses.html" class="mobile-nav-link">
+            <svg class="mobile-nav-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+            <span>Training</span>
+          </a>
+          <a href="contact.html" class="mobile-nav-link">
+            <svg class="mobile-nav-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            <span>Contact</span>
+          </a>
+        </nav>
+        <div class="mobile-bottom">
+          <a href="/login" class="mobile-login-btn">
+            <svg class="mobile-nav-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+            <span>Sign In</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+        <!-- ============================================================
+         SERVICES HERO SECTION: ENTIRE WIDTH BACKGROUND
+    ============================================================ -->
+        <section id="hero" class="page-hero-pro hero-services">
+      <!-- Full-Width Responsive Background Wrapper -->
+      <div class="services-hero-bg-wrapper" aria-hidden="true">
+        <img src="assets/hero/service-dark.png" class="services-bg-img services-hero-img-dark" alt="Services Background" loading="eager" />
+        <img src="assets/hero/service-light.png" class="services-bg-img services-hero-img-light" alt="Services Background" loading="eager" />
+        <div class="services-hero-gradient-overlay"></div>
+      </div>
+
+      <!-- Left-Aligned Content Layer -->
+      <div class="services-hero-inner">
+        <div class="services-hero-left-content">
+          <h1 class="services-hero-headline">
+            Full-Spectrum<br>
+            <span class="hero-gradient-text">Digital Capabilities</span>
+          </h1>
+
+          <p class="services-hero-desc">
+            From high-throughput cloud distributed backbones and custom autonomous AI agents to responsive, pixel-perfect web and mobile digital products.
+          </p>
+
+          <div class="services-hero-btn-row">
+            <a href="contact.html" class="services-btn-primary group">
+              <span>Start a Project</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+            </a>
+            <button onclick="if(window.lenis){window.lenis.scrollTo('#services-stack-wrapper')}else{document.getElementById('services-stack-wrapper').scrollIntoView({behavior:'smooth'})}" class="services-btn-secondary">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="7" height="7"></rect>
+                <rect x="14" y="3" width="7" height="7"></rect>
+                <rect x="14" y="14" width="7" height="7"></rect>
+                <rect x="3" y="14" width="7" height="7"></rect>
+              </svg>
+              <span>Browse Categories</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useRef, useEffect, useState } = React;
+        const { motion } = window.Motion;
+
+        const ROW_1_IMAGES = [
+            { name: "React", url: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/react/react-original.svg" },
+            { name: "Next.js", url: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/nextjs/nextjs-original.svg" },
+            { name: "TypeScript", url: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/typescript/typescript-original.svg" },
+            { name: "JavaScript", url: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/javascript/javascript-original.svg" },
+            { name: "TailwindCSS", url: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/tailwindcss/tailwindcss-original.svg" },
+            { name: "Figma", url: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/figma/figma-original.svg" },
+            { name: "Python", url: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/python/python-original.svg" },
+            { name: "AWS", url: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/amazonwebservices/amazonwebservices-original.svg" }
+        ];
+
+        const ROW_2_IMAGES = [
+            { name: "Node.js", url: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/nodejs/nodejs-original.svg" },
+            { name: "PostgreSQL", url: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/postgresql/postgresql-original.svg" },
+            { name: "MongoDB", url: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/mongodb/mongodb-original.svg" },
+            { name: "MySQL", url: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/mysql/mysql-original.svg" },
+            { name: "Java", url: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/java/java-original.svg" },
+            { name: "C#", url: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/csharp/csharp-original.svg" },
+            { name: "Elixir", url: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/elixir/elixir-original.svg" },
+            { name: "React", url: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/react/react-original.svg" }
+        ];
+
+        function CleanIconItem({ item }) {
+            return (
+                <div className="inline-flex items-center gap-3 px-5 py-3 mx-3 shrink-0 rounded-full tech-pill shadow-sm transition-all duration-300">
+                    <img 
+                        src={item.url} 
+                        alt={item.name} 
+                        className={`w-8 h-8 object-contain ${item.name === 'Next.js' ? 'theme-nextjs-logo' : ''}`} 
+                    />
+                    <span className="text-sm font-semibold tracking-wide" style={{ color: 'var(--heading)' }}>{item.name}</span>
+                </div>
+            );
+        }
+
+        // ------------------------------------------------------------
+        // SVGs matching the mockup
+        // ------------------------------------------------------------
+        const ICONS = {
+            "01": (
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="16 18 22 12 16 6"></polyline>
+                    <polyline points="8 6 2 12 8 18"></polyline>
+                </svg>
+            ),
+            "02": (
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10c1.06 0 1.94-.8 2-1.84.05-.53-.16-1.04-.57-1.42l-.24-.23c-.22-.22-.35-.53-.35-.85 0-.66.54-1.2 1.2-1.2h2.22c3.21 0 5.82-2.61 5.82-5.82C22 7.15 17.52 2 12 2z"></path>
+                    <circle cx="7.5" cy="10.5" r="1.5" fill="#111"></circle>
+                    <circle cx="10.5" cy="6.5" r="1.5" fill="#111"></circle>
+                    <circle cx="14.5" cy="6.5" r="1.5" fill="#111"></circle>
+                    <circle cx="17.5" cy="10.5" r="1.5" fill="#111"></circle>
+                </svg>
+            ),
+            "03": (
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="2" y="7" width="20" height="14" rx="2" ry="2" fill="currentColor"></rect>
+                    <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" stroke="#111"></path>
+                </svg>
+            ),
+            "04": (
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"></path>
+                </svg>
+            ),
+            "05": (
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" fill="currentColor"></path>
+                    <path d="m9 12 2 2 4-4" stroke="#111"></path>
+                </svg>
+            )
+        };
+
+        // ------------------------------------------------------------
+        // DATA
+        // ------------------------------------------------------------
+        const CATEGORIES = [
+            {
+                id: "development",
+                name: "Development",
+                color: "rgba(0, 210, 255, ",
+                tagline: "Scalable software, web, and mobile solutions engineered for growth.",
+                services: [
+                    { 
+                        name: "Software Development", 
+                        tagline: "Custom scalable software architectures engineered for performance.",
+                        video: "service-video/software%20development.mp4"
+                    },
+                    { 
+                        name: "Web Development", 
+                        tagline: "Modern, responsive, and ultra-fast web platforms built to scale.",
+                        video: "service-video/web%20development.mp4"
+                    },
+                    { 
+                        name: "App Development", 
+                        tagline: "High-performance cross-platform and native iOS & Android applications.",
+                        video: "service-video/app%20development.mp4"
+                    },
+                    { 
+                        name: "API Integration", 
+                        tagline: "Secure microservices, third-party connectors, and data sync engines.",
+                        video: "service-video/api_integration.mp4"
+                    }
+                ]
+            },
+            {
+                id: "creative",
+                name: "Creative & Experience",
+                color: "rgba(180, 66, 245, ",
+                tagline: "Human-centered UI/UX design, branding, and captivating visual identities.",
+                services: [
+                    { 
+                        name: "UI/UX Design", 
+                        tagline: "Intuitive user journeys, design systems, and wireframe prototypes.",
+                        video: "service-video/ui_ux_design.mp4"
+                    },
+                    { 
+                        name: "Graphic Design", 
+                        tagline: "High-impact visual creatives, marketing assets, and digital artwork.",
+                        video: "service-video/graphic_design.mp4"
+                    },
+                    { 
+                        name: "Branding & Visual Identity", 
+                        tagline: "Distinctive brand identities, logo suites, and typography guidelines.",
+                        video: "service-video/branding%20and%20designing.mp4"
+                    },
+                    { 
+                        name: "Motion Graphics", 
+                        tagline: "Captivating 2D/3D animations, product reels, and micro-interactions.",
+                        video: "service-video/motion_graphics.mp4"
+                    }
+                ]
+            },
+            {
+                id: "business",
+                name: "Business Solutions",
+                color: "rgba(224, 139, 38, ",
+                tagline: "End-to-end e-commerce, digital marketing, and operations advisory.",
+                services: [
+                    { 
+                        name: "E-Commerce Solutions", 
+                        tagline: "High-converting online storefronts, catalog filters, and secure checkouts.",
+                        video: "service-video/ecommerce.mp4"
+                    },
+                    { 
+                        name: "Digital Marketing", 
+                        tagline: "Targeted SEO, organic growth strategies, and performance marketing.",
+                        video: "service-video/digital%20marketing.mp4"
+                    },
+                    { 
+                        name: "BPO Services", 
+                        tagline: "Reliable 24/7 technical customer support and operational workflows.",
+                        video: "service-video/bpo%20services.mp4"
+                    },
+                    { 
+                        name: "Strategy Consulting", 
+                        tagline: "Actionable technology roadmaps, system audits, and digital advisory.",
+                        video: "service-video/strategy_consulting.mp4"
+                    }
+                ]
+            },
+            {
+                id: "infrastructure",
+                name: "Infrastructure",
+                color: "rgba(46, 201, 83, ",
+                tagline: "Fault-tolerant cloud architectures and bulletproof network security.",
+                services: [
+                    { 
+                        name: "Cloud & Hosting", 
+                        tagline: "Resilient multi-cloud deployments, automated CI/CD, and scaling.",
+                        video: "service-video/cloud_hosting.mp4"
+                    },
+                    { 
+                        name: "Network Security", 
+                        tagline: "Zero-trust network perimeters, encryption, and threat defense.",
+                        video: "service-video/network_security.mp4"
+                    }
+                ]
+            }
+        ];
+
+        // ------------------------------------------------------------
+        // COMPONENTS
+        // ------------------------------------------------------------
+
+        
+        // ------------------------------------------------------------
+        // MOBILE NATIVE SERVICES COMPONENTS (Training Page Alignment)
+        // ------------------------------------------------------------
+        function MobileServiceCard({ service }) {
+            const videoRef = useRef(null);
+
+            const handleNavigate = () => {
+                window.location.href = `contact.html?service=${encodeURIComponent(service.name)}`;
+            };
+
+            useEffect(() => {
+                const video = videoRef.current;
+                if (!video) return;
+
+                video.muted = true;
+                video.defaultMuted = true;
+
+                if ('IntersectionObserver' in window) {
+                    const observer = new IntersectionObserver((entries) => {
+                        entries.forEach(entry => {
+                            if (entry.isIntersecting) {
+                                video.play().catch(() => {});
+                            } else {
+                                video.pause();
+                            }
+                        });
+                    }, { threshold: 0.25 });
+                    observer.observe(video);
+                    return () => observer.disconnect();
+                } else {
+                    video.play().catch(() => {});
+                }
+            }, []);
+
+            return (
+                <div 
+                    onClick={handleNavigate}
+                    className="arox-mob-service-card"
+                    role="button"
+                    tabIndex={0}
+                    aria-label={`${service.name} service`}
+                    onKeyDown={(e) => { if (e.key === 'Enter') handleNavigate(); }}
+                >
+                    {/* Top Header: Title on Left, Circular Arrow Button on Right */}
+                    <div className="arox-mob-card-head">
+                        <h3 className="arox-mob-card-title">{service.name}</h3>
+                        <button
+                            type="button"
+                            aria-label={`Explore ${service.name}`}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                handleNavigate();
+                            }}
+                            className="arox-mob-card-arrow"
+                        >
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                <line x1="7" y1="17" x2="17" y2="7" />
+                                <polyline points="7 7 17 7 17 17" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    {/* Video Container (No explanation text as requested) */}
+                    <div className="arox-mob-card-video-wrap">
+                        <video 
+                            ref={videoRef}
+                            src={service.video} 
+                            loop 
+                            muted 
+                            playsInline
+                            autoPlay
+                            preload="auto"
+                            className="arox-mob-card-video"
+                        />
+                    </div>
+                </div>
+            );
+        }
+
+        function MobileServicesView({ categories }) {
+            return (
+                <div className="arox-mobile-services-view" id="aroxMobileServicesView">
+                    {categories.map((domain) => (
+                        <div key={domain.id} id={`mob-service-${domain.id}`} className="arox-mob-service-section">
+                            <div className="arox-mob-service-header">
+                                <h2 className="arox-mob-service-heading">{domain.name}</h2>
+                                {domain.tagline && (
+                                    <p className="arox-mob-service-sub">{domain.tagline}</p>
+                                )}
+                            </div>
+                            <div className="arox-mob-services-scroll-track">
+                                {domain.services.map((svc, idx) => (
+                                    <MobileServiceCard key={idx} service={svc} />
+                                ))}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            );
+        }
+
+
+        function ServiceCard({ service }) {
+            const videoRef = useRef(null);
+
+            const handleNavigate = () => {
+                window.location.href = `contact.html?service=${encodeURIComponent(service.name)}`;
+            };
+
+            // Play video ONLY when hovered; pause all other cards so only one video plays at a time
+            const handleMouseEnter = () => {
+                document.querySelectorAll('.service-card-video').forEach(v => {
+                    if (v !== videoRef.current && !v.paused) {
+                        v.pause();
+                        v.currentTime = 0;
+                    }
+                });
+                if (videoRef.current) {
+                    videoRef.current.play().catch(() => {});
+                }
+            };
+
+            const handleMouseLeave = () => {
+                if (videoRef.current) {
+                    videoRef.current.pause();
+                    videoRef.current.currentTime = 0;
+                }
+            };
+
+            return (
+                <div 
+                    onClick={handleNavigate}
+                    onMouseEnter={handleMouseEnter}
+                    onMouseLeave={handleMouseLeave}
+                    onTouchStart={handleMouseEnter}
+                    className="arox-service-card group snap-start"
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => { if (e.key === 'Enter') handleNavigate(); }}
+                >
+                    {/* Top Header Row: Title on Left, Circular Arrow Button on Right */}
+                    <div className="card-header-row">
+                        <h3 className="card-title-text font-bold text-lg sm:text-xl lg:text-[1.3rem] tracking-tight leading-snug">
+                            {service.name}
+                        </h3>
+                        <button
+                            type="button"
+                            aria-label={`Explore ${service.name}`}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                handleNavigate();
+                            }}
+                            className="card-arrow-circle"
+                        >
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5">
+                                <line x1="7" y1="17" x2="17" y2="7" />
+                                <polyline points="7 7 17 7 17 17" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    {/* Horizontal Divider Line */}
+                    <div className="card-divider"></div>
+
+                    {/* Service Related Tagline (Positioned directly below divider matching reference image) */}
+                    {service.tagline && (
+                        <p className="card-tagline">
+                            {service.tagline}
+                        </p>
+                    )}
+
+                    {/* Video Container (Plays ONLY on mouse hover, one at a time) */}
+                    <div className="card-video-box">
+                        <video 
+                            ref={videoRef}
+                            src={service.video} 
+                            loop 
+                            muted 
+                            playsInline
+                            preload="metadata"
+                            className="service-card-video"
+                        />
+                    </div>
+                </div>
+            );
+        }
+
+        function DomainSection({ domain, domainIdx }) {
+            const trackRef = useRef(null);
+            const [canScrollLeft, setCanScrollLeft] = useState(false);
+            const [canScrollRight, setCanScrollRight] = useState(false);
+
+            const updateArrows = () => {
+                const el = trackRef.current;
+                if (!el) return;
+                const canLeft = el.scrollLeft > 15;
+                const canRight = el.scrollLeft < el.scrollWidth - el.clientWidth - 15;
+                setCanScrollLeft(canLeft);
+                setCanScrollRight(canRight);
+            };
+
+            useEffect(() => {
+                updateArrows();
+                const el = trackRef.current;
+                if (!el) return;
+                el.addEventListener('scroll', updateArrows, { passive: true });
+                window.addEventListener('resize', updateArrows);
+                const timer = setTimeout(updateArrows, 300);
+                return () => {
+                    el.removeEventListener('scroll', updateArrows);
+                    window.removeEventListener('resize', updateArrows);
+                    clearTimeout(timer);
+                };
+            }, [domain.services]);
+
+            const scrollByAmount = (direction) => {
+                const el = trackRef.current;
+                if (!el) return;
+                const card = el.querySelector('.arox-service-card');
+                const step = card ? card.offsetWidth + 24 : 374;
+                el.scrollBy({ left: step * direction, behavior: 'smooth' });
+            };
+
+            const initialTransform = domainIdx === 0 ? 'translateY(0%)' : 'translateY(105%)';
+            const cardZIndex = (domainIdx + 1) * 10;
+
+            return (
+                <section 
+                    id={`domain-section-${domainIdx}`} 
+                    className={`domain-section-card domain-folder-card domain-card-${domainIdx}`}
+                    style={{ zIndex: cardZIndex, transform: initialTransform }}
+                >
+                    {/* Top Header Bar */}
+                    <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 header-row">
+                        <div>
+                            <h2 className="domain-title font-bold text-3xl sm:text-4xl lg:text-[2.75rem] tracking-tight leading-none">
+                                {domain.name}
+                            </h2>
+                        </div>
+                        <p className="domain-tagline text-xs sm:text-sm md:text-[0.92rem] font-medium opacity-80 md:text-right max-w-xl">
+                            {domain.tagline}
+                        </p>
+                    </div>
+
+                    {/* Divider Line */}
+                    <div className="domain-divider w-full h-[1px] mt-4 mb-6"></div>
+
+                    {/* Horizontal Track Container */}
+                    <div className="relative w-full group/carousel flex-1 flex flex-col justify-center min-h-0">
+                        
+                        {/* Left Navigation Arrow */}
+                        {canScrollLeft && (
+                            <button
+                                type="button"
+                                aria-label={`Previous ${domain.name} services`}
+                                onClick={() => scrollByAmount(-1)}
+                                className="domain-scroll-arrow domain-scroll-arrow-left"
+                            >
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                    <polyline points="15 18 9 12 15 6"></polyline>
+                                </svg>
+                            </button>
+                        )}
+
+                        {/* Right Navigation Arrow */}
+                        {canScrollRight && (
+                            <button
+                                type="button"
+                                aria-label={`Next ${domain.name} services`}
+                                onClick={() => scrollByAmount(1)}
+                                className="domain-scroll-arrow domain-scroll-arrow-right"
+                            >
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                    <polyline points="9 18 15 12 9 6"></polyline>
+                                </svg>
+                            </button>
+                        )}
+
+                        {/* Edge Fades */}
+                        <div 
+                            className="domain-edge-fade domain-edge-fade-left" 
+                            style={{ opacity: canScrollLeft ? 1 : 0 }} 
+                        />
+                        <div 
+                            className="domain-edge-fade domain-edge-fade-right" 
+                            style={{ opacity: canScrollRight ? 1 : 0 }} 
+                        />
+
+                        {/* Horizontal Cards Row */}
+                        <div 
+                            ref={trackRef}
+                            className="domain-cards-grid flex items-stretch gap-6 overflow-x-auto hide-scroll snap-x snap-mandatory py-2 px-1"
+                        >
+                            {domain.services.map((svc, sIdx) => (
+                                <ServiceCard key={sIdx} service={svc} />
+                            ))}
+                        </div>
+                    </div>
+                </section>
+            );
+        }
+
+        // ------------------------------------------------------------
+        // MAIN APP
+        // ------------------------------------------------------------
+        function App() {
+            const [activeIdx, setActiveIdx] = useState(0);
+            const [navVisible, setNavVisible] = useState(false);
+
+            // Lenis smooth scroll initialization
+            useEffect(() => {
+                if ('scrollRestoration' in history) {
+                    history.scrollRestoration = 'manual';
+                }
+
+                let lenis = window.lenis;
+                if (!lenis && typeof Lenis !== 'undefined') {
+                    lenis = new Lenis({
+                        duration: 1.2,
+                        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+                        orientation: 'vertical',
+                        gestureOrientation: 'vertical',
+                        smoothWheel: true,
+                        wheelMultiplier: 1,
+                        smoothTouch: false,
+                        touchMultiplier: 1.5,
+                    });
+                    window.lenis = lenis;
+
+                    function raf(time) {
+                        lenis.raf(time);
+                        requestAnimationFrame(raf);
+                    }
+                    requestAnimationFrame(raf);
+                }
+            }, []);
+
+            // Real-time visibility listener for the service cards nav bar & primary navbar hiding
+            // REQUIREMENT:
+            // 1. Initial service card fully appears -> Service nav bar shows at top of cards (with clearance, not touching cards).
+            // 2. Primary navbar (#site-header) is hidden while service nav bar is visible.
+            // 3. Primary navbar does NOT return until the final service card is scrolled past by 10%.
+            useEffect(() => {
+                const header = document.getElementById('site-header');
+
+                const checkNavAndHeader = () => {
+                    const isMobile = window.innerWidth <= 768;
+                    if (isMobile) {
+                        setNavVisible(false);
+                        if (header) header.classList.remove('services-nav-hidden');
+                        return;
+                    }
+                    let isServicesActive = false;
+
+                    const wrapper = document.getElementById('services-stack-wrapper');
+                    if (wrapper) {
+                        const rect = wrapper.getBoundingClientRect();
+                        isServicesActive = (rect.top <= 60 && rect.bottom >= window.innerHeight * 0.90);
+                    }
+
+                    setNavVisible(isServicesActive);
+                    window.isServicesScrollActive = isServicesActive;
+
+                    if (header) {
+                        if (isServicesActive) {
+                            header.classList.add('services-nav-hidden');
+                        } else {
+                            header.classList.remove('services-nav-hidden');
+                        }
+                    }
+                };
+
+                window.addEventListener('scroll', checkNavAndHeader, { passive: true });
+                window.addEventListener('resize', checkNavAndHeader);
+                if (window.lenis) {
+                    window.lenis.on('scroll', checkNavAndHeader);
+                }
+                checkNavAndHeader();
+
+                return () => {
+                    window.removeEventListener('scroll', checkNavAndHeader);
+                    window.removeEventListener('resize', checkNavAndHeader);
+                    if (window.lenis) {
+                        window.lenis.off('scroll', checkNavAndHeader);
+                    }
+                    if (header) {
+                        header.classList.remove('services-nav-hidden');
+                    }
+                    window.isServicesScrollActive = false;
+                };
+            }, []);
+
+            // GSAP ScrollTrigger Sticky Domain Stacking Timeline (Active on both Desktop and Mobile)
+            useEffect(() => {
+                if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return;
+                if (window.innerWidth <= 768) return; // Do NOT initialize desktop pinning on mobile!
+                
+                gsap.registerPlugin(ScrollTrigger);
+
+                if (window.lenis) {
+                    window.lenis.on('scroll', ScrollTrigger.update);
+                }
+
+                const tl = gsap.timeline({
+                    scrollTrigger: {
+                        id: "services-folder-stack-trigger",
+                        trigger: "#services-stack-wrapper",
+                        pin: "#services-stack-pinned",
+                        pinSpacing: false,
+                        start: "top top",
+                        end: "bottom bottom",
+                        scrub: 0.6,
+                        onUpdate: (self) => {
+                            const p = self.progress;
+                            if (p < 0.28) setActiveIdx(0);
+                            else if (p < 0.60) setActiveIdx(1);
+                            else if (p < 0.88) setActiveIdx(2);
+                            else setActiveIdx(3);
+                        }
+                    }
+                });
+
+                // Step 1: Card 1 (Creative & Experience) slides up over Card 0 (Development)
+                tl.to("#domain-section-1", {
+                    y: "0%",
+                    ease: "power2.out",
+                    duration: 1
+                }, 0)
+                .to("#domain-section-0 .domain-tagline", { opacity: 0, duration: 0.3 }, 0.2)
+                .to("#domain-section-0", { scale: 0.97, opacity: 0.7, duration: 0.6 }, 0.4);
+
+                // Step 2: Card 2 (Business Solutions) slides up over Card 1
+                tl.to("#domain-section-2", {
+                    y: "0%",
+                    ease: "power2.out",
+                    duration: 1
+                }, 1.2)
+                .to("#domain-section-1 .domain-tagline", { opacity: 0, duration: 0.3 }, 1.4)
+                .to("#domain-section-1", { scale: 0.97, opacity: 0.7, duration: 0.6 }, 1.6);
+
+                // Step 3: Card 3 (Infrastructure) slides up over Card 2
+                tl.to("#domain-section-3", {
+                    y: "0%",
+                    ease: "power2.out",
+                    duration: 1
+                }, 2.4)
+                .to("#domain-section-2 .domain-tagline", { opacity: 0, duration: 0.3 }, 2.6)
+                .to("#domain-section-2", { scale: 0.97, opacity: 0.7, duration: 0.6 }, 2.8);
+
+                return () => {
+                    const st = ScrollTrigger.getById("services-folder-stack-trigger");
+                    if (st) st.kill();
+                };
+            }, []);
+
+            const goToCard = (index, force = false) => {
+                if (!force && !navVisible) return;
+                setActiveIdx(index);
+                const st = ScrollTrigger.getById("services-folder-stack-trigger");
+                if (!st) {
+                    const el = document.getElementById(`domain-section-${index}`);
+                    if (el) {
+                        const topOffset = el.getBoundingClientRect().top + window.pageYOffset - 80;
+                        window.scrollTo({ top: topOffset, behavior: 'smooth' });
+                    }
+                    return;
+                }
+                const total = st.end - st.start;
+                const progressMap = [0.0, 0.34, 0.67, 1.0];
+                const targetY = st.start + progressMap[index] * total;
+                if (window.lenis) {
+                    window.lenis.scrollTo(targetY, { duration: 1.2 });
+                } else {
+                    window.scrollTo({ top: targetY, behavior: 'smooth' });
+                }
+            };
+            window.goToServiceCard = goToCard;
+
+            // Direct landing & footer click navigation to specific service domain
+            useEffect(() => {
+                const checkUrlAndNavigate = () => {
+                    const params = new URLSearchParams(window.location.search);
+                    const hash = (window.location.hash || '').replace('#', '').toLowerCase();
+                    let target = (params.get('service') || params.get('domain') || hash).toLowerCase();
+                    if (!target) return;
+                    if (target.startsWith('domain-section-')) {
+                        const num = parseInt(target.replace('domain-section-', ''), 10);
+                        const revMap = ['development', 'creative', 'business', 'infrastructure'];
+                        if (revMap[num] !== undefined) target = revMap[num];
+                    }
+
+                    const idMap = {
+                        'development': 0,
+                        'creative': 1,
+                        'business': 2,
+                        'infrastructure': 3
+                    };
+                    const idx = idMap[target];
+                    if (idx !== undefined) {
+                        setTimeout(() => {
+                            if (window.innerWidth <= 768) {
+                                const mobEl = document.getElementById(`mob-service-${target}`) || document.getElementById(target);
+                                if (mobEl) {
+                                    mobEl.scrollIntoView({ behavior: 'instant', block: 'start' });
+                                }
+                            } else {
+                                goToCard(idx, false);
+                            }
+                        }, 200);
+                    }
+                };
+
+                checkUrlAndNavigate();
+                window.addEventListener('hashchange', checkUrlAndNavigate);
+                return () => window.removeEventListener('hashchange', checkUrlAndNavigate);
+            }, []);
+
+            return (
+                <div className="w-full" style={{ backgroundColor: 'var(--background)', color: 'var(--body)' }}>
+                    
+                    {/* Floating Service Cards Navigation Bar */}
+                    {/* Positioned at top of cards with guaranteed clearance (never touches cards) */}
+                    <div 
+                        id="services-floating-nav"
+                        className={`fixed top-5 left-0 right-0 z-50 flex justify-center transition-all duration-300 ${navVisible ? 'is-nav-visible opacity-100 translate-y-0 pointer-events-auto visible' : 'nav-hidden opacity-0 -translate-y-4 pointer-events-none invisible'}`}
+                        style={{
+                            visibility: navVisible ? 'visible' : 'hidden',
+                            pointerEvents: navVisible ? 'auto' : 'none'
+                        }}
+                    >
+                        <div 
+                            className={`services-category-pills-bar ${navVisible ? 'pointer-events-auto' : 'pointer-events-none'}`}
+                            style={{
+                                pointerEvents: navVisible ? 'auto' : 'none',
+                                visibility: navVisible ? 'visible' : 'hidden'
+                            }}
+                        >
+                            {CATEGORIES.map((cat, idx) => (
+                                <button
+                                    key={cat.id}
+                                    type="button"
+                                    disabled={!navVisible}
+                                    tabIndex={navVisible ? 0 : -1}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        if (navVisible) goToCard(idx);
+                                    }}
+                                    className={`services-category-pill-btn ${activeIdx === idx ? 'active' : ''}`}
+                                    style={{
+                                        pointerEvents: navVisible ? 'auto' : 'none'
+                                    }}
+                                >
+                                    {cat.name}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Mobile View: Native App Feed with Horizontal Scroll Tracks */}
+                    <MobileServicesView categories={CATEGORIES} />
+
+                    {/* Sticky Domain Stacking System for the 4 Service Domain Containers */}
+                    <div id="services-stack-wrapper" className="relative w-full" style={{ height: '400vh' }}>
+                        <div id="services-stack-pinned" className="w-full h-screen flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 z-30 pt-24 sm:pt-28 pb-6">
+                            
+                            {/* Stage Box (Cards Stack Stage) */}
+                            <div id="services-stack-stage" className="services-stack-stage">
+                                {CATEGORIES.map((domain, domainIdx) => (
+                                    <DomainSection 
+                                        key={domain.id} 
+                                        domain={domain} 
+                                        domainIdx={domainIdx} 
+                                    />
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Technology Stack Section (Previous Design Restored) */}
+                    <section id="tech-stack-section" className="tech-stack-section py-24 relative overflow-hidden" style={{ backgroundColor: 'var(--background)' }}>
+                        <div className="max-w-[1400px] mx-auto px-6 md:px-12 flex flex-col lg:flex-row items-center justify-between gap-12 relative z-10">
+                            
+                            {/* Left Info Column (40%) */}
+                            <div className="w-full lg:w-[40%] space-y-6">
+                                <div className="section-eyebrow inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-opacity-30 text-xs font-bold" style={{ backgroundColor: 'var(--glow-color)', color: 'var(--primary)', borderColor: 'var(--primary)' }}>
+                                    <span className="w-2 h-2 rounded-full bg-[var(--primary)] animate-pulse"></span>
+                                    ENTERPRISE TECH STACK
+                                </div>
+                                <h2 className="section-title text-3xl md:text-4xl font-bold tracking-tight leading-tight" style={{ color: 'var(--heading)' }}>
+                                    Powering Solutions with <br className="hidden md:block"/>
+                                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)]">
+                                        Modern Technology
+                                    </span>
+                                </h2>
+                                <p className="opacity-70 leading-relaxed font-light text-base max-w-md" style={{ color: 'var(--body)' }}>
+                                    Our development stack leverages high-performance libraries, frameworks, cloud native services and secure databases trusted by world-class systems.
+                                </p>
+                            </div>
+
+                            {/* Right Marquee Column (60%) */}
+                            <div className="w-full lg:w-[60%] flex flex-col gap-6 overflow-hidden relative py-4">
+                                {/* Edge Fade Masks */}
+                                <div className="absolute inset-y-0 left-0 w-20 fade-mask-left z-20 pointer-events-none"></div>
+                                <div className="absolute inset-y-0 right-0 w-20 fade-mask-right z-20 pointer-events-none"></div>
+
+                                {/* Row 1 Marquee */}
+                                <div className="overflow-hidden w-full relative py-2">
+                                    <div className="flex items-center animate-slow-right w-max">
+                                        {[...ROW_1_IMAGES, ...ROW_1_IMAGES, ...ROW_1_IMAGES, ...ROW_1_IMAGES].map((item, idx) => (
+                                            <CleanIconItem key={idx} item={item} />
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Row 2 Marquee */}
+                                <div className="overflow-hidden w-full relative py-2">
+                                    <div className="flex items-center animate-slow-left w-max">
+                                        {[...ROW_2_IMAGES, ...ROW_2_IMAGES, ...ROW_2_IMAGES, ...ROW_2_IMAGES].map((item, idx) => (
+                                            <CleanIconItem key={idx} item={item} />
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+
+        <!-- PRE-FOOTER CTA SECTION -->
+  <section class="cta-section" id="cta">
+    <div class="cta-card reveal">
+      <div class="cta-content">
+        <h2 class="cta-heading">Technology built around your goals.</h2>
+        <p class="cta-text">Websites, software platforms, mobile applications, AI solutions and data-driven systems designed around real business needs.</p>
+        <div class="cta-actions">
+          <a href="contact.html" class="btn-primary">
+            <span>Start a Project</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-left: 6px; display: inline-block; vertical-align: middle;"><line x1="7" y1="17" x2="17" y2="7" /><polyline points="7 7 17 7 17 17" /></svg>
+          </a>
+          <a href="courses.html" class="btn-secondary">
+            <span>Explore Training</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+        <footer>
+        <div class="footer-inner">
+            <!-- Background Watermark -->
+            <div class="footer-watermark">Arox Tech</div>
+
+            <!-- Main Footer Grid / Mobile Accordions -->
+            <div class="footer-grid">
+                <!-- Brand Section -->
+                <div class="footer-brand">
+                    <a href="index.html" class="footer-brand-logo">
+                        <img id="footer-logo-img" src="public/assets/logo/logo-dark.png" alt="Arox Tech" onerror="this.src='assets/logo/logo-dark.png'" />
+                    </a>
+                    <p class="footer-tagline">
+                        We build scalable software architectures, robust digital platforms, and high-impact AI solutions for modern businesses.
+                    </p>
+                    <!-- 4 Social Icons in a Single Row: Instagram, WhatsApp, Facebook, LinkedIn -->
+                    <div class="footer-socials">
+                        <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="footer-social-btn" aria-label="Instagram">
+                            <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                        </a>
+                        <a href="https://whatsapp.com" target="_blank" rel="noopener noreferrer" class="footer-social-btn" aria-label="WhatsApp">
+                            <svg viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
+                        </a>
+                        <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" class="footer-social-btn" aria-label="Facebook">
+                            <svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                        </a>
+                        <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" class="footer-social-btn" aria-label="LinkedIn">
+                            <svg viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Row 1 / Col 2: Company -->
+                <details class="footer-col footer-col-company" open>
+                    <summary class="footer-col-header">
+                        <div class="footer-col-header-left">
+                            <div>
+                                <h3 class="footer-col-title">Company</h3>
+                                <div class="footer-title-bar"></div>
+                            </div>
+                        </div>
+                        <div class="footer-chevron">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                        </div>
+                    </summary>
+                    <div class="footer-col-body">
+                        <ul class="footer-links">
+                            <li><a class="footer-link" href="about.html">About Us</a></li>
+                            <li><a class="footer-link" href="about.html#mission-section">Purpose &amp; Vision</a></li>
+                            <li><a class="footer-link" href="about.html#process-section">Operating Model</a></li>
+                            <li><a class="footer-link" href="apply.html">Careers</a></li>
+                            <li><a class="footer-link" href="services.html">Partners</a></li>
+                            <li><a class="footer-link" href="contact.html">Contact Us</a></li>
+                        </ul>
+                    </div>
+                </details>
+
+                <!-- Row 1 / Col 3: Services -->
+                <details class="footer-col footer-col-services" open>
+                    <summary class="footer-col-header">
+                        <div class="footer-col-header-left">
+                            <div>
+                                <h3 class="footer-col-title">Services</h3>
+                                <div class="footer-title-bar"></div>
+                            </div>
+                        </div>
+                        <div class="footer-chevron">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                        </div>
+                    </summary>
+                    <div class="footer-col-body">
+                        <ul class="footer-links">
+                            <li><a class="footer-link" href="services.html?service=development#domain-section-0"><span>Development</span><svg class="footer-arrow-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg></a></li>
+                            <li><a class="footer-link" href="services.html?service=creative#domain-section-1"><span>Creative &amp; Experience</span><svg class="footer-arrow-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg></a></li>
+                            <li><a class="footer-link" href="services.html?service=business#domain-section-2"><span>Business Solutions</span><svg class="footer-arrow-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg></a></li>
+                            <li><a class="footer-link" href="services.html?service=infrastructure#domain-section-3"><span>Infrastructure</span><svg class="footer-arrow-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg></a></li>
+                        </ul>
+                    </div>
+                </details>
+
+                <!-- Row 1 / Col 4: Training -->
+                <details class="footer-col footer-col-training" open>
+                    <summary class="footer-col-header">
+                        <div class="footer-col-header-left">
+                            <div>
+                                <h3 class="footer-col-title">Training</h3>
+                                <div class="footer-title-bar"></div>
+                            </div>
+                        </div>
+                        <div class="footer-chevron">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                        </div>
+                    </summary>
+                    <div class="footer-col-body">
+                        <ul class="footer-links">
+                            <li><a class="footer-link" href="detail.html?course=full-stack-web-development&amp;from=training">Full Stack Web Dev</a></li>
+                            <li><a class="footer-link" href="detail.html?course=data-science-and-ai&amp;from=training">Python &amp; Data Science</a></li>
+                            <li><a class="footer-link" href="detail.html?course=data-science-and-ai&amp;from=training">AI &amp; Machine Learning</a></li>
+                            <li><a class="footer-link" href="detail.html?course=cyber-security&amp;from=training">Cyber Security</a></li>
+                            <li><a class="footer-link" href="detail.html?course=devops-engineering&amp;from=training">Cloud &amp; DevOps</a></li>
+                            <li><a class="footer-link" href="detail.html?course=ui-ux-designing&amp;from=training">UI/UX Designing</a></li>
+                        </ul>
+                    </div>
+                </details>
+
+                <!-- Row 2 / Col 2: Internships -->
+                <details class="footer-col footer-col-internships" open>
+                    <summary class="footer-col-header">
+                        <div class="footer-col-header-left">
+                            <div>
+                                <h3 class="footer-col-title">Internship</h3>
+                                <div class="footer-title-bar"></div>
+                            </div>
+                        </div>
+                        <div class="footer-chevron">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                        </div>
+                    </summary>
+                    <div class="footer-col-body">
+                        <ul class="footer-links">
+                            <li><a class="footer-link" href="training.html?tab=internship&amp;domain=cse_it#internshipDomainWrap"><span>CSE &amp; IT</span><svg class="footer-arrow-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg></a></li>
+                            <li><a class="footer-link" href="training.html?tab=internship&amp;domain=ece#internshipDomainWrap"><span>ECE</span><svg class="footer-arrow-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg></a></li>
+                            <li><a class="footer-link" href="training.html?tab=internship&amp;domain=mech#internshipDomainWrap"><span>MECH</span><svg class="footer-arrow-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg></a></li>
+                            <li><a class="footer-link" href="training.html?tab=internship&amp;domain=management#internshipDomainWrap"><span>MANAGEMENT</span><svg class="footer-arrow-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg></a></li>
+                        </ul>
+                    </div>
+                </details>
+
+                <!-- Row 2 / Col 3: Contact -->
+                <details class="footer-col footer-col-contact" open>
+                    <summary class="footer-col-header">
+                        <div class="footer-col-header-left">
+                            <div>
+                                <h3 class="footer-col-title">Contact</h3>
+                                <div class="footer-title-bar"></div>
+                            </div>
+                        </div>
+                        <div class="footer-chevron">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                        </div>
+                    </summary>
+                    <div class="footer-col-body">
+                        <ul class="footer-contact-items">
+                            <li class="footer-contact-item">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                                <span>Salem, Tamil Nadu, India</span>
+                            </li>
+                            <li class="footer-contact-item">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13.1a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.56 2.38l3-.02a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.18 6.18l1.44-1.44a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7a2 2 0 0 1 1.72 2.03z"/></svg>
+                                <a href="tel:+911234567890">+91 12345 67890</a>
+                            </li>
+                            <li class="footer-contact-item">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                                <a href="mailto:info@aroxtech.com">info@aroxtech.com</a>
+                            </li>
+                            <li class="footer-contact-item">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                <span>Mon - Sat: 9:00 AM - 6:00 PM</span>
+                            </li>
+                        </ul>
+                    </div>
+                </details>
+            </div>
+        </div>
+
+        <!-- Footer Bottom Bar -->
+        <div class="footer-bottom">
+            <div class="footer-bottom-inner">
+                <p class="footer-copyright-bottom">&copy; <span>AROX Tech 2026</span> All Rights Reserved</p>
+                <div class="footer-bottom-right">
+                    <a href="#" class="footer-legal-link">Terms &amp; Conditions</a>
+                    <span class="footer-legal-sep">&bull;</span>
+                    <a href="#" class="footer-legal-link">Privacy Policy</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+  <script src="js/main.js" defer></script>
+
+  <!-- Dynamic Theme Sync for Services Hero Background Image -->
+  <script>
+    (function() {
+      function syncServicesHeroImages() {
+        var isLight = document.documentElement.classList.contains('theme-light') || 
+                      document.documentElement.getAttribute('data-theme') === 'light' ||
+                      (!document.documentElement.classList.contains('dark') && !document.documentElement.classList.contains('theme-dark'));
+        var darkImgs = document.querySelectorAll('.hero-img-dark');
+        var lightImgs = document.querySelectorAll('.hero-img-light');
+        darkImgs.forEach(function(img) {
+          img.style.setProperty('display', isLight ? 'none' : 'block', 'important');
+        });
+        lightImgs.forEach(function(img) {
+          img.style.setProperty('display', isLight ? 'block' : 'none', 'important');
+        });
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', syncServicesHeroImages);
+      } else {
+        syncServicesHeroImages();
+      }
+
+      window.addEventListener('arox-theme-change', syncServicesHeroImages);
+
+      var themeObserver = new MutationObserver(function() {
+        syncServicesHeroImages();
+      });
+      themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['class', 'data-theme'] });
+    })();
+  </script>
+
+
+    <script>
+    // Footer service links smooth redirection on same page
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('a[href*="service="]').forEach(a => {
+            a.addEventListener('click', (e) => {
+                try {
+                    const url = new URL(a.href, window.location.href);
+                    const svc = url.searchParams.get('service');
+                    if (svc) {
+                        const idMap = { development: 0, creative: 1, business: 2, infrastructure: 3 };
+                        const idx = idMap[svc.toLowerCase()];
+                        if (idx !== undefined) {
+                            e.preventDefault();
+                            history.pushState(null, '', a.href);
+                            if (window.innerWidth <= 768) {
+                                const mobEl = document.getElementById(`mob-service-${svc.toLowerCase()}`);
+                                if (mobEl) mobEl.scrollIntoView({ behavior: 'instant', block: 'start' });
+                            } else if (typeof window.goToServiceCard === 'function') {
+                                window.goToServiceCard(idx, false);
+                            }
+                        }
+                    }
+                } catch (_) {}
+            });
+        });
+    });
+    </script>
+</body>
+</html>

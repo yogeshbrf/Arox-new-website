@@ -1,0 +1,471 @@
+<div class="erp-h1" style="margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; color: #000000;">
+  <div>
+    <div style="font-size: 24px; font-weight: 750;">Communication: Call Reports</div>
+    <div style="font-size: 13px; color: #64748B; font-weight: 500; margin-top: 2px;">Track and log outreach calls with students, institutional leads, and corporate accounts</div>
+  </div>
+  <button type="button" onclick="openLogCallModal()" class="erp-btn erp-btn-primary" style="padding: 9px 18px; background: #000000; color: #FFFFFF; border-radius: 8px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; border: none;">
+    <i data-lucide="phone-outgoing" style="width: 16px; height: 16px;"></i>
+    <span>Log New Call</span>
+  </button>
+</div>
+
+<!-- Metrics Cards -->
+<%
+  const totalCalls = stats ? stats.total_calls : (reports ? reports.length : 0);
+  const convertedCalls = stats ? stats.converted : (reports ? reports.filter(r => r.outcome === 'converted').length : 0);
+  const interestedCalls = stats ? stats.interested : (reports ? reports.filter(r => r.outcome === 'interested').length : 0);
+  const callbackCalls = stats ? stats.call_back : (reports ? reports.filter(r => r.outcome === 'call_back').length : 0);
+%>
+<div class="erp-grid-4" style="margin-bottom: 24px;">
+  <div class="erp-card" style="background: #FFFFFF; border: 1px solid #E2E8F0; padding: 20px;">
+    <div class="erp-card-header">
+      <div class="erp-card-icon" style="background: #000000; color: #FFFFFF;">
+        <i data-lucide="phone-call"></i>
+      </div>
+      <div class="erp-card-title" style="color: #64748B;">Total Calls Logged</div>
+    </div>
+    <div class="erp-card-value" style="color: #000000;"><%= totalCalls %></div>
+    <div class="erp-p" style="margin-top: 6px; color: #64748B; font-size: 12px;">Synced to Admin Reports</div>
+  </div>
+
+  <div class="erp-card" style="background: #FFFFFF; border: 1px solid #E2E8F0; padding: 20px;">
+    <div class="erp-card-header">
+      <div class="erp-card-icon" style="background: #000000; color: #FFFFFF;">
+        <i data-lucide="check-circle-2"></i>
+      </div>
+      <div class="erp-card-title" style="color: #64748B;">Converted</div>
+    </div>
+    <div class="erp-card-value" style="color: #000000;"><%= convertedCalls %></div>
+    <div class="erp-p" style="margin-top: 6px; color: #16A34A; font-weight: 600; font-size: 12px;">Positive closures</div>
+  </div>
+
+  <div class="erp-card" style="background: #FFFFFF; border: 1px solid #E2E8F0; padding: 20px;">
+    <div class="erp-card-header">
+      <div class="erp-card-icon" style="background: #000000; color: #FFFFFF;">
+        <i data-lucide="thumbs-up"></i>
+      </div>
+      <div class="erp-card-title" style="color: #64748B;">Interested</div>
+    </div>
+    <div class="erp-card-value" style="color: #000000;"><%= interestedCalls %></div>
+    <div class="erp-p" style="margin-top: 6px; color: #000000; font-weight: 600; font-size: 12px;">High prospective leads</div>
+  </div>
+
+  <div class="erp-card" style="background: #FFFFFF; border: 1px solid #E2E8F0; padding: 20px;">
+    <div class="erp-card-header">
+      <div class="erp-card-icon" style="background: #000000; color: #FFFFFF;">
+        <i data-lucide="calendar"></i>
+      </div>
+      <div class="erp-card-title" style="color: #64748B;">Follow-Ups Scheduled</div>
+    </div>
+    <div class="erp-card-value" style="color: #000000;"><%= callbackCalls %></div>
+    <div class="erp-p" style="margin-top: 6px; color: #D97706; font-weight: 600; font-size: 12px;">Upcoming touchpoints</div>
+  </div>
+</div>
+
+<!-- Interactive Catalogue Filter Toolbar (Apple + Google Material 3) -->
+<div class="catalogue-toolbar" data-catalogue="emp_calls">
+  <div class="catalogue-filters-group">
+    <!-- Search Input -->
+    <div class="catalogue-search-wrap">
+      <i data-lucide="search"></i>
+      <input type="text" class="catalogue-search-input" placeholder="Search contact name, phone, notes...">
+    </div>
+
+    <!-- Outcome Filter -->
+    <select class="catalogue-select" data-filter="status" title="Filter by Outcome">
+      <option value="all">All Outcomes</option>
+      <option value="converted">Converted</option>
+      <option value="interested">Interested</option>
+      <option value="call_back">Call Back</option>
+      <option value="not_reachable">Not Reachable</option>
+      <option value="not_interested">Not Interested</option>
+    </select>
+
+    <!-- Contact Type Filter -->
+    <select class="catalogue-select" data-filter="category" title="Filter by Contact Type">
+      <option value="all">All Types</option>
+      <option value="student">Student</option>
+      <option value="client">Client</option>
+      <option value="lead">Lead</option>
+      <option value="other">Other</option>
+    </select>
+
+    <!-- Sort Dropdown -->
+    <select class="catalogue-select" data-filter="sort" title="Sort records">
+      <option value="newest">Newest First</option>
+      <option value="name">Contact Name (A - Z)</option>
+    </select>
+
+    <!-- Reset Button -->
+    <button type="button" class="catalogue-reset-btn" title="Reset all filters">
+      <i data-lucide="rotate-ccw" style="width: 13px; height: 13px;"></i>
+      <span>Reset</span>
+    </button>
+
+    <!-- Result Counter -->
+    <span class="catalogue-count-badge">Showing <%= reports ? reports.length : 0 %> logs</span>
+  </div>
+
+  <!-- Segmented View Switcher: List vs Kanban/Grid -->
+  <div class="catalogue-view-switcher">
+    <button type="button" class="view-btn active" data-view="list" title="Table List View">
+      <i data-lucide="list"></i>
+      <span>List</span>
+    </button>
+    <button type="button" class="view-btn" data-view="kanban" title="Kanban Card Grid View">
+      <i data-lucide="layout-grid"></i>
+      <span>Kanban</span>
+    </button>
+  </div>
+</div>
+
+<!-- 1. LIST VIEW (Data Table) -->
+<div class="catalogue-list-view" data-catalogue="emp_calls">
+  <div class="erp-card" style="background: #fff; border: 1px solid #E2E8F0; border-radius: 12px; overflow-x: auto; padding: 0;">
+    <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 13px;">
+      <thead>
+        <tr style="background: #F8FAFC; border-bottom: 1px solid #E2E8F0; font-size: 11px; text-transform: uppercase; color: #64748B; font-weight: 700;">
+          <th style="padding: 12px 16px;">Date & Time</th>
+          <th style="padding: 12px 16px;">Contact Person</th>
+          <th style="padding: 12px 16px;">Type</th>
+          <th style="padding: 12px 16px;">Phone / Email</th>
+          <th style="padding: 12px 16px;">Outcome</th>
+          <th style="padding: 12px 16px;">Notes & Discussion</th>
+          <th style="padding: 12px 16px;">Next Follow-Up</th>
+          <th style="padding: 12px 16px; text-align: right;">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (reports && reports.length > 0) { %>
+          <% reports.forEach(r => { %>
+            <tr style="border-bottom: 1px solid #E2E8F0;" id="call-row-<%= r.id %>"
+                data-search="<%= (r.contact_name + ' ' + (r.contact_phone || '') + ' ' + (r.contact_email || '') + ' ' + (r.notes || '') + ' ' + (r.contact_type || '')).toLowerCase() %>"
+                data-status="<%= (r.outcome || '').toLowerCase() %>"
+                data-category="<%= (r.contact_type || '').toLowerCase() %>"
+                data-name="<%= (r.contact_name || '').toLowerCase() %>"
+                data-newest="<%= r.id %>">
+              <td style="padding: 12px 16px;">
+                <div style="font-weight: 600; color: #000; font-size: 13px;">
+                  <%= new Date(r.call_date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) %>
+                </div>
+                <div style="font-size: 11px; color: #64748B;">
+                  <%= new Date(r.call_date).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }) %>
+                </div>
+              </td>
+              <td style="padding: 12px 16px;">
+                <div style="font-weight: 700; color: #000; font-size: 13px;"><%= r.contact_name %></div>
+              </td>
+              <td style="padding: 12px 16px;">
+                <span style="display: inline-block; padding: 2px 7px; font-size: 11px; font-weight: 600; background: #F1F5F9; border-radius: 4px; text-transform: uppercase;">
+                  <%= r.contact_type %>
+                </span>
+              </td>
+              <td style="padding: 12px 16px;">
+                <div style="font-size: 12px; font-weight: 600; color: #000;">
+                  <% if (r.contact_phone) { %>
+                    <a href="tel:<%= r.contact_phone %>" style="color: inherit; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;">
+                      <i data-lucide="phone" style="width: 12px; height: 12px;"></i> <%= r.contact_phone %>
+                    </a>
+                  <% } else { %>
+                    —
+                  <% } %>
+                </div>
+                <div style="font-size: 11px; color: #64748B;"><%= r.contact_email || '' %></div>
+              </td>
+              <td style="padding: 12px 16px;">
+                <% if (r.outcome === 'converted') { %>
+                  <span style="padding: 3px 8px; border-radius: 99px; font-size: 11px; font-weight: 700; background: #DCFCE7; color: #15803D;">Converted</span>
+                <% } else if (r.outcome === 'interested') { %>
+                  <span style="padding: 3px 8px; border-radius: 99px; font-size: 11px; font-weight: 700; background: #000000; color: #FFFFFF;">Interested</span>
+                <% } else if (r.outcome === 'call_back') { %>
+                  <span style="padding: 3px 8px; border-radius: 99px; font-size: 11px; font-weight: 700; background: #FEF3C7; color: #B45309;">Call Back</span>
+                <% } else if (r.outcome === 'not_reachable') { %>
+                  <span style="padding: 3px 8px; border-radius: 99px; font-size: 11px; font-weight: 700; background: #F1F5F9; color: #475569;">Not Reachable</span>
+                <% } else { %>
+                  <span style="padding: 3px 8px; border-radius: 99px; font-size: 11px; font-weight: 700; background: #FEE2E2; color: #B91C1C;">Not Interested</span>
+                <% } %>
+              </td>
+              <td style="padding: 12px 16px; max-width: 260px;">
+                <div style="font-size: 12px; color: #334155; line-height: 1.4;">
+                  <%= r.notes || '—' %>
+                </div>
+              </td>
+              <td style="padding: 12px 16px;">
+                <% if (r.next_followup) { %>
+                  <div style="font-size: 12px; font-weight: 600; color: #D97706;">
+                    <i data-lucide="calendar" style="width: 12px; height: 12px; display: inline-block; vertical-align: middle;"></i>
+                    <%= new Date(r.next_followup).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' }) %>
+                  </div>
+                <% } else { %>
+                  <span style="color: #94A3B8; font-size: 12px;">None</span>
+                <% } %>
+              </td>
+              <td style="padding: 12px 16px; text-align: right;">
+                <button type="button" onclick="deleteCallReport(<%= r.id %>)" class="erp-btn" style="padding: 3px 8px; font-size: 11px; border: 1px solid #FECACA; background: #FEF2F2; color: #DC2626; border-radius: 6px; cursor: pointer;" title="Delete Log">
+                  Delete
+                </button>
+              </td>
+            </tr>
+          <% }); %>
+        <% } %>
+        <tr class="empty-state-row" style="display: <%= (!reports || reports.length === 0) ? '' : 'none' %>;">
+          <td colspan="8" style="padding: 32px; text-align: center; color: #64748B;">No call reports matching current filters.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- 2. KANBAN / GRID VIEW (Material 3 Cards) -->
+<div class="catalogue-kanban-view" data-catalogue="emp_calls">
+  <% if (reports && reports.length > 0) { %>
+    <% reports.forEach(r => { %>
+      <div class="kanban-item-card"
+           data-search="<%= (r.contact_name + ' ' + (r.contact_phone || '') + ' ' + (r.contact_email || '') + ' ' + (r.notes || '') + ' ' + (r.contact_type || '')).toLowerCase() %>"
+           data-status="<%= (r.outcome || '').toLowerCase() %>"
+           data-category="<%= (r.contact_type || '').toLowerCase() %>"
+           data-name="<%= (r.contact_name || '').toLowerCase() %>"
+           data-newest="<%= r.id %>">
+        <div class="kanban-card-top">
+          <div>
+            <div class="kanban-card-title"><%= r.contact_name %></div>
+            <div class="kanban-card-subtitle">
+              <i data-lucide="clock" style="width: 11px; height: 11px; display: inline-block;"></i>
+              <%= new Date(r.call_date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' }) %> &bull; <%= new Date(r.call_date).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }) %>
+            </div>
+          </div>
+          <% if (r.outcome === 'converted') { %>
+            <span style="font-size: 10px; font-weight: 700; padding: 2px 7px; background: #DCFCE7; color: #15803D; border-radius: 4px; text-transform: uppercase;">Converted</span>
+          <% } else if (r.outcome === 'interested') { %>
+            <span style="font-size: 10px; font-weight: 700; padding: 2px 7px; background: #000000; color: #FFFFFF; border-radius: 4px; text-transform: uppercase;">Interested</span>
+          <% } else if (r.outcome === 'call_back') { %>
+            <span style="font-size: 10px; font-weight: 700; padding: 2px 7px; background: #FEF3C7; color: #B45309; border-radius: 4px; text-transform: uppercase;">Call Back</span>
+          <% } else if (r.outcome === 'not_reachable') { %>
+            <span style="font-size: 10px; font-weight: 700; padding: 2px 7px; background: #F1F5F9; color: #475569; border-radius: 4px; text-transform: uppercase;">Unreachable</span>
+          <% } else { %>
+            <span style="font-size: 10px; font-weight: 700; padding: 2px 7px; background: #FEE2E2; color: #B91C1C; border-radius: 4px; text-transform: uppercase;">Not Interested</span>
+          <% } %>
+        </div>
+
+        <div class="kanban-card-body">
+          <div class="kanban-chip-row">
+            <span class="kanban-chip">
+              <i data-lucide="tag"></i> <%= r.contact_type %>
+            </span>
+            <% if (r.next_followup) { %>
+              <span class="kanban-chip" style="background: #FEF3C7; color: #B45309; font-weight: 600;">
+                <i data-lucide="calendar"></i> Next: <%= new Date(r.next_followup).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' }) %>
+              </span>
+            <% } %>
+          </div>
+
+          <% if (r.notes) { %>
+            <div style="font-size: 12px; color: #334155; line-height: 1.4; padding: 8px 10px; background: #F8FAFC; border-radius: 8px; border: 1px solid #F1F5F9;">
+              <%= r.notes %>
+            </div>
+          <% } %>
+        </div>
+
+        <div class="kanban-card-footer">
+          <div style="display: flex; gap: 8px; align-items: center;">
+            <% if (r.contact_phone) { %>
+              <a href="tel:<%= r.contact_phone %>" class="erp-btn erp-btn-secondary" style="padding: 4px 10px; font-size: 11px; text-decoration: none; border-radius: 6px; display: inline-flex; align-items: center; gap: 4px; border: 1px solid #CBD5E1; color: #000;">
+                <i data-lucide="phone" style="width: 11px; height: 11px;"></i> Call
+              </a>
+              <a href="https://wa.me/<%= r.contact_phone.replace(/[^0-9]/g, '') %>" target="_blank" class="erp-btn erp-btn-secondary" style="padding: 4px 10px; font-size: 11px; text-decoration: none; border-radius: 6px; display: inline-flex; align-items: center; gap: 4px; border: 1px solid #CBD5E1; color: #15803D;">
+                <i data-lucide="message-square" style="width: 11px; height: 11px;"></i> WhatsApp
+              </a>
+            <% } %>
+          </div>
+          <button type="button" onclick="deleteCallReport(<%= r.id %>)" class="erp-btn" style="padding: 4px 8px; font-size: 11px; border: 1px solid #FECACA; background: #FEF2F2; color: #DC2626; border-radius: 6px; cursor: pointer;">
+            Delete
+          </button>
+        </div>
+      </div>
+    <% }) %>
+  <% } %>
+  <div class="kanban-empty-state" style="display: <%= (!reports || reports.length === 0) ? 'block' : 'none' %>;">
+    <i data-lucide="phone-missed" style="width: 36px; height: 36px; margin: 0 auto 10px; color: #94A3B8;"></i>
+    <div style="font-weight: 700; font-size: 15px; color: #000;">No Call Reports Found</div>
+    <div style="font-size: 12px; color: #64748B; margin-top: 4px;">Click "Log New Call" to record student or corporate outreach.</div>
+  </div>
+</div>
+
+<!-- Modal: Log Call Report -->
+<div id="logCallModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 9999; align-items: center; justify-content: center; padding: 16px;">
+  <div style="background: #FFFFFF; border-radius: 12px; max-width: 540px; width: 100%; max-height: 90vh; overflow-y: auto; padding: 24px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);">
+    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #E2E8F0; padding-bottom: 12px; margin-bottom: 16px;">
+      <h3 style="margin: 0; font-size: 17px; font-weight: 700; color: #000;">Log Call / Outreach Report</h3>
+      <button type="button" onclick="closeLogCallModal()" style="border: none; background: transparent; font-size: 20px; cursor: pointer; color: #64748B;">&times;</button>
+    </div>
+
+    <form id="callReportForm" onsubmit="handleCallSubmit(event)">
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+        <div>
+          <label style="display: block; font-size: 11px; font-weight: 700; color: #000; margin-bottom: 4px;">Contact Type *</label>
+          <select id="callContactType" onchange="handleContactTypeChange()" required style="width: 100%; padding: 8px; border: 1px solid #CBD5E1; border-radius: 6px; background: #fff;">
+            <option value="student">Student</option>
+            <option value="client">Client</option>
+            <option value="lead">Lead / Inquirer</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div>
+          <label style="display: block; font-size: 11px; font-weight: 700; color: #000; margin-bottom: 4px;">Select Existing Contact</label>
+          <select id="contactPicker" onchange="fillContactFromPicker()" style="width: 100%; padding: 8px; border: 1px solid #CBD5E1; border-radius: 6px; background: #fff;">
+            <option value="">-- Choose from Directory --</option>
+            <% if (students && students.length > 0) { %>
+              <optgroup label="Students" id="studentOptGroup">
+                <% students.forEach(s => { %>
+                  <option value="student_<%= s.id %>" data-type="student" data-id="<%= s.id %>" data-name="<%= s.name %>" data-phone="<%= s.phone %>" data-email="<%= s.email %>"><%= s.name %> (<%= s.phone || 'No phone' %>)</option>
+                <% }); %>
+              </optgroup>
+            <% } %>
+            <% if (clients && clients.length > 0) { %>
+              <optgroup label="Clients" id="clientOptGroup">
+                <% clients.forEach(c => { %>
+                  <option value="client_<%= c.id %>" data-type="client" data-id="<%= c.id %>" data-name="<%= c.name %> - <%= c.contact_person %>" data-phone="<%= c.phone %>" data-email="<%= c.email %>"><%= c.name %> (<%= c.contact_person %>)</option>
+                <% }); %>
+              </optgroup>
+            <% } %>
+          </select>
+        </div>
+      </div>
+
+      <input type="hidden" id="selectedStudentId">
+      <input type="hidden" id="selectedClientId">
+
+      <div style="margin-bottom: 12px;">
+        <label style="display: block; font-size: 11px; font-weight: 700; color: #000; margin-bottom: 4px;">Contact Name *</label>
+        <input type="text" id="callContactName" required placeholder="Person / Representative name" style="width: 100%; padding: 8px; border: 1px solid #CBD5E1; border-radius: 6px;">
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+        <div>
+          <label style="display: block; font-size: 11px; font-weight: 700; color: #000; margin-bottom: 4px;">Phone Number</label>
+          <input type="text" id="callContactPhone" placeholder="Mobile / WhatsApp" style="width: 100%; padding: 8px; border: 1px solid #CBD5E1; border-radius: 6px;">
+        </div>
+        <div>
+          <label style="display: block; font-size: 11px; font-weight: 700; color: #000; margin-bottom: 4px;">Email Address</label>
+          <input type="email" id="callContactEmail" placeholder="Email" style="width: 100%; padding: 8px; border: 1px solid #CBD5E1; border-radius: 6px;">
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+        <div>
+          <label style="display: block; font-size: 11px; font-weight: 700; color: #000; margin-bottom: 4px;">Call Outcome *</label>
+          <select id="callOutcome" required style="width: 100%; padding: 8px; border: 1px solid #CBD5E1; border-radius: 6px; background: #fff;">
+            <option value="interested">Interested</option>
+            <option value="converted">Converted / Enrolled</option>
+            <option value="call_back">Call Back / Scheduled</option>
+            <option value="not_reachable">Not Reachable / Busy</option>
+            <option value="not_interested">Not Interested</option>
+          </select>
+        </div>
+        <div>
+          <label style="display: block; font-size: 11px; font-weight: 700; color: #000; margin-bottom: 4px;">Next Follow-Up Date</label>
+          <input type="date" id="callNextFollowup" style="width: 100%; padding: 8px; border: 1px solid #CBD5E1; border-radius: 6px;">
+        </div>
+      </div>
+
+      <div style="margin-bottom: 20px;">
+        <label style="display: block; font-size: 11px; font-weight: 700; color: #000; margin-bottom: 4px;">Discussion Notes & Remarks</label>
+        <textarea id="callNotes" rows="3" placeholder="Key talking points, course preferences, pricing discussed, next actions..." style="width: 100%; padding: 8px; border: 1px solid #CBD5E1; border-radius: 6px; resize: vertical;"></textarea>
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; gap: 10px; border-top: 1px solid #E2E8F0; padding-top: 16px;">
+        <button type="button" onclick="closeLogCallModal()" class="erp-btn erp-btn-secondary" style="padding: 8px 16px; border: 1px solid #CBD5E1; color: #000; cursor: pointer;">Cancel</button>
+        <button type="submit" id="saveCallBtn" class="erp-btn erp-btn-primary" style="padding: 8px 20px; background: #000; color: #fff; border-radius: 6px; font-weight: 600; cursor: pointer;">Save & Sync with Admin</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  function openLogCallModal() {
+    document.getElementById('callReportForm').reset();
+    document.getElementById('selectedStudentId').value = '';
+    document.getElementById('selectedClientId').value = '';
+    document.getElementById('logCallModal').style.display = 'flex';
+  }
+
+  function closeLogCallModal() {
+    document.getElementById('logCallModal').style.display = 'none';
+  }
+
+  function handleContactTypeChange() {
+    // optional reset of picker
+  }
+
+  function fillContactFromPicker() {
+    const sel = document.getElementById('contactPicker');
+    const opt = sel.options[sel.selectedIndex];
+    if (!opt || !opt.value) return;
+
+    const type = opt.getAttribute('data-type');
+    const id = opt.getAttribute('data-id');
+    const name = opt.getAttribute('data-name');
+    const phone = opt.getAttribute('data-phone');
+    const email = opt.getAttribute('data-email');
+
+    document.getElementById('callContactType').value = type;
+    document.getElementById('callContactName').value = name || '';
+    document.getElementById('callContactPhone').value = phone || '';
+    document.getElementById('callContactEmail').value = email || '';
+
+    if (type === 'student') {
+      document.getElementById('selectedStudentId').value = id;
+      document.getElementById('selectedClientId').value = '';
+    } else if (type === 'client') {
+      document.getElementById('selectedClientId').value = id;
+      document.getElementById('selectedStudentId').value = '';
+    }
+  }
+
+  async function handleCallSubmit(e) {
+    e.preventDefault();
+    const btn = document.getElementById('saveCallBtn');
+    btn.disabled = true;
+
+    const payload = {
+      contact_type: document.getElementById('callContactType').value,
+      contact_name: document.getElementById('callContactName').value.trim(),
+      contact_phone: document.getElementById('callContactPhone').value.trim(),
+      contact_email: document.getElementById('callContactEmail').value.trim(),
+      student_id: document.getElementById('selectedStudentId').value || null,
+      client_id: document.getElementById('selectedClientId').value || null,
+      outcome: document.getElementById('callOutcome').value,
+      next_followup: document.getElementById('callNextFollowup').value || null,
+      notes: document.getElementById('callNotes').value.trim()
+    };
+
+    try {
+      const res = await fetch('/api/call-reports', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Failed to log call');
+
+      closeLogCallModal();
+      window.location.reload();
+    } catch (err) {
+      alert(err.message);
+    } finally {
+      btn.disabled = false;
+    }
+  }
+
+  async function deleteCallReport(id) {
+    if (!confirm('Are you sure you want to delete this call report?')) return;
+    try {
+      const res = await fetch(`/api/call-reports/${id}`, { method: 'DELETE' });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Failed to delete');
+      window.location.reload();
+    } catch (err) {
+      alert(err.message);
+    }
+  }
+</script>

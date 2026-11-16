@@ -1,0 +1,409 @@
+<div class="erp-h1" style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; color: #000000;">
+  <div>
+    <div style="font-size: 24px; font-weight: 750;">Course Reviews & Rating</div>
+    <div style="font-size: 13px; color: #64748B; font-weight: 500; margin-top: 2px;">Submit feedback on enrolled curricula and track administrative acknowledgement</div>
+  </div>
+  <div style="font-size: 13px; color: #64748B; font-weight: 500; display: inline-flex; align-items: center; gap: 6px;">
+    <i data-lucide="star" style="width: 15px; height: 15px;"></i>
+    <span>Student Feedback Portal</span>
+  </div>
+</div>
+
+<!-- Enrolled Courses Ready for Review -->
+<div class="erp-card" style="padding: 0; background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 12px; overflow: hidden; margin-bottom: 24px;">
+  <div style="padding: 18px 24px; border-bottom: 1px solid #E2E8F0;">
+    <h3 style="margin: 0; font-size: 16px; font-weight: 700; color: #000;">My Enrolled Courses</h3>
+    <p style="margin: 2px 0 0; font-size: 12px; color: #64748B;">You can submit one official review and rating per enrolled course cohort.</p>
+  </div>
+
+  <div class="erp-table-container" style="border: none; border-radius: 0; margin-bottom: 0;">
+    <table class="erp-table">
+      <thead>
+        <tr style="background: #F8FAFC; border-bottom: 1px solid #E2E8F0; font-size: 11px; text-transform: uppercase; color: #64748B; font-weight: 700;">
+          <th style="padding: 12px 16px; color: #000;">Program / Course</th>
+          <th style="padding: 12px 16px; color: #000;">Cohort Batch</th>
+          <th style="padding: 12px 16px; color: #000;">Review Status</th>
+          <th style="padding: 12px 16px; text-align: right; color: #000;">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (enrolledCourses && enrolledCourses.length > 0) { %>
+          <% enrolledCourses.forEach(c => { 
+            const existingRev = myReviews ? myReviews.find(r => r.course_id === c.id) : null;
+          %>
+            <tr style="border-bottom: 1px solid #E2E8F0;">
+              <td style="padding: 12px 16px;">
+                <div style="font-weight: 700; color: #000; font-size: 14px;"><%= c.title %></div>
+              </td>
+              <td style="padding: 12px 16px;">
+                <div style="font-size: 12px; color: #64748B;"><%= c.batch_name || 'Standard Batch' %></div>
+              </td>
+              <td style="padding: 12px 16px;">
+                <% if (existingRev) { %>
+                  <span style="padding: 3px 8px; border-radius: 99px; font-size: 11px; font-weight: 700; background: #DCFCE7; color: #15803D; display: inline-flex; align-items: center; gap: 4px;">
+                    <i data-lucide="check" style="width: 12px; height: 12px;"></i> Submitted (<%= existingRev.rating %>★)
+                  </span>
+                <% } else { %>
+                  <span style="padding: 3px 8px; border-radius: 99px; font-size: 11px; font-weight: 700; background: #FEF3C7; color: #B45309;">
+                    Awaiting Review
+                  </span>
+                <% } %>
+              </td>
+              <td style="padding: 12px 16px; text-align: right;">
+                <% if (!existingRev) { %>
+                  <button type="button" onclick="openCourseReviewModalById('<%= c.id %>')" class="erp-btn erp-btn-primary" style="padding: 6px 14px; font-size: 12px; font-weight: 600; background: #000; color: #fff; border-radius: 6px; cursor: pointer; border: none;">
+                    Write Review &rarr;
+                  </button>
+                <% } else { %>
+                  <span style="font-size: 12px; color: #64748B; font-weight: 500;">Review Logged</span>
+                <% } %>
+              </td>
+            </tr>
+          <% }); %>
+        <% } else { %>
+          <tr>
+            <td colspan="4" style="text-align: center; padding: 32px; color: #64748B;">
+              No enrolled courses available to review.
+            </td>
+          </tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Interactive Catalogue Filter Toolbar (Apple + Google Material 3) for Submitted Feedback -->
+<!-- Summary Metric Cards -->
+<%
+  const totalEnrolled = enrolledCourses ? enrolledCourses.length : 0;
+  const reviewsCount = myReviews ? myReviews.length : 0;
+  const studentAvg = myReviews && myReviews.length > 0 ? (myReviews.reduce((sum, r) => sum + Number(r.rating || 5), 0) / myReviews.length).toFixed(1) : '5.0';
+  const repliesCount = myReviews ? myReviews.filter(r => r.admin_reply).length : 0;
+%>
+<div class="erp-grid-4" style="margin-bottom: 24px;">
+  <div class="erp-card" style="background: #FFFFFF; border: 1px solid #E2E8F0; padding: 20px;">
+    <div class="erp-card-header">
+      <div class="erp-card-icon" style="background: #000000; color: #FFFFFF;">
+        <i data-lucide="book-open"></i>
+      </div>
+      <div class="erp-card-title" style="color: #64748B;">Enrolled Courses</div>
+    </div>
+    <div class="erp-card-value" style="color: #000000;"><%= totalEnrolled %></div>
+    <div class="erp-p" style="margin-top: 6px; color: #64748B; font-size: 12px;">Cohorts available to review</div>
+  </div>
+
+  <div class="erp-card" style="background: #FFFFFF; border: 1px solid #E2E8F0; padding: 20px;">
+    <div class="erp-card-header">
+      <div class="erp-card-icon" style="background: #000000; color: #FFFFFF;">
+        <i data-lucide="message-square-check"></i>
+      </div>
+      <div class="erp-card-title" style="color: #64748B;">Submitted Reviews</div>
+    </div>
+    <div class="erp-card-value" style="color: #000000;"><%= reviewsCount %></div>
+    <div class="erp-p" style="margin-top: 6px; color: #16A34A; font-weight: 600; font-size: 12px;">Shared feedback</div>
+  </div>
+
+  <div class="erp-card" style="background: #FFFFFF; border: 1px solid #E2E8F0; padding: 20px;">
+    <div class="erp-card-header">
+      <div class="erp-card-icon" style="background: #000000; color: #FFFFFF;">
+        <i data-lucide="star"></i>
+      </div>
+      <div class="erp-card-title" style="color: #64748B;">Average Rating</div>
+    </div>
+    <div class="erp-card-value" style="color: #000000;"><%= studentAvg %> ★</div>
+    <div class="erp-p" style="margin-top: 6px; color: #EAB308; font-weight: 600; font-size: 12px;">Your submitted average</div>
+  </div>
+
+  <div class="erp-card" style="background: #FFFFFF; border: 1px solid #E2E8F0; padding: 20px;">
+    <div class="erp-card-header">
+      <div class="erp-card-icon" style="background: #000000; color: #FFFFFF;">
+        <i data-lucide="message-circle"></i>
+      </div>
+      <div class="erp-card-title" style="color: #64748B;">Trainer Responses</div>
+    </div>
+    <div class="erp-card-value" style="color: #000000;"><%= repliesCount %></div>
+    <div class="erp-p" style="margin-top: 6px; color: #2563EB; font-weight: 600; font-size: 12px;">Official replies received</div>
+  </div>
+</div>
+<div class="catalogue-toolbar" data-catalogue="st_reviews">
+  <div class="catalogue-filters-group">
+    <!-- Search Input -->
+    <div class="catalogue-search-wrap">
+      <i data-lucide="search"></i>
+      <input type="text" class="catalogue-search-input" placeholder="Search submitted feedback, reply...">
+    </div>
+
+    <!-- Rating Filter -->
+    <select class="catalogue-select" data-filter="rating" title="Filter by Rating">
+      <option value="all">All Ratings</option>
+      <option value="5">⭐⭐⭐⭐⭐ (5 Stars)</option>
+      <option value="4">⭐⭐⭐⭐ (4 Stars)</option>
+      <option value="3">⭐⭐⭐ (3 Stars)</option>
+      <option value="2">⭐⭐ (2 Stars)</option>
+      <option value="1">⭐ (1 Star)</option>
+    </select>
+
+    <!-- Status Filter -->
+    <select class="catalogue-select" data-filter="status" title="Filter by Status">
+      <option value="all">All Statuses</option>
+      <option value="acknowledged">Acknowledged</option>
+      <option value="pending">Pending</option>
+    </select>
+
+    <!-- Sort Dropdown -->
+    <select class="catalogue-select" data-filter="sort" title="Sort reviews">
+      <option value="newest">Newest First</option>
+      <option value="rating_desc">Highest Rating</option>
+      <option value="rating_asc">Lowest Rating</option>
+    </select>
+
+    <!-- Reset Button -->
+    <button type="button" class="catalogue-reset-btn" title="Reset all filters">
+      <i data-lucide="rotate-ccw" style="width: 13px; height: 13px;"></i>
+      <span>Reset</span>
+    </button>
+
+    <!-- Result Counter -->
+    <span class="catalogue-count-badge">Showing <%= myReviews ? myReviews.length : 0 %> reviews</span>
+  </div>
+
+  <!-- Segmented View Switcher: List vs Kanban/Grid -->
+  <div class="catalogue-view-switcher">
+    <button type="button" class="view-btn active" data-view="list" title="Table List View">
+      <i data-lucide="list"></i>
+      <span>List</span>
+    </button>
+    <button type="button" class="view-btn" data-view="kanban" title="Kanban Card Grid View">
+      <i data-lucide="layout-grid"></i>
+      <span>Kanban</span>
+    </button>
+  </div>
+</div>
+
+<!-- 1. LIST VIEW (Data Table) -->
+<div class="catalogue-list-view" data-catalogue="st_reviews">
+  <div class="erp-card" style="background: #fff; border: 1px solid #E2E8F0; border-radius: 12px; overflow-x: auto; padding: 0;">
+    <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 13px;">
+      <thead>
+        <tr style="background: #F8FAFC; border-bottom: 1px solid #E2E8F0; font-size: 11px; text-transform: uppercase; color: #64748B; font-weight: 700;">
+          <th style="padding: 12px 16px;">Date & Course</th>
+          <th style="padding: 12px 16px;">Rating</th>
+          <th style="padding: 12px 16px;">My Feedback</th>
+          <th style="padding: 12px 16px;">Admin Status</th>
+          <th style="padding: 12px 16px;">Admin Reply</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (myReviews && myReviews.length > 0) { %>
+          <% myReviews.forEach(r => { 
+            const stat = (r.status || 'pending').toLowerCase();
+          %>
+            <tr style="border-bottom: 1px solid #E2E8F0;"
+                data-search="<%= ((r.course_title || '') + ' ' + (r.review_text || '') + ' ' + (r.admin_reply || '') + ' ' + stat).toLowerCase() %>"
+                data-rating="<%= r.rating %>"
+                data-status="<%= stat %>"
+                data-newest="<%= r.id %>">
+              <td style="padding: 12px 16px;">
+                <div style="font-weight: 700; color: #000; font-size: 13px;"><%= r.course_title || 'General Course' %></div>
+                <div style="font-size: 11px; color: #64748B;">
+                  <%= new Date(r.created_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) %>
+                </div>
+              </td>
+              <td style="padding: 12px 16px;">
+                <div style="color: #EAB308; font-weight: 700; font-size: 13px; display: inline-flex; align-items: center; gap: 3px;">
+                  <% for (let i = 1; i <= 5; i++) { %>
+                    <i data-lucide="star" style="width: 13px; height: 13px; fill: <%= i <= r.rating ? '#EAB308' : 'none' %>; stroke: #EAB308;"></i>
+                  <% } %>
+                  <span style="font-size: 12px; color: #000; margin-left: 4px;"><%= r.rating %>/5</span>
+                </div>
+              </td>
+              <td style="padding: 12px 16px; max-width: 300px;">
+                <div style="font-size: 13px; color: #334155; line-height: 1.4;"><%= r.review_text %></div>
+              </td>
+              <td style="padding: 12px 16px;">
+                <% if (r.status === 'acknowledged') { %>
+                  <span style="padding: 3px 8px; border-radius: 99px; font-size: 11px; font-weight: 700; background: #DCFCE7; color: #15803D; display: inline-flex; align-items: center; gap: 4px;">
+                    <i data-lucide="shield-check" style="width: 12px; height: 12px;"></i> Acknowledged
+                  </span>
+                  <div style="font-size: 10px; color: #64748B; margin-top: 2px;">
+                    by <%= r.acknowledged_by_name || 'Admin' %> <%= r.acknowledged_at ? 'on ' + new Date(r.acknowledged_at).toLocaleDateString('en-IN') : '' %>
+                  </div>
+                <% } else { %>
+                  <span style="padding: 3px 8px; border-radius: 99px; font-size: 11px; font-weight: 700; background: #FEF3C7; color: #B45309;">
+                    Pending Staff Review
+                  </span>
+                <% } %>
+              </td>
+              <td style="padding: 12px 16px;">
+                <% if (r.admin_reply) { %>
+                  <div style="font-size: 12px; color: #000; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 6px; padding: 6px 10px; font-weight: 500;">
+                    <%= r.admin_reply %>
+                  </div>
+                <% } else { %>
+                  <span style="color: #94A3B8; font-size: 12px;">No reply yet</span>
+                <% } %>
+              </td>
+            </tr>
+          <% }); %>
+        <% } %>
+        <tr class="empty-state-row" style="display: <%= (!myReviews || myReviews.length === 0) ? '' : 'none' %>;">
+          <td colspan="5" style="padding: 32px; text-align: center; color: #64748B;">No course reviews matching current filters.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- 2. KANBAN / GRID VIEW (Material 3 Cards) -->
+<div class="catalogue-kanban-view" data-catalogue="st_reviews">
+  <% if (myReviews && myReviews.length > 0) { %>
+    <% myReviews.forEach(r => { 
+      const stat = (r.status || 'pending').toLowerCase();
+    %>
+      <div class="kanban-item-card"
+           data-search="<%= ((r.course_title || '') + ' ' + (r.review_text || '') + ' ' + (r.admin_reply || '') + ' ' + stat).toLowerCase() %>"
+           data-rating="<%= r.rating %>"
+           data-status="<%= stat %>"
+           data-newest="<%= r.id %>">
+        <div class="kanban-card-top">
+          <div>
+            <div class="kanban-card-title"><%= r.course_title || 'General Course' %></div>
+            <div class="kanban-card-subtitle">
+              <%= new Date(r.created_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) %>
+            </div>
+          </div>
+          <% if (r.status === 'acknowledged') { %>
+            <span style="font-size: 10px; font-weight: 700; padding: 2px 7px; background: #DCFCE7; color: #15803D; border-radius: 4px; text-transform: uppercase;">Acknowledged</span>
+          <% } else { %>
+            <span style="font-size: 10px; font-weight: 700; padding: 2px 7px; background: #FEF3C7; color: #B45309; border-radius: 4px; text-transform: uppercase;">Pending</span>
+          <% } %>
+        </div>
+
+        <div class="kanban-card-body">
+          <div style="display: flex; align-items: center; gap: 3px; color: #EAB308; margin-bottom: 8px;">
+            <% for (let i = 1; i <= 5; i++) { %>
+              <i data-lucide="star" style="width: 13px; height: 13px; fill: <%= i <= r.rating ? '#EAB308' : 'none' %>; stroke: #EAB308;"></i>
+            <% } %>
+            <span style="font-size: 12px; font-weight: 700; color: #000; margin-left: 4px;"><%= r.rating %>/5</span>
+          </div>
+
+          <div style="font-size: 13px; color: #334155; line-height: 1.4;">
+            "<%= r.review_text %>"
+          </div>
+
+          <% if (r.admin_reply) { %>
+            <div style="font-size: 11.5px; color: #000; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; padding: 8px 10px; margin-top: 8px;">
+              <span style="font-weight: 700; color: #64748B; font-size: 10px; text-transform: uppercase; display: block; margin-bottom: 2px;">Admin Reply:</span>
+              <%= r.admin_reply %>
+            </div>
+          <% } %>
+        </div>
+
+        <div class="kanban-card-footer">
+          <% if (r.status === 'acknowledged' && r.acknowledged_by_name) { %>
+            <span style="font-size: 11px; font-weight: 600; color: #15803D;">Ack by <%= r.acknowledged_by_name %></span>
+          <% } else { %>
+            <span style="font-size: 11px; color: #64748B;">Pending Staff Review</span>
+          <% } %>
+        </div>
+      </div>
+    <% }); %>
+  <% } %>
+  <div class="kanban-empty-state" style="display: <%= (!myReviews || myReviews.length === 0) ? 'block' : 'none' %>;">
+    <i data-lucide="message-square" style="width: 36px; height: 36px; margin: 0 auto 10px; color: #94A3B8;"></i>
+    <div style="font-weight: 700; font-size: 15px; color: #000;">No Course Reviews Found</div>
+    <div style="font-size: 12px; color: #64748B; margin-top: 4px;">Submit a review for your enrolled courses above.</div>
+  </div>
+</div>
+
+<!-- Review Submission Modal -->
+<div id="courseReviewModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 9999; align-items: center; justify-content: center; padding: 16px;">
+  <div style="background: #FFFFFF; border-radius: 12px; max-width: 480px; width: 100%; padding: 24px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);">
+    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #E2E8F0; padding-bottom: 12px; margin-bottom: 16px;">
+      <h3 style="margin: 0; font-size: 17px; font-weight: 700; color: #000;" id="modalReviewHeading">Submit Course Review</h3>
+      <button type="button" onclick="closeCourseReviewModal()" style="border: none; background: transparent; font-size: 20px; cursor: pointer; color: #64748B;">&times;</button>
+    </div>
+
+    <form id="courseReviewForm" onsubmit="handleCourseReviewSubmit(event)">
+      <input type="hidden" id="reviewCourseId">
+
+      <div style="margin-bottom: 16px;">
+        <label style="display: block; font-size: 12px; font-weight: 700; color: #000; margin-bottom: 6px;">Course</label>
+        <div id="reviewCourseDisplay" style="padding: 10px; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 6px; font-size: 13px; font-weight: 600; color: #000;">
+          Selected Course
+        </div>
+      </div>
+
+      <div style="margin-bottom: 16px;">
+        <label style="display: block; font-size: 12px; font-weight: 700; color: #000; margin-bottom: 6px;">Your Overall Rating (1 - 5 Stars) *</label>
+        <select id="reviewRatingSelect" required style="width: 100%; padding: 10px; border: 1px solid #CBD5E1; border-radius: 6px; font-size: 14px; background: #fff;">
+          <option value="5">⭐⭐⭐⭐⭐ 5 Stars - Exceptional Program</option>
+          <option value="4">⭐⭐⭐⭐ 4 Stars - Very Good Experience</option>
+          <option value="3">⭐⭐⭐ 3 Stars - Met Expectations</option>
+          <option value="2">⭐⭐ 2 Stars - Needs Improvement</option>
+          <option value="1">⭐ 1 Star - Unsatisfactory</option>
+        </select>
+      </div>
+
+      <div style="margin-bottom: 20px;">
+        <label style="display: block; font-size: 12px; font-weight: 700; color: #000; margin-bottom: 6px;">Review & Learning Feedback *</label>
+        <textarea id="reviewTextContent" required rows="4" placeholder="Share your experience regarding curriculum quality, mentorship, hands-on projects, and overall outcomes..." style="width: 100%; padding: 10px; border: 1px solid #CBD5E1; border-radius: 6px; resize: vertical; font-size: 13px;"></textarea>
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; gap: 10px; border-top: 1px solid #E2E8F0; padding-top: 16px;">
+        <button type="button" onclick="closeCourseReviewModal()" class="erp-btn erp-btn-secondary" style="padding: 8px 16px; border: 1px solid #CBD5E1; color: #000; cursor: pointer;">Cancel</button>
+        <button type="submit" id="saveCourseReviewBtn" class="erp-btn erp-btn-primary" style="padding: 8px 20px; background: #000; color: #fff; border-radius: 6px; font-weight: 600; cursor: pointer; border: none;">Submit Review</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  const enrolledCoursesMap = <%- JSON.stringify((enrolledCourses || []).reduce((acc, c) => ({ ...acc, [c.id]: c }), {})) %>;
+
+  function openCourseReviewModalById(id) {
+    const c = enrolledCoursesMap[id];
+    if (!c) return console.warn('Course not found:', id);
+    openCourseReviewModal(c.id, c.title);
+  }
+
+  function openCourseReviewModal(courseId, courseTitle) {
+    document.getElementById('courseReviewForm').reset();
+    document.getElementById('reviewCourseId').value = courseId;
+    document.getElementById('reviewCourseDisplay').textContent = courseTitle;
+    document.getElementById('courseReviewModal').style.display = 'flex';
+  }
+
+  function closeCourseReviewModal() {
+    document.getElementById('courseReviewModal').style.display = 'none';
+  }
+
+  async function handleCourseReviewSubmit(e) {
+    e.preventDefault();
+    const btn = document.getElementById('saveCourseReviewBtn');
+    btn.disabled = true;
+
+    const payload = {
+      course_id: parseInt(document.getElementById('reviewCourseId').value, 10),
+      rating: parseInt(document.getElementById('reviewRatingSelect').value, 10),
+      review_text: document.getElementById('reviewTextContent').value.trim()
+    };
+
+    try {
+      const res = await fetch('/api/reviews', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Failed to submit review');
+
+      closeCourseReviewModal();
+      window.location.reload();
+    } catch (err) {
+      alert(err.message);
+    } finally {
+      btn.disabled = false;
+    }
+  }
+</script>

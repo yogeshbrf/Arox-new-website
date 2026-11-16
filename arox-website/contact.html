@@ -1,0 +1,1242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <style id="arox-critical-theme">
+    html { background-color: #000000; }
+    html.theme-light, html.theme-light body, html:not(.dark) { background-color: #FFFFFF !important; color-scheme: light; }
+    html.theme-dark, html.theme-dark body, html.dark { background-color: #000000 !important; color-scheme: dark; }
+  </style>
+  <script>
+    (function () {
+      try {
+        var storedTheme = localStorage.getItem('arox-theme') || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        var isDark = storedTheme === 'dark';
+        var root = document.documentElement;
+        root.className = (root.className ? root.className.replace(/theme-[a-z]+|dark/g, '').trim() + ' ' : '') + 'theme-' + storedTheme + (isDark ? ' dark' : '');
+        root.style.colorScheme = storedTheme;
+        root.style.backgroundColor = isDark ? '#000000' : '#FFFFFF';
+
+        var logoSrc = isDark ? 'public/assets/logo/logo-dark.png' : 'public/assets/logo/logo-light.png';
+        var syncElements = function () {
+          var logo = document.getElementById('nav-logo-img');
+          if (logo && logo.getAttribute('src') !== logoSrc) logo.src = logoSrc;
+          var fLogo = document.getElementById('footer-logo-img');
+          if (fLogo && fLogo.getAttribute('src') !== logoSrc) fLogo.src = logoSrc;
+          var cb = document.getElementById('theme-checkbox') || document.getElementById('checkbox');
+          if (cb && cb.checked !== !isDark) cb.checked = !isDark;
+        };
+
+        var obs = new MutationObserver(syncElements);
+        obs.observe(root, { childList: true, subtree: true });
+
+        document.addEventListener('DOMContentLoaded', function () {
+          obs.disconnect();
+          document.querySelectorAll('#nav-logo-img, #footer-logo-img, .nav-logo img, .footer-brand-logo img').forEach(function (el) {
+            if (el) el.src = logoSrc;
+          });
+          document.querySelectorAll('#checkbox, #theme-checkbox, .theme-switch-checkbox').forEach(function (cb) {
+            cb.checked = !isDark;
+          });
+        });
+      } catch (e) {
+        document.documentElement.className = 'theme-dark dark';
+      }
+    })();
+  </script>
+  <link rel="stylesheet" href="css/style.css" />
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Contact | AROX TECH</title>
+<link rel="icon" type="image/x-icon" href="/favicon.ico" />
+<link rel="shortcut icon" href="/favicon.ico" />
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                "on-secondary-container": "#6b4b00",
+                "on-secondary": "#412d00",
+                "on-primary": "#561f00",
+                "secondary-fixed": "#ffdea8",
+                "surface-variant": "#353534",
+                "on-tertiary-fixed": "#001550",
+                "surface-container": "#201f1f",
+                "text-muted": "#808080",
+                "surface-tint": "#ffb693",
+                "on-secondary-fixed-variant": "#5e4200",
+                "primary-fixed": "#ffdbcc",
+                "on-primary-fixed": "#351000",
+                "text-light": "#A7A7A7",
+                "secondary": "#ffdb9d",
+                "inverse-primary": "#a04100",
+                "outline-variant": "#5a4136",
+                "surface-dim": "#131313",
+                "border-glass": "rgba(255, 255, 255, 0.08)",
+                "surface": "#111111",
+                "error-container": "#93000a",
+                "tertiary-fixed": "#dce1ff",
+                "on-primary-container": "#572000",
+                "surface-bright": "#3a3939",
+                "secondary-fixed-dim": "#ffba20",
+                "on-primary-fixed-variant": "#7a3000",
+                "on-error-container": "#ffdad6",
+                "deep-navy": "#0B1F4D",
+                "surface-container-highest": "#353534",
+                "background": "#131313",
+                "on-error": "#690005",
+                "on-tertiary-fixed-variant": "#003ab2",
+                "secondary-container": "#feb700",
+                "on-tertiary": "#00277f",
+                "outline": "#a98a7d",
+                "on-background": "#e5e2e1",
+                "tertiary-fixed-dim": "#b6c4ff",
+                "surface-container-lowest": "#0e0e0e",
+                "surface-container-low": "#1c1b1b",
+                "card": "#151515",
+                "primary": "#ffb693",
+                "on-surface-variant": "#e2bfb0",
+                "inverse-surface": "#e5e2e1",
+                "background-alt": "#0A0A0A",
+                "tertiary-container": "#7593ff",
+                "on-tertiary-container": "#002881",
+                "divider-glass": "rgba(255, 255, 255, 0.05)",
+                "primary-container": "#00ED64",
+                "inverse-on-surface": "#313030",
+                "tertiary": "#b6c4ff",
+                "on-surface": "#e5e2e1"
+            },
+            "borderRadius": {
+                "DEFAULT": "0.25rem",
+                "lg": "0.5rem",
+                "xl": "0.75rem",
+                "full": "9999px"
+            },
+            "spacing": {
+                "content-width": "1280px",
+                "container-max": "1440px",
+                "nav-height": "90px",
+                "gutter": "40px",
+                "section-padding": "120px",
+                "card-gap": "24px"
+            },
+            "fontFamily": {
+                "headline-section": ["'Montserrat'", "sans-serif"],
+                "body-lg": ["'Montserrat'", "sans-serif"],
+                "display-hero": ["'Montserrat'", "sans-serif"],
+                "body-sm": ["'Montserrat'", "sans-serif"],
+                "label-caps": ["'Montserrat'", "sans-serif"],
+                "display-hero-mobile": ["'Montserrat'", "sans-serif"],
+                "headline-card": ["'Montserrat'", "sans-serif"],
+                "numeric-display": ["'Montserrat'", "sans-serif"]
+            },
+            "fontSize": {
+                "headline-section": ["48px", {"lineHeight": "1.2", "fontWeight": "500"}],
+                "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                "display-hero": ["80px", {"lineHeight": "1.05", "fontWeight": "500"}],
+                "body-sm": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                "label-caps": ["13px", {"lineHeight": "1.2", "fontWeight": "600"}],
+                "display-hero-mobile": ["48px", {"lineHeight": "1.2", "fontWeight": "500"}],
+                "headline-card": ["28px", {"lineHeight": "1.3", "fontWeight": "500"}],
+                "numeric-display": ["64px", {"lineHeight": "1.0", "fontWeight": "500"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: var(--background);
+            color: var(--body);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Dark mode map inversion styling */
+        .theme-dark .map-container iframe {
+            filter: invert(90%) hue-rotate(180deg) brightness(95%) contrast(90%);
+        }
+        
+        /* Outline input focus styling */
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: var(--heading) !important;
+            box-shadow: 0 0 0 1px var(--heading);
+        }
+    </style>
+
+  <!-- Modern Entire Width Contact Hero Background & Theme Styles -->
+  <style id="contact-hero-modern-styles">
+    .page-hero-pro.hero-contact {
+      min-height: 90vh !important;
+      min-height: 90dvh !important;
+      width: 100% !important;
+      position: relative !important;
+      overflow: hidden !important;
+      display: flex !important;
+      flex-direction: column !important;
+      justify-content: center !important;
+      align-items: stretch !important;
+      padding-top: calc(90px + 2rem) !important;
+      padding-bottom: 2.5rem !important;
+      background: #000000 !important;
+      background-image: none !important;
+    }
+    .theme-light .page-hero-pro.hero-contact,
+    [data-theme="light"] .page-hero-pro.hero-contact,
+    html:not(.dark) .page-hero-pro.hero-contact {
+      background: #FFFFFF !important;
+    }
+
+    /* Entire Width Hero Background */
+    .contact-hero-bg-wrapper {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .contact-bg-img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: right center;
+      transition: opacity 0.4s ease;
+    }
+
+    /* Directional gradient overlay: text readable on left, artwork clear on right */
+    .contact-hero-gradient-overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      pointer-events: none;
+      background: none;
+    }
+    .theme-light .contact-hero-gradient-overlay,
+    [data-theme="light"] .contact-hero-gradient-overlay,
+    html:not(.dark) .contact-hero-gradient-overlay {
+      background: none;
+    }
+
+    /* Content container */
+    .contact-hero-inner {
+      max-width: 1360px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 0 2.5rem;
+      position: relative;
+      z-index: 10;
+      box-sizing: border-box;
+    }
+
+    .contact-hero-left-content {
+      max-width: 660px;
+      text-align: left;
+    }
+
+    .contact-eyebrow-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 16px;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--primary);
+      background: rgba(0, 210, 255, 0.1);
+      border: 1px solid rgba(0, 210, 255, 0.3);
+      backdrop-filter: blur(8px);
+      margin-bottom: 1.5rem;
+    }
+    .theme-light .contact-eyebrow-pill,
+    [data-theme="light"] .contact-eyebrow-pill {
+      background: rgba(0, 102, 255, 0.08);
+      border-color: rgba(0, 102, 255, 0.25);
+    }
+
+    .contact-eyebrow-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--primary);
+      box-shadow: 0 0 8px var(--primary);
+      animation: contactDotPulse 2s ease-in-out infinite;
+    }
+    @keyframes contactDotPulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(1.4); }
+    }
+
+    .contact-hero-headline {
+      font-family: var(--font-display, 'Montserrat', sans-serif);
+      font-size: clamp(2.4rem, 4.2vw, 4rem);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      color: var(--heading);
+      margin: 0 0 1.5rem 0;
+    }
+
+    .contact-hero-headline .hero-gradient-text {
+      background: linear-gradient(135deg, var(--primary) 0%, #38bdf8 55%, var(--secondary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .contact-hero-desc {
+      font-size: 1.05rem;
+      line-height: 1.7;
+      color: var(--muted);
+      font-weight: 300;
+      max-width: 580px;
+      margin: 0 0 2.25rem 0;
+    }
+
+    .contact-hero-btn-row {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .contact-btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 32px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+      color: #FFFFFF !important;
+      font-size: 0.92rem;
+      font-weight: 700;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 10px 30px rgba(0, 102, 255, 0.4);
+      transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+    .contact-btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 15px 38px rgba(0, 210, 255, 0.5);
+    }
+    .contact-btn-primary svg {
+      width: 16px;
+      height: 16px;
+      stroke: currentColor;
+      transition: transform 0.25s ease;
+    }
+    .contact-btn-primary:hover svg {
+      transform: translateY(3px);
+    }
+
+    .contact-btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 28px;
+      border-radius: 999px;
+      background: var(--surface-elevated);
+      color: var(--heading) !important;
+      font-size: 0.92rem;
+      font-weight: 600;
+      text-decoration: none;
+      border: 1px solid var(--border);
+      backdrop-filter: blur(12px);
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+    .contact-btn-secondary:hover {
+      background: var(--surface);
+      transform: translateY(-2px);
+      border-color: var(--primary);
+    }
+
+    /* Stats ribbon at base */
+    .contact-hero-stats {
+      max-width: 1360px;
+      width: 100%;
+      margin: 3.5rem auto 0;
+      padding: 2rem 2.5rem 0;
+      border-top: 1px solid var(--border);
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2rem;
+      position: relative;
+      z-index: 10;
+      box-sizing: border-box;
+    }
+    .contact-stat-box {
+      text-align: left;
+    }
+    .contact-stat-num {
+      font-family: var(--font-display, 'Montserrat', sans-serif);
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--heading);
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      margin-bottom: 4px;
+    }
+    .contact-stat-label {
+      font-size: 0.75rem;
+      color: var(--muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    /* Strict theme switching for images */
+    .hero-img-dark {
+      display: block !important;
+    }
+    .hero-img-light {
+      display: none !important;
+    }
+
+    .theme-light .hero-img-dark,
+    [data-theme="light"] .hero-img-dark,
+    html.theme-light .hero-img-dark,
+    html[data-theme="light"] .hero-img-dark,
+    body.theme-light .hero-img-dark,
+    html:not(.dark) .hero-img-dark {
+      display: none !important;
+    }
+
+    .theme-light .hero-img-light,
+    [data-theme="light"] .hero-img-light,
+    html.theme-light .hero-img-light,
+    html[data-theme="light"] .hero-img-light,
+    body.theme-light .hero-img-light,
+    html:not(.dark) .hero-img-light {
+      display: block !important;
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .page-hero-pro.hero-contact {
+        min-height: auto !important;
+        padding-top: calc(90px + 1.5rem) !important;
+        padding-bottom: 3rem !important;
+      }
+      .contact-hero-left-content {
+        max-width: 580px;
+      }
+      .contact-hero-stats {
+        margin-top: 2.5rem;
+        padding-top: 1.5rem;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .page-hero-pro.hero-contact {
+        padding-top: calc(90px + 2.5rem) !important;
+        padding-bottom: 2rem !important;
+      }
+      .contact-eyebrow-pill {
+        margin-bottom: 1.25rem !important;
+      }
+      .contact-hero-headline {
+        font-size: 2.15rem !important;
+        margin-bottom: 1rem !important;
+      }
+      .contact-hero-desc {
+        font-size: 0.95rem !important;
+        line-height: 1.6 !important;
+        margin-bottom: 1.75rem !important;
+      }
+      .contact-hero-stats {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 1.25rem !important;
+        margin-top: 2rem !important;
+        padding-top: 1.5rem !important;
+        padding-left: 1.25rem !important;
+        padding-right: 1.25rem !important;
+      }
+      .contact-stat-num {
+        font-size: 1.65rem !important;
+      }
+      .contact-stat-label {
+        font-size: 0.7rem !important;
+      }
+      .contact-hero-btn-row {
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: auto !important;
+        gap: 8px !important;
+        margin: 0 auto 1.25rem !important;
+      }
+      .contact-btn-primary,
+      .contact-btn-secondary {
+        width: auto !important;
+        flex: 0 1 auto !important;
+        padding: 8px 14px !important;
+        font-size: 12px !important;
+        white-space: nowrap !important;
+        justify-content: center !important;
+      }
+      .contact-hero-gradient-overlay {
+        background: none;
+      }
+      .theme-light .contact-hero-gradient-overlay,
+      [data-theme="light"] .contact-hero-gradient-overlay,
+      html:not(.dark) .contact-hero-gradient-overlay {
+        background: none;
+      }
+      .contact-bg-img {
+        object-position: 75% center !important;
+      }
+      .contact-hero-inner {
+        padding: 0 1.25rem !important;
+      }
+      .contact-hero-headline {
+        font-size: 2.25rem !important;
+      }
+      .contact-hero-stats {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 1.5rem !important;
+        margin-top: 2rem !important;
+      }
+      .contact-hero-btn-row {
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: auto !important;
+        gap: 8px !important;
+        margin: 0 auto 1.25rem !important;
+      }
+      .contact-btn-primary,
+      .contact-btn-secondary {
+        width: auto !important;
+        flex: 0 1 auto !important;
+        padding: 8px 14px !important;
+        font-size: 12px !important;
+        white-space: nowrap !important;
+        justify-content: center !important;
+      }
+    }
+  </style>
+
+
+  <!-- Clean Hero Image: Zero Overlay -->
+  <style id="clean-hero-no-overlay">
+/* ==========================================================================
+   Hero Sections & CTA Card Overlay Rules:
+   - Desktop: 50% black overlay on left-side content only in Dark Theme; None in Light Theme
+   - Mobile (<= 768px): 90% overlay across image in BOTH themes
+   ========================================================================== */
+
+.home-hero-bg-overlay,
+.about-hero-gradient-overlay,
+.services-hero-gradient-overlay,
+.contact-hero-gradient-overlay,
+.training-hero-gradient-overlay,
+.cta-card-gradient-overlay {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  z-index: 2 !important;
+  pointer-events: none !important;
+}
+
+/* --- DESKTOP (Default > 768px) --- */
+/* Dark Theme: 50% black overlay on left-side content only */
+.theme-dark .about-hero-gradient-overlay,
+.dark .about-hero-gradient-overlay,
+[data-theme="dark"] .about-hero-gradient-overlay,
+.theme-dark .services-hero-gradient-overlay,
+.dark .services-hero-gradient-overlay,
+[data-theme="dark"] .services-hero-gradient-overlay,
+.theme-dark .contact-hero-gradient-overlay,
+.dark .contact-hero-gradient-overlay,
+[data-theme="dark"] .contact-hero-gradient-overlay,
+.theme-dark .training-hero-gradient-overlay,
+.dark .training-hero-gradient-overlay,
+[data-theme="dark"] .training-hero-gradient-overlay,
+.theme-dark .home-hero-bg-overlay,
+.dark .home-hero-bg-overlay,
+[data-theme="dark"] .home-hero-bg-overlay,
+.theme-dark .cta-card-gradient-overlay,
+.dark .cta-card-gradient-overlay,
+[data-theme="dark"] .cta-card-gradient-overlay {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  background: linear-gradient(
+    to right,
+    rgba(0, 0, 0, 0.50) 0%,
+    rgba(0, 0, 0, 0.50) 42%,
+    rgba(0, 0, 0, 0.25) 56%,
+    rgba(0, 0, 0, 0.0) 70%
+  ) !important;
+}
+
+/* Light Theme: No overlay on desktop */
+.theme-light .home-hero-bg-overlay,
+[data-theme="light"] .home-hero-bg-overlay,
+.theme-light .about-hero-gradient-overlay,
+[data-theme="light"] .about-hero-gradient-overlay,
+.theme-light .services-hero-gradient-overlay,
+[data-theme="light"] .services-hero-gradient-overlay,
+.theme-light .contact-hero-gradient-overlay,
+[data-theme="light"] .contact-hero-gradient-overlay,
+.theme-light .training-hero-gradient-overlay,
+[data-theme="light"] .training-hero-gradient-overlay,
+.theme-light .cta-card-gradient-overlay,
+[data-theme="light"] .cta-card-gradient-overlay {
+  display: none !important;
+  background: none !important;
+  opacity: 0 !important;
+}
+
+/* --- MOBILE VIEW ONLY (<= 768px): 90% Overlay in BOTH Themes --- */
+@media (max-width: 768px) {
+  /* Dark Theme Mobile: 90% Black Overlay */
+  .theme-dark .home-hero-bg-overlay,
+  .dark .home-hero-bg-overlay,
+  [data-theme="dark"] .home-hero-bg-overlay,
+  .theme-dark .about-hero-gradient-overlay,
+  .dark .about-hero-gradient-overlay,
+  [data-theme="dark"] .about-hero-gradient-overlay,
+  .theme-dark .services-hero-gradient-overlay,
+  .dark .services-hero-gradient-overlay,
+  [data-theme="dark"] .services-hero-gradient-overlay,
+  .theme-dark .contact-hero-gradient-overlay,
+  .dark .contact-hero-gradient-overlay,
+  [data-theme="dark"] .contact-hero-gradient-overlay,
+  .theme-dark .training-hero-gradient-overlay,
+  .dark .training-hero-gradient-overlay,
+  [data-theme="dark"] .training-hero-gradient-overlay,
+  .theme-dark .cta-card-gradient-overlay,
+  .dark .cta-card-gradient-overlay,
+  [data-theme="dark"] .cta-card-gradient-overlay {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    background: rgba(0, 0, 0, 0.90) !important;
+  }
+
+  /* Light Theme Mobile: 90% Light/White Overlay */
+  .theme-light .home-hero-bg-overlay,
+  [data-theme="light"] .home-hero-bg-overlay,
+  html:not(.dark) .home-hero-bg-overlay,
+  .theme-light .about-hero-gradient-overlay,
+  [data-theme="light"] .about-hero-gradient-overlay,
+  html:not(.dark) .about-hero-gradient-overlay,
+  .theme-light .services-hero-gradient-overlay,
+  [data-theme="light"] .services-hero-gradient-overlay,
+  html:not(.dark) .services-hero-gradient-overlay,
+  .theme-light .contact-hero-gradient-overlay,
+  [data-theme="light"] .contact-hero-gradient-overlay,
+  html:not(.dark) .contact-hero-gradient-overlay,
+  .theme-light .training-hero-gradient-overlay,
+  [data-theme="light"] .training-hero-gradient-overlay,
+  html:not(.dark) .training-hero-gradient-overlay,
+  .theme-light .cta-card-gradient-overlay,
+  [data-theme="light"] .cta-card-gradient-overlay,
+  html:not(.dark) .cta-card-gradient-overlay {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    background: rgba(255, 255, 255, 0.90) !important;
+  }
+}
+  </style>
+
+
+<style>
+/* PREVENT / REMOVE BROWSER AUTOFILL BACKGROUND */
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus, 
+input:-webkit-autofill:active,
+textarea:-webkit-autofill,
+select:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 1000px transparent inset !important;
+  box-shadow: 0 0 0 1000px transparent inset !important;
+  -webkit-text-fill-color: inherit !important;
+  transition: background-color 999999s ease-in-out 0s !important;
+  background-color: transparent !important;
+}
+</style>
+
+</head>
+<body class="bg-[var(--background)] text-[var(--body)]">
+  <div class="noise-overlay" aria-hidden="true"></div>
+  <header id="site-header">
+    <div class="nav-inner">
+      <div class="nav-left">
+        <a href="index.html" class="nav-logo">
+          <img id="nav-logo-img" src="public/assets/logo/logo-dark.png" alt="Arox Tech Logo"
+            onerror="this.style.display='none';document.getElementById('nav-logo-text').style.display='block'" />
+          <span id="nav-logo-text"
+            style="display:none;font-family:var(--font-display);font-weight:800;font-size:1.25rem;color:var(--heading);letter-spacing:-.03em;">AROX</span>
+          <span class="mobile-breadcrumb-sep">/</span>
+          <span class="mobile-breadcrumb-current">Contact</span>
+        </a>
+        <div class="nav-divider">/</div>
+        <nav class="nav-links" aria-label="Main navigation">
+          <a href="index.html" class="nav-link">Home</a>
+          <a href="about.html" class="nav-link">About</a>
+          <a href="services.html" class="nav-link">Services</a>
+          <a href="courses.html" class="nav-link">Training</a>
+          <a href="contact.html" class="nav-link active">Contact</a>
+        </nav>
+      </div>
+      <div class="nav-right">
+        <a href="/login" class="nav-login">Sign In</a>
+        <label class="switch" title="Toggle theme">
+          <input id="theme-checkbox" type="checkbox" aria-label="Toggle theme" />
+          <span class="slider">
+            <div class="star star_1"></div>
+            <div class="star star_2"></div>
+            <div class="star star_3"></div>
+            <svg viewBox="0 0 16 16" class="cloud_1 cloud">
+              <path
+                transform="matrix(.77976 0 0 .78395-299.99-418.63)"
+                fill="#fff"
+                d="m391.84 540.91c-.421-.329-.949-.524-1.523-.524-1.351 0-2.451 1.084-2.485 2.435-1.395.526-2.388 1.88-2.388 3.466 0 1.874 1.385 3.423 3.182 3.667v.034h12.73v-.006c1.775-.104 3.182-1.584 3.182-3.395 0-1.747-1.309-3.186-2.994-3.379.007-.106.011-.214.011-.322 0-2.707-2.271-4.901-5.072-4.901-2.073 0-3.856 1.202-4.643 2.925"
+              ></path>
+            </svg>
+          </span>
+        </label>
+        <button id="hamburger-btn" class="nav-hamburger" aria-label="Toggle mobile menu">
+          <svg id="hamburger-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <line class="line-1" x1="4" y1="6" x2="20" y2="6"></line>
+            <line class="line-2" x1="4" y1="12" x2="20" y2="12"></line>
+            <line class="line-3" x1="4" y1="18" x2="20" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+  <div id="mobile-menu" aria-hidden="true">
+    <div class="mobile-menu-panel">
+      <nav class="mobile-nav">
+        <a href="index.html" class="mobile-nav-link">
+          <svg class="mobile-nav-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          <span>Home</span>
+        </a>
+        <a href="about.html" class="mobile-nav-link">
+          <svg class="mobile-nav-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+          <span>About</span>
+        </a>
+        <a href="services.html" class="mobile-nav-link">
+          <svg class="mobile-nav-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="7" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+          <span>Services</span>
+        </a>
+        <a href="courses.html" class="mobile-nav-link">
+          <svg class="mobile-nav-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+          <span>Training</span>
+        </a>
+        <a href="contact.html" class="mobile-nav-link active">
+          <svg class="mobile-nav-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          <span>Contact</span>
+        </a>
+      </nav>
+      <div class="mobile-bottom">
+        <a href="/login" class="mobile-login-btn">
+          <svg class="mobile-nav-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+          <span>Sign In</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+
+<main class="bg-[var(--background)] text-[var(--body)] relative overflow-hidden">
+    <!-- ============================================================
+       CONTACT HERO SECTION: ENTIRE WIDTH BACKGROUND
+  ============================================================ -->
+  <section id="hero" class="page-hero-pro hero-contact">
+    <!-- Full-Width Background Wrapper -->
+    <div class="contact-hero-bg-wrapper" aria-hidden="true">
+      <img src="assets/hero/contact-d.png" class="contact-bg-img hero-img-dark" alt="AROX Tech Communication & Dispatch Network" loading="eager" onerror="this.src='public/assets/hero/contact-d.png'" />
+      <img src="assets/hero/contact-l.png" class="contact-bg-img hero-img-light" alt="AROX Tech Communication & Dispatch Network" loading="eager" onerror="this.src='public/assets/hero/contact-l.png'" />
+      <div class="contact-hero-gradient-overlay"></div>
+    </div>
+
+    <!-- Left-Aligned Content Layer -->
+    <div class="contact-hero-inner">
+      <div class="contact-hero-left-content">
+        <h1 class="contact-hero-headline">
+          Connect with Our<br>
+          <span class="hero-gradient-text">Lead Architects</span>
+        </h1>
+
+        <p class="contact-hero-desc">
+          Whether you require an enterprise software platform, distributed cloud infrastructure, or tech training enrollment — our core engineering team responds within hours.
+        </p>
+
+        <div class="contact-hero-btn-row">
+          <button onclick="document.getElementById('contact-content-section').scrollIntoView({behavior:'smooth'})" class="contact-btn-primary group">
+            <span>Send Message Below</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <polyline points="19 12 12 19 5 12"></polyline>
+            </svg>
+          </button>
+          <a href="mailto:info@aroxtech.com" class="contact-btn-secondary">
+            <span>Direct Email</span>
+            <svg class="w-4 h-4 text-[var(--muted)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect width="20" height="16" x="2" y="4" rx="2"></rect>
+              <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="w-full relative z-10 pt-16 md:pt-20" id="contact-content-section">
+    <div class="max-w-6xl mx-auto px-6">
+    <!-- Main Content Form & Contact Info Section -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-16 py-12">
+      
+      <!-- Left Column: Send us a Message -->
+      <div class="lg:col-span-7">
+        <span class="section-eyebrow text-primary">GET IN TOUCH</span>
+        <h2 class="section-title text-2xl md:text-3xl font-bold text-[var(--heading)] tracking-tight font-display">Send us a Message</h2>
+        <div class="w-12 h-[2px] bg-[var(--heading)] mt-2 mb-8"></div>
+        
+        <form class="space-y-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Name Input -->
+            <div class="relative flex items-center">
+              <span class="absolute left-4 text-[var(--muted)]">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+              </span>
+              <input type="text" placeholder="Your Name" class="w-full pl-12 pr-4 py-3.5 rounded-lg border border-[var(--border)] bg-[var(--background)] text-[var(--body)] placeholder-[var(--muted)] focus:border-[var(--heading)] focus:ring-1 focus:ring-[var(--heading)] outline-none transition-all font-sans text-sm" />
+            </div>
+            
+            <!-- Email Input -->
+            <div class="relative flex items-center">
+              <span class="absolute left-4 text-[var(--muted)]">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                  <polyline points="22,6 12,13 2,6"></polyline>
+                </svg>
+              </span>
+              <input type="email" placeholder="Your Email" class="w-full pl-12 pr-4 py-3.5 rounded-lg border border-[var(--border)] bg-[var(--background)] text-[var(--body)] placeholder-[var(--muted)] focus:border-[var(--heading)] focus:ring-1 focus:ring-[var(--heading)] outline-none transition-all font-sans text-sm" />
+            </div>
+          </div>
+
+          <!-- Subject Input -->
+          <div class="relative flex items-center">
+            <span class="absolute left-4 text-[var(--muted)]">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+              </svg>
+            </span>
+            <input type="text" placeholder="Subject" class="w-full pl-12 pr-4 py-3.5 rounded-lg border border-[var(--border)] bg-[var(--background)] text-[var(--body)] placeholder-[var(--muted)] focus:border-[var(--heading)] focus:ring-1 focus:ring-[var(--heading)] outline-none transition-all font-sans text-sm" />
+          </div>
+
+          <!-- Message Textarea -->
+          <div class="relative flex items-start">
+            <span class="absolute left-4 top-4 text-[var(--muted)]">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 20h9"></path>
+                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+              </svg>
+            </span>
+            <textarea placeholder="Your Message" rows="6" class="w-full pl-12 pr-4 py-3.5 rounded-lg border border-[var(--border)] bg-[var(--background)] text-[var(--body)] placeholder-[var(--muted)] focus:border-[var(--heading)] focus:ring-1 focus:ring-[var(--heading)] outline-none transition-all font-sans text-sm resize-none"></textarea>
+          </div>
+
+          <!-- Submit Button -->
+          <button type="submit" class="cta-btn-solid flex items-center justify-center gap-2 mt-4 hover:opacity-90 transition-all font-sans px-6 py-3.5 rounded-lg bg-[var(--heading)] text-[var(--background)] font-bold text-sm">
+            <span>Send Message</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+          </button>
+        </form>
+      </div>
+
+      <!-- Right Column: Contact Information -->
+      <div class="lg:col-span-5">
+        <span class="section-eyebrow text-primary">REACH US</span>
+        <h2 class="section-title text-2xl md:text-3xl font-bold text-[var(--heading)] tracking-tight font-display">Contact Information</h2>
+        <div class="w-12 h-[2px] bg-[var(--heading)] mt-2 mb-8"></div>
+        
+        <div class="space-y-8">
+          <!-- Row 1: Location -->
+          <div class="flex items-start gap-4">
+            <div class="w-10 h-10 rounded-full bg-[var(--heading)] text-[var(--background)] flex items-center justify-center flex-shrink-0 mt-0.5">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                <circle cx="12" cy="10" r="3"></circle>
+              </svg>
+            </div>
+            <div>
+              <div class="text-[10px] font-bold text-[var(--muted)] uppercase tracking-[0.1em]">Our Location</div>
+              <div class="text-sm font-semibold text-[var(--heading)] mt-1">Near New Bus Stand, Salem, Tamil Nadu, India</div>
+            </div>
+          </div>
+
+          <!-- Row 2: Phone -->
+          <div class="flex items-start gap-4">
+            <div class="w-10 h-10 rounded-full bg-[var(--heading)] text-[var(--background)] flex items-center justify-center flex-shrink-0 mt-0.5">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13.1a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.56 2.38l3-.02a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.18 6.18l1.44-1.44a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7a2 2 0 0 1 1.72 2.03z"></path>
+              </svg>
+            </div>
+            <div>
+              <div class="text-[10px] font-bold text-[var(--muted)] uppercase tracking-[0.1em]">Phone Number</div>
+              <div class="text-sm font-semibold text-[var(--heading)] mt-1">+91 12345 67890</div>
+            </div>
+          </div>
+
+          <!-- Row 3: Email -->
+          <div class="flex items-start gap-4">
+            <div class="w-10 h-10 rounded-full bg-[var(--heading)] text-[var(--background)] flex items-center justify-center flex-shrink-0 mt-0.5">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                <polyline points="22,6 12,13 2,6"></polyline>
+              </svg>
+            </div>
+            <div>
+              <div class="text-[10px] font-bold text-[var(--muted)] uppercase tracking-[0.1em]">Email Address</div>
+              <div class="text-sm font-semibold text-[var(--heading)] mt-1">info@aroxtech.com</div>
+            </div>
+          </div>
+
+          <!-- Row 4: Working Hours -->
+          <div class="flex items-start gap-4">
+            <div class="w-10 h-10 rounded-full bg-[var(--heading)] text-[var(--background)] flex items-center justify-center flex-shrink-0 mt-0.5">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+            </div>
+            <div>
+              <div class="text-[10px] font-bold text-[var(--muted)] uppercase tracking-[0.1em]">Working Hours</div>
+              <div class="text-sm font-semibold text-[var(--heading)] mt-1">Mon - Sat: 9:00 AM - 6:00 PM</div>
+            </div>
+          </div>
+
+          <!-- Row 5: Follow Us -->
+          <div class="flex items-start gap-4">
+            <div class="w-10 h-10 rounded-full bg-[var(--heading)] text-[var(--background)] flex items-center justify-center flex-shrink-0 mt-0.5">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="22" y1="2" x2="11" y2="13"></line>
+                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+              </svg>
+            </div>
+            <div class="w-full">
+              <div class="text-[10px] font-bold text-[var(--muted)] uppercase tracking-[0.1em]">Follow Us</div>
+              <div class="flex items-center gap-5 mt-3">
+                <a href="#" class="text-[var(--muted)] hover:text-[var(--heading)] transition-colors" aria-label="LinkedIn">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
+                    <rect x="2" y="9" width="4" height="12"></rect>
+                    <circle cx="4" cy="4" r="2"></circle>
+                  </svg>
+                </a>
+                <a href="#" class="text-[var(--muted)] hover:text-[var(--heading)] transition-colors" aria-label="Facebook">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
+                  </svg>
+                </a>
+                <a href="#" class="text-[var(--muted)] hover:text-[var(--heading)] transition-colors" aria-label="Twitter">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path>
+                  </svg>
+                </a>
+                <a href="#" class="text-[var(--muted)] hover:text-[var(--heading)] transition-colors" aria-label="Instagram">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                  </svg>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Map Banner Container -->
+    <div class="py-8 w-full z-10" id="map-section">
+      <div class="w-full h-80 rounded-2xl overflow-hidden border border-[var(--border)] map-container relative">
+        <iframe 
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15629.839803159937!2d78.140417!3d11.663085!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3babf015b672722b%3A0xb3ff76eb80356c9a!2sNew%20Bus%20Stand%2C%20Meyyanur%2C%20Salem%2C%20Tamil%20Nadu%20636004!5e0!3m2!1sen!2sin!4v1710000000000!5m2!1sen!2sin"
+          width="100%" 
+          height="100%" 
+          style="border:0;" 
+          allowfullscreen="" 
+          loading="lazy" 
+          referrerpolicy="no-referrer-when-downgrade">
+        </iframe>
+      </div>
+    </div>
+
+    </div>
+  </section>
+</main>
+
+      <!-- PRE-FOOTER CTA SECTION -->
+  <section class="cta-section" id="cta">
+    <div class="cta-card reveal">
+      <div class="cta-content">
+        <h2 class="cta-heading">Have an idea? Let's talk.</h2>
+        <p class="cta-text">Tell us what you're trying to build, improve or solve. We'll help you find the right technology approach and next step.</p>
+        <div class="cta-actions">
+          <a href="mailto:info@aroxtech.com" class="btn-primary">
+            <span>Start a Conversation</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-left: 6px; display: inline-block; vertical-align: middle;"><line x1="7" y1="17" x2="17" y2="7" /><polyline points="7 7 17 7 17 17" /></svg>
+          </a>
+          <a href="index.html" class="btn-secondary">
+            <span>Back to Home</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+      <footer>
+        <div class="footer-inner">
+            <!-- Background Watermark -->
+            <div class="footer-watermark">Arox Tech</div>
+
+            <!-- Main Footer Grid / Mobile Accordions -->
+            <div class="footer-grid">
+                <!-- Brand Section -->
+                <div class="footer-brand">
+                    <a href="index.html" class="footer-brand-logo">
+                        <img id="footer-logo-img" src="public/assets/logo/logo-dark.png" alt="Arox Tech" onerror="this.src='assets/logo/logo-dark.png'" />
+                    </a>
+                    <p class="footer-tagline">
+                        We build scalable software architectures, robust digital platforms, and high-impact AI solutions for modern businesses.
+                    </p>
+                    <!-- 4 Social Icons in a Single Row: Instagram, WhatsApp, Facebook, LinkedIn -->
+                    <div class="footer-socials">
+                        <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="footer-social-btn" aria-label="Instagram">
+                            <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                        </a>
+                        <a href="https://whatsapp.com" target="_blank" rel="noopener noreferrer" class="footer-social-btn" aria-label="WhatsApp">
+                            <svg viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
+                        </a>
+                        <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" class="footer-social-btn" aria-label="Facebook">
+                            <svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                        </a>
+                        <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" class="footer-social-btn" aria-label="LinkedIn">
+                            <svg viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Row 1 / Col 2: Company -->
+                <details class="footer-col footer-col-company" open>
+                    <summary class="footer-col-header">
+                        <div class="footer-col-header-left">
+                            <div>
+                                <h3 class="footer-col-title">Company</h3>
+                                <div class="footer-title-bar"></div>
+                            </div>
+                        </div>
+                        <div class="footer-chevron">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                        </div>
+                    </summary>
+                    <div class="footer-col-body">
+                        <ul class="footer-links">
+                            <li><a class="footer-link" href="about.html">About Us</a></li>
+                            <li><a class="footer-link" href="about.html#mission-section">Purpose &amp; Vision</a></li>
+                            <li><a class="footer-link" href="about.html#process-section">Operating Model</a></li>
+                            <li><a class="footer-link" href="apply.html">Careers</a></li>
+                            <li><a class="footer-link" href="services.html">Partners</a></li>
+                            <li><a class="footer-link" href="contact.html">Contact Us</a></li>
+                        </ul>
+                    </div>
+                </details>
+
+                <!-- Row 1 / Col 3: Services -->
+                <details class="footer-col footer-col-services" open>
+                    <summary class="footer-col-header">
+                        <div class="footer-col-header-left">
+                            <div>
+                                <h3 class="footer-col-title">Services</h3>
+                                <div class="footer-title-bar"></div>
+                            </div>
+                        </div>
+                        <div class="footer-chevron">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                        </div>
+                    </summary>
+                    <div class="footer-col-body">
+                        <ul class="footer-links">
+                            <li><a class="footer-link" href="services.html?service=development#domain-section-0"><span>Development</span><svg class="footer-arrow-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg></a></li>
+                            <li><a class="footer-link" href="services.html?service=creative#domain-section-1"><span>Creative &amp; Experience</span><svg class="footer-arrow-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg></a></li>
+                            <li><a class="footer-link" href="services.html?service=business#domain-section-2"><span>Business Solutions</span><svg class="footer-arrow-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg></a></li>
+                            <li><a class="footer-link" href="services.html?service=infrastructure#domain-section-3"><span>Infrastructure</span><svg class="footer-arrow-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg></a></li>
+                        </ul>
+                    </div>
+                </details>
+
+                <!-- Row 1 / Col 4: Training -->
+                <details class="footer-col footer-col-training" open>
+                    <summary class="footer-col-header">
+                        <div class="footer-col-header-left">
+                            <div>
+                                <h3 class="footer-col-title">Training</h3>
+                                <div class="footer-title-bar"></div>
+                            </div>
+                        </div>
+                        <div class="footer-chevron">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                        </div>
+                    </summary>
+                    <div class="footer-col-body">
+                        <ul class="footer-links">
+                            <li><a class="footer-link" href="detail.html?course=full-stack-web-development&amp;from=training">Full Stack Web Dev</a></li>
+                            <li><a class="footer-link" href="detail.html?course=data-science-and-ai&amp;from=training">Python &amp; Data Science</a></li>
+                            <li><a class="footer-link" href="detail.html?course=data-science-and-ai&amp;from=training">AI &amp; Machine Learning</a></li>
+                            <li><a class="footer-link" href="detail.html?course=cyber-security&amp;from=training">Cyber Security</a></li>
+                            <li><a class="footer-link" href="detail.html?course=devops-engineering&amp;from=training">Cloud &amp; DevOps</a></li>
+                            <li><a class="footer-link" href="detail.html?course=ui-ux-designing&amp;from=training">UI/UX Designing</a></li>
+                        </ul>
+                    </div>
+                </details>
+
+                <!-- Row 2 / Col 2: Internships -->
+                <details class="footer-col footer-col-internships" open>
+                    <summary class="footer-col-header">
+                        <div class="footer-col-header-left">
+                            <div>
+                                <h3 class="footer-col-title">Internship</h3>
+                                <div class="footer-title-bar"></div>
+                            </div>
+                        </div>
+                        <div class="footer-chevron">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                        </div>
+                    </summary>
+                    <div class="footer-col-body">
+                        <ul class="footer-links">
+                            <li><a class="footer-link" href="training.html?tab=internship&amp;domain=cse_it#internshipDomainWrap"><span>CSE &amp; IT</span><svg class="footer-arrow-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg></a></li>
+                            <li><a class="footer-link" href="training.html?tab=internship&amp;domain=ece#internshipDomainWrap"><span>ECE</span><svg class="footer-arrow-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg></a></li>
+                            <li><a class="footer-link" href="training.html?tab=internship&amp;domain=mech#internshipDomainWrap"><span>MECH</span><svg class="footer-arrow-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg></a></li>
+                            <li><a class="footer-link" href="training.html?tab=internship&amp;domain=management#internshipDomainWrap"><span>MANAGEMENT</span><svg class="footer-arrow-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg></a></li>
+                        </ul>
+                    </div>
+                </details>
+
+                <!-- Row 2 / Col 3: Contact -->
+                <details class="footer-col footer-col-contact" open>
+                    <summary class="footer-col-header">
+                        <div class="footer-col-header-left">
+                            <div>
+                                <h3 class="footer-col-title">Contact</h3>
+                                <div class="footer-title-bar"></div>
+                            </div>
+                        </div>
+                        <div class="footer-chevron">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                        </div>
+                    </summary>
+                    <div class="footer-col-body">
+                        <ul class="footer-contact-items">
+                            <li class="footer-contact-item">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                                <span>Salem, Tamil Nadu, India</span>
+                            </li>
+                            <li class="footer-contact-item">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13.1a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.56 2.38l3-.02a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.18 6.18l1.44-1.44a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7a2 2 0 0 1 1.72 2.03z"/></svg>
+                                <a href="tel:+911234567890">+91 12345 67890</a>
+                            </li>
+                            <li class="footer-contact-item">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                                <a href="mailto:info@aroxtech.com">info@aroxtech.com</a>
+                            </li>
+                            <li class="footer-contact-item">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                <span>Mon - Sat: 9:00 AM - 6:00 PM</span>
+                            </li>
+                        </ul>
+                    </div>
+                </details>
+            </div>
+        </div>
+
+        <!-- Footer Bottom Bar -->
+        <div class="footer-bottom">
+            <div class="footer-bottom-inner">
+                <p class="footer-copyright-bottom">&copy; <span>AROX Tech 2026</span> All Rights Reserved</p>
+                <div class="footer-bottom-right">
+                    <a href="#" class="footer-legal-link">Terms &amp; Conditions</a>
+                    <span class="footer-legal-sep">&bull;</span>
+                    <a href="#" class="footer-legal-link">Privacy Policy</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+  <script src="js/main.js" defer></script>
+  <script>
+    (function () {
+      const urlParams = new URLSearchParams(window.location.search);
+      const serviceParam = urlParams.get('service');
+      if (serviceParam) {
+        window.addEventListener('DOMContentLoaded', function () {
+          const subjectInput = document.querySelector('input[placeholder="Subject"]');
+          if (subjectInput) {
+            subjectInput.value = 'Inquiry: ' + serviceParam;
+          }
+        });
+      }
+    })();
+  </script>
+
+  <!-- Dynamic Theme Sync for Contact Hero Background Image -->
+  <script>
+    (function() {
+      function syncContactHeroImages() {
+        var isLight = document.documentElement.classList.contains('theme-light') || 
+                      document.documentElement.getAttribute('data-theme') === 'light' ||
+                      (!document.documentElement.classList.contains('dark') && !document.documentElement.classList.contains('theme-dark'));
+        var darkImgs = document.querySelectorAll('.hero-img-dark');
+        var lightImgs = document.querySelectorAll('.hero-img-light');
+        darkImgs.forEach(function(img) {
+          img.style.setProperty('display', isLight ? 'none' : 'block', 'important');
+        });
+        lightImgs.forEach(function(img) {
+          img.style.setProperty('display', isLight ? 'block' : 'none', 'important');
+        });
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', syncContactHeroImages);
+      } else {
+        syncContactHeroImages();
+      }
+
+      window.addEventListener('arox-theme-change', syncContactHeroImages);
+
+      var themeObserver = new MutationObserver(function() {
+        syncContactHeroImages();
+      });
+      themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['class', 'data-theme'] });
+    })();
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <style id="arox-critical-theme">
+    html { background-color: #000000; }
+    html.theme-light, html.theme-light body, html:not(.dark) { background-color: #FFFFFF !important; color-scheme: light; }
+    html.theme-dark, html.theme-dark body, html.dark { background-color: #000000 !important; color-scheme: dark; }
+  </style>
+  <script>
+    (function () {
+      try {
+        var storedTheme = localStorage.getItem('arox-theme') || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        var isDark = storedTheme === 'dark';
+        var root = document.documentElement;
+        root.className = (root.className ? root.className.replace(/theme-[a-z]+|dark/g, '').trim() + ' ' : '') + 'theme-' + storedTheme + (isDark ? ' dark' : '');
+        root.style.colorScheme = storedTheme;
+        root.style.backgroundColor = isDark ? '#000000' : '#FFFFFF';
+
+        var logoSrc = isDark ? 'public/assets/logo/logo-dark.png' : 'public/assets/logo/logo-light.png';
+        var syncElements = function () {
+          var logo = document.getElementById('nav-logo-img');
+          if (logo && logo.getAttribute('src') !== logoSrc) logo.src = logoSrc;
+          var fLogo = document.getElementById('footer-logo-img');
+          if (fLogo && fLogo.getAttribute('src') !== logoSrc) fLogo.src = logoSrc;
+          var cb = document.getElementById('theme-checkbox') || document.getElementById('checkbox');
+          if (cb && cb.checked !== !isDark) cb.checked = !isDark;
+        };
+
+        var obs = new MutationObserver(syncElements);
+        obs.observe(root, { childList: true, subtree: true });
+
+        document.addEventListener('DOMContentLoaded', function () {
+          obs.disconnect();
+          document.querySelectorAll('#nav-logo-img, #footer-logo-img, .nav-logo img, .footer-brand-logo img').forEach(function (el) {
+            if (el) el.src = logoSrc;
+          });
+          document.querySelectorAll('#checkbox, #theme-checkbox, .theme-switch-checkbox').forEach(function (cb) {
+            cb.checked = !isDark;
+          });
+        });
+      } catch (e) {
+        document.documentElement.className = 'theme-dark dark';
+      }
+    })();
+  </script>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/coverflow.css" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AROX TECH - Building scalable software and systems</title>
+  <meta name="description"
+    content="AROX Tech designs world-class enterprise architectures, digital platforms, and custom ERP integrations." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap"
+    rel="stylesheet" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+  <link rel="shortcut icon" href="/favicon.ico" />
+  <!-- TailwindCSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            muted: "var(--muted)",
+            heading: "var(--heading)",
+            body: "var(--body)",
+            border: "var(--border)",
+            background: "var(--background)",
+            surface: "var(--surface)",
+            "surface-elevated": "var(--surface-elevated)",
+            primary: "var(--primary)"
+          }
+        }
+      }
+    }
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+
+  <!-- Modern Entire Width Home Hero Background & Theme Styles -->
+  <style id="home-hero-modern-styles">
+    #hero.home-hero-pro {
+      position: relative !important;
+      width: 100% !important;
+      min-height: 100vh !important;
+      min-height: 100dvh !important;
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: center !important;
+      justify-content: center !important;
+      padding-top: calc(90px + 1.5rem) !important;
+      padding-bottom: 3rem !important;
+      overflow: hidden !important;
+      background: #000000 !important;
+      background-image: none !important;
+      box-sizing: border-box !important;
+    }
+    .theme-light #hero.home-hero-pro,
+    [data-theme="light"] #hero.home-hero-pro,
+    html:not(.dark) #hero.home-hero-pro {
+      background: #FFFFFF !important;
+    }
+
+    /* Entire Width Background */
+    .home-hero-bg-wrapper {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .home-bg-img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center center;
+      transition: opacity 0.4s ease;
+    }
+
+    /* Gradient overlay: keeps text in center crystal clear while wave ribbons glow around */
+    .home-hero-bg-overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      pointer-events: none;
+      background: none;
+    }
+    .theme-light .home-hero-bg-overlay,
+    [data-theme="light"] .home-hero-bg-overlay,
+    html:not(.dark) .home-hero-bg-overlay {
+      background: none;
+    }
+
+    /* Strict theme switching for images */
+    .hero-img-dark {
+      display: block !important;
+    }
+    .hero-img-light {
+      display: none !important;
+    }
+
+    .theme-light .hero-img-dark,
+    [data-theme="light"] .hero-img-dark,
+    html.theme-light .hero-img-dark,
+    html[data-theme="light"] .hero-img-dark,
+    body.theme-light .hero-img-dark,
+    html:not(.dark) .hero-img-dark {
+      display: none !important;
+    }
+
+    .theme-light .hero-img-light,
+    [data-theme="light"] .hero-img-light,
+    html.theme-light .hero-img-light,
+    html[data-theme="light"] .hero-img-light,
+    body.theme-light .hero-img-light,
+    html:not(.dark) .hero-img-light {
+      display: block !important;
+    }
+
+    /* Hero inner positioning on top of background */
+    #hero.home-hero-pro .hero-inner {
+      position: relative !important;
+      z-index: 10 !important;
+    }
+
+    /* Mobile fine-tuning */
+    @media (max-width: 768px) {
+      #hero.home-hero-pro {
+        min-height: auto !important;
+        height: auto !important;
+        padding-top: calc(85px + 2rem) !important;
+        padding-bottom: 1.5rem !important;
+        justify-content: flex-start !important;
+      }
+      #hero.home-hero-pro .hero-inner {
+        background: transparent !important;
+        border: none !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        box-shadow: none !important;
+        padding: 0 1.25rem !important;
+      }
+      .home-bg-img {
+        object-position: center center !important;
+      }
+      .home-hero-bg-overlay {
+        background: none;
+      }
+      .theme-light .home-hero-bg-overlay,
+      [data-theme="light"] .home-hero-bg-overlay,
+      html:not(.dark) .home-hero-bg-overlay {
+        background: none;
+      }
+    }
+  </style>
+
+
+  <!-- Clean Hero Image: Zero Overlay -->
+  <style id="clean-hero-no-overlay">
+/* ==========================================================================
+   Hero Sections & CTA Card Overlay Rules:
+   - Desktop: 50% black overlay on left-side content only in Dark Theme; None in Light Theme
+   - Mobile (<= 768px): 90% overlay across image in BOTH themes
+   ========================================================================== */
+
+.home-hero-bg-overlay,
+.about-hero-gradient-overlay,
+.services-hero-gradient-overlay,
+.contact-hero-gradient-overlay,
+.training-hero-gradient-overlay,
+.cta-card-gradient-overlay {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  z-index: 2 !important;
+  pointer-events: none !important;
+}
+
+/* --- DESKTOP (Default > 768px) --- */
+/* Dark Theme: 50% black overlay on left-side content only */
+.theme-dark .about-hero-gradient-overlay,
+.dark .about-hero-gradient-overlay,
+[data-theme="dark"] .about-hero-gradient-overlay,
+.theme-dark .services-hero-gradient-overlay,
+.dark .services-hero-gradient-overlay,
+[data-theme="dark"] .services-hero-gradient-overlay,
+.theme-dark .contact-hero-gradient-overlay,
+.dark .contact-hero-gradient-overlay,
+[data-theme="dark"] .contact-hero-gradient-overlay,
+.theme-dark .training-hero-gradient-overlay,
+.dark .training-hero-gradient-overlay,
+[data-theme="dark"] .training-hero-gradient-overlay,
+.theme-dark .home-hero-bg-overlay,
+.dark .home-hero-bg-overlay,
+[data-theme="dark"] .home-hero-bg-overlay,
+.theme-dark .cta-card-gradient-overlay,
+.dark .cta-card-gradient-overlay,
+[data-theme="dark"] .cta-card-gradient-overlay {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  background: linear-gradient(
+    to right,
+    rgba(0, 0, 0, 0.50) 0%,
+    rgba(0, 0, 0, 0.50) 42%,
+    rgba(0, 0, 0, 0.25) 56%,
+    rgba(0, 0, 0, 0.0) 70%
+  ) !important;
+}
+
+/* Light Theme: No overlay on desktop */
+.theme-light .home-hero-bg-overlay,
+[data-theme="light"] .home-hero-bg-overlay,
+.theme-light .about-hero-gradient-overlay,
+[data-theme="light"] .about-hero-gradient-overlay,
+.theme-light .services-hero-gradient-overlay,
+[data-theme="light"] .services-hero-gradient-overlay,
+.theme-light .contact-hero-gradient-overlay,
+[data-theme="light"] .contact-hero-gradient-overlay,
+.theme-light .training-hero-gradient-overlay,
+[data-theme="light"] .training-hero-gradient-overlay,
+.theme-light .cta-card-gradient-overlay,
+[data-theme="light"] .cta-card-gradient-overlay {
+  display: none !important;
+  background: none !important;
+  opacity: 0 !important;
+}
+
+/* --- MOBILE VIEW ONLY (<= 768px): 90% Overlay in BOTH Themes --- */
+@media (max-width: 768px) {
+  /* Dark Theme Mobile: 90% Black Overlay */
+  .theme-dark .home-hero-bg-overlay,
+  .dark .home-hero-bg-overlay,
+  [data-theme="dark"] .home-hero-bg-overlay,
+  .theme-dark .about-hero-gradient-overlay,
+  .dark .about-hero-gradient-overlay,
+  [data-theme="dark"] .about-hero-gradient-overlay,
+  .theme-dark .services-hero-gradient-overlay,
+  .dark .services-hero-gradient-overlay,
+  [data-theme="dark"] .services-hero-gradient-overlay,
+  .theme-dark .contact-hero-gradient-overlay,
+  .dark .contact-hero-gradient-overlay,
+  [data-theme="dark"] .contact-hero-gradient-overlay,
+  .theme-dark .training-hero-gradient-overlay,
+  .dark .training-hero-gradient-overlay,
+  [data-theme="dark"] .training-hero-gradient-overlay,
+  .theme-dark .cta-card-gradient-overlay,
+  .dark .cta-card-gradient-overlay,
+  [data-theme="dark"] .cta-card-gradient-overlay {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    background: rgba(0, 0, 0, 0.90) !important;
+  }
+
+  /* Light Theme Mobile: 90% Light/White Overlay */
+  .theme-light .home-hero-bg-overlay,
+  [data-theme="light"] .home-hero-bg-overlay,
+  html:not(.dark) .home-hero-bg-overlay,
+  .theme-light .about-hero-gradient-overlay,
+  [data-theme="light"] .about-hero-gradient-overlay,
+  html:not(.dark) .about-hero-gradient-overlay,
+  .theme-light .services-hero-gradient-overlay,
+  [data-theme="light"] .services-hero-gradient-overlay,
+  html:not(.dark) .services-hero-gradient-overlay,
+  .theme-light .contact-hero-gradient-overlay,
+  [data-theme="light"] .contact-hero-gradient-overlay,
+  html:not(.dark) .contact-hero-gradient-overlay,
+  .theme-light .training-hero-gradient-overlay,
+  [data-theme="light"] .training-hero-gradient-overlay,
+  html:not(.dark) .training-hero-gradient-overlay,
+  .theme-light .cta-card-gradient-overlay,
+  [data-theme="light"] .cta-card-gradient-overlay,
+  html:not(.dark) .cta-card-gradient-overlay {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    background: rgba(255, 255, 255, 0.90) !important;
+  }
+}
+  </style>
+
+</head>
+
+<body>
+  <div class="noise-overlay" aria-hidden="true"></div>
+  <header id="site-header">
+    <div class="nav-inner">
+      <div class="nav-left">
+        <a href="index.html" class="nav-logo">
+          <img id="nav-logo-img" src="public/assets/logo/logo-dark.png" alt="Arox Tech Logo"
+            onerror="this.style.display='none';document.getElementById('nav-logo-text').style.display='block'" />
+          <span id="nav-logo-text"
+            style="display:none;font-family:var(--font-display);font-weight:800;font-size:1.25rem;color:var(--heading);letter-spacing:-.03em;">AROX</span>
+          <span class="mobile-breadcrumb-sep">/</span>
+          <span class="mobile-breadcrumb-current">Home</span>
+        </a>
+        <div class="nav-divider">/</div>
+        <nav class="nav-links" aria-label="Main navigation">
+          <a href="index.html" class="nav-link active">Home</a>
+          <a href="about.html" class="nav-link">About</a>
+          <a href="services.html" class="nav-link">Services</a>
+          <a href="courses.html" class="nav-link">Training</a>
+          <a href="contact.html" class="nav-link">Contact</a>
+        </nav>
+      </div>
+      <div class="nav-right">
+        <a href="/login" class="nav-login">Sign In</a>
+        <label class="switch" title="Toggle theme">
+          <input id="theme-checkbox" type="checkbox" aria-label="Toggle theme" />
+          <span class="slider">
+            <div class="star star_1"></div>
+            <div class="star star_2"></div>
+            <div class="star star_3"></div>
+            <svg viewBox="0 0 16 16" class="cloud_1 cloud">
+              <path
+                transform="matrix(.77976 0 0 .78395-299.99-418.63)"
+                fill="#fff"
+                d="m391.84 540.91c-.421-.329-.949-.524-1.523-.524-1.351 0-2.451 1.084-2.485 2.435-1.395.526-2.388 1.88-2.388 3.466 0 1.874 1.385 3.423 3.182 3.667v.034h12.73v-.006c1.775-.104 3.182-1.584 3.182-3.395 0-1.747-1.309-3.186-2.994-3.379.007-.106.011-.214.011-.322 0-2.707-2.271-4.901-5.072-4.901-2.073 0-3.856 1.202-4.643 2.925"
+              ></path>
+            </svg>
+          </span>
+        </label>
+        <button id="hamburger-btn" class="nav-hamburger" aria-label="Toggle mobile menu">
+          <svg id="hamburger-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <line class="line-1" x1="4" y1="6" x2="20" y2="6"></line>
+            <line class="line-2" x1="4" y1="12" x2="20" y2="12"></line>
+            <line class="line-3" x1="4" y1="18" x2="20" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+  <div id="mobile-menu" aria-hidden="true">
+    <div class="mobile-menu-panel">
+      <nav class="mobile-nav">
+        <a href="index.html" class="mobile-nav-link active">
+          <svg class="mobile-nav-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          <span>Home</span>
+        </a>
+        <a href="about.html" class="mobile-nav-link">
+          <svg class="mobile-nav-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+          <span>About</span>
+        </a>
+        <a href="services.html" class="mobile-nav-link">
+          <svg class="mobile-nav-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="7" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+          <span>Services</span>
+        </a>
+        <a href="courses.html" class="mobile-nav-link">
+          <svg class="mobile-nav-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+          <span>Training</span>
+        </a>
+        <a href="contact.html" class="mobile-nav-link">
+          <svg class="mobile-nav-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          <span>Contact</span>
+        </a>
+      </nav>
+      <div class="mobile-bottom">
+        <a href="/login" class="mobile-login-btn">
+          <svg class="mobile-nav-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+          <span>Sign In</span>
+        </a>
+      </div>
+    </div>
+  </div>
+  <main>
+    <!-- ============================================================
+         HERO SECTION
+    ============================================================ -->
+        <!-- ============================================================
+         HOME HERO SECTION WITH FULL-WIDTH BACKGROUND
+    ============================================================ -->
+    <section id="hero" class="home-hero-pro relative w-full min-h-screen min-h-[100dvh] flex flex-col items-center justify-center pt-24 pb-12 overflow-hidden">
+      <!-- Full-Width Background Wrapper -->
+      <div class="home-hero-bg-wrapper" aria-hidden="true">
+        <img src="assets/hero/hero-d.png" class="home-bg-img hero-img-dark" alt="AROX Tech Enterprise Background" loading="eager" onerror="this.src='public/assets/hero/hero-d.png'" />
+        <img src="assets/hero/hero-l.png" class="home-bg-img hero-img-light" alt="AROX Tech Enterprise Background" loading="eager" onerror="this.src='public/assets/hero/hero-l.png'" />
+        <div class="home-hero-bg-overlay"></div>
+      </div>
+
+      <div class="hero-inner max-w-4xl w-full mx-auto px-6 sm:px-8 relative z-10 flex flex-col items-center text-center">
+
+        <!-- Main Headline -->
+        <h1 class="hero-main-title font-display text-4xl sm:text-5xl lg:text-[4.2rem] font-black tracking-tight text-[var(--heading)] leading-[1.08] mb-6 max-w-3xl">
+          Building Scalable Systems for the <span class="hero-gradient-text">Intelligent Era</span>
+        </h1>
+
+        <!-- Subtitle -->
+        <p class="hero-description text-base sm:text-lg text-[var(--muted)] leading-relaxed font-light max-w-2xl mb-8">
+          We engineer mission-critical cloud backbones, high-impact digital platforms, and production AI workflows designed for extreme scale, sub-millisecond execution, and uncompromised resilience.
+        </p>
+
+        <!-- Dual Action Buttons -->
+        <div class="hero-action-row justify-center mb-10 w-full sm:w-auto">
+          <a href="contact.html" class="btn-primary-pro group relative inline-flex items-center justify-center gap-3 px-8 py-4 rounded-full font-display font-semibold text-sm transition-all duration-300 shadow-[0_10px_30px_rgba(0,210,255,0.3)] hover:shadow-[0_15px_40px_rgba(0,210,255,0.5)]">
+            <span>Start a Project</span>
+            <svg class="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+          </a>
+          <a href="#services-section" class="btn-secondary-pro inline-flex items-center justify-center gap-2.5 px-7 py-4 rounded-full border border-[var(--border)] bg-[var(--surface)]/70 hover:bg-[var(--surface-elevated)] backdrop-blur-md text-[var(--heading)] font-display font-semibold text-sm transition-all duration-300">
+            <svg class="w-4 h-4 text-[var(--primary)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polygon points="10 8 16 12 10 16 10 8"></polygon>
+            </svg>
+            <span>Explore Capabilities</span>
+          </a>
+        </div>
+
+        <!-- Scroll Chevron Indicator (Static) -->
+        <div class="hero-scroll-wrap">
+          <a href="#stats-section" aria-label="Scroll to stats" class="hero-scroll-btn">
+            <span class="hero-scroll-text">Explore</span>
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section id="stats-section">
+      <div class="stats-header"><span class="stats-eyebrow">Our Impact</span>
+        <h2 class="stats-title">Numbers that define us</h2>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-card-gsap">
+          <div class="light-sweep"></div>
+          <div class="stat-accent-bar"></div>
+          <div class="card-number" data-target="100" data-suffix="+">0+</div>
+          <div class="stat-desc">Students Trained</div>
+        </div>
+        <div class="stat-card-gsap">
+          <div class="light-sweep"></div>
+          <div class="stat-accent-bar"></div>
+          <div class="card-number" data-target="50" data-suffix="+">0+</div>
+          <div class="stat-desc">Projects Delivered</div>
+        </div>
+        <div class="stat-card-gsap">
+          <div class="light-sweep"></div>
+          <div class="stat-accent-bar"></div>
+          <div class="card-number" data-target="20" data-suffix="+">0+</div>
+          <div class="stat-desc">Business Clients</div>
+        </div>
+        <div class="stat-card-gsap">
+          <div class="light-sweep"></div>
+          <div class="stat-accent-bar"></div>
+          <div class="card-number" data-target="95" data-suffix="%">0%</div>
+          <div class="stat-desc">Satisfaction Rate</div>
+        </div>
+      </div>
+    </section>
+    <!-- ======================================================== -->
+    <!-- WE DELIVER: 3-COLUMN BALANCED 9-CARD SKEUOMORPHIC GRID    -->
+    <!-- ======================================================== -->
+    <section id="we-deliver-section" class="deliver-section-wrap" aria-label="We Deliver">
+      <!-- 3-Column Structured Card Grid (9 Cards Total) -->
+      <div class="deliver-grid-container" id="deliver-grid-container">
+        
+        <!-- Left Column (3 cards) -->
+        <div class="deliver-grid-col deliver-col-left">
+          <!-- 1. Custom Software Solutions -->
+          <article class="deliver-card deliver-grid-card" data-card="software">
+            <div class="deliver-squircle-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="16 18 22 12 16 6"></polyline>
+                <polyline points="8 6 2 12 8 18"></polyline>
+              </svg>
+            </div>
+            <div class="deliver-card-body">
+              <h3 class="deliver-card-title">Custom Software Solutions</h3>
+              <p class="deliver-card-tagline">Bespoke architectures engineered precisely for your unique operational workflows and scale.</p>
+            </div>
+            <div class="deliver-card-spotlight" aria-hidden="true"></div>
+          </article>
+
+          <!-- 2. Premium UI/UX Experience -->
+          <article class="deliver-card deliver-grid-card" data-card="uiux">
+            <div class="deliver-squircle-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect width="18" height="18" x="3" y="3" rx="2"></rect>
+                <path d="M3 9h18"></path>
+                <path d="M9 21V9"></path>
+              </svg>
+            </div>
+            <div class="deliver-card-body">
+              <h3 class="deliver-card-title">Premium UI/UX Experience</h3>
+              <p class="deliver-card-tagline">Human-centered, pixel-perfect interfaces crafted to drive engagement and retention.</p>
+            </div>
+            <div class="deliver-card-spotlight" aria-hidden="true"></div>
+          </article>
+
+          <!-- 3. Cloud-Ready Architecture -->
+          <article class="deliver-card deliver-grid-card" data-card="cloud">
+            <div class="deliver-squircle-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"></path>
+              </svg>
+            </div>
+            <div class="deliver-card-body">
+              <h3 class="deliver-card-title">Cloud-Ready Architecture</h3>
+              <p class="deliver-card-tagline">Scalable, resilient, and secure microservices built for zero downtime and peak traffic.</p>
+            </div>
+            <div class="deliver-card-spotlight" aria-hidden="true"></div>
+          </article>
+        </div>
+
+        <!-- Center Column (3 cards) -->
+        <div class="deliver-grid-col deliver-col-center">
+          <!-- 4. Agile Development Process (Top Flank) -->
+          <article class="deliver-card deliver-grid-card" data-card="agile">
+            <div class="deliver-squircle-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 2v6h-6"></path>
+                <path d="M3 12a9 9 0 0 1 15-6.7L21 8"></path>
+                <path d="M3 22v-6h6"></path>
+                <path d="M21 12a9 9 0 0 1-15 6.7L3 16"></path>
+              </svg>
+            </div>
+            <div class="deliver-card-body">
+              <h3 class="deliver-card-title">Agile Development Process</h3>
+              <p class="deliver-card-tagline">Rapid sprint cycles, continuous feedback, and transparent, on-time milestones.</p>
+            </div>
+            <div class="deliver-card-spotlight" aria-hidden="true"></div>
+          </article>
+
+          <!-- 5. WE DELIVER (Hero Center Card - Permanently Anchored in Center) -->
+          <article class="deliver-card deliver-hero-card" id="deliver-hero-card" data-card="hero">
+            <div class="deliver-card-body deliver-hero-body">
+              <h3 class="deliver-hero-title">We Deliver</h3>
+            </div>
+            <div class="card-rim-glow" aria-hidden="true"></div>
+            <div class="card-bottom-line" aria-hidden="true"></div>
+          </article>
+
+          <!-- 6. Robust Cyber Security (Bottom Flank) -->
+          <article class="deliver-card deliver-grid-card" data-card="security">
+            <div class="deliver-squircle-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                <path d="M12 8v4"></path>
+                <path d="M12 16h.01"></path>
+              </svg>
+            </div>
+            <div class="deliver-card-body">
+              <h3 class="deliver-card-title">Robust Cyber Security</h3>
+              <p class="deliver-card-tagline">Proactive threat intelligence, end-to-end encryption, and rigorous compliance.</p>
+            </div>
+            <div class="deliver-card-spotlight" aria-hidden="true"></div>
+          </article>
+        </div>
+
+        <!-- Right Column (3 cards) -->
+        <div class="deliver-grid-col deliver-col-right">
+          <!-- 7. AI-Powered Innovation -->
+          <article class="deliver-card deliver-grid-card" data-card="ai">
+            <div class="deliver-squircle-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"></path>
+              </svg>
+            </div>
+            <div class="deliver-card-body">
+              <h3 class="deliver-card-title">AI-Powered Innovation</h3>
+              <p class="deliver-card-tagline">Intelligent automation and predictive models embedded natively into your core stack.</p>
+            </div>
+            <div class="deliver-card-spotlight" aria-hidden="true"></div>
+          </article>
+
+          <!-- 8. Business-First Solutions -->
+          <article class="deliver-card deliver-grid-card" data-card="business">
+            <div class="deliver-squircle-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline>
+                <polyline points="16 7 22 7 22 13"></polyline>
+              </svg>
+            </div>
+            <div class="deliver-card-body">
+              <h3 class="deliver-card-title">Business-First Solutions</h3>
+              <p class="deliver-card-tagline">Technology engineered with clear ROI and strategic revenue drivers.</p>
+            </div>
+            <div class="deliver-card-spotlight" aria-hidden="true"></div>
+          </article>
+
+          <!-- 9. Long-Term Partnership -->
+          <article class="deliver-card deliver-grid-card" data-card="partnership">
+            <div class="deliver-squircle-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                <path d="m9 12 2 2 4-4"></path>
+              </svg>
+            </div>
+            <div class="deliver-card-body">
+              <h3 class="deliver-card-title">Long-Term Partnership</h3>
+              <p class="deliver-card-tagline">Dedicated continuous maintenance, proactive optimization, and evolving features.</p>
+            </div>
+            <div class="deliver-card-spotlight" aria-hidden="true"></div>
+          </article>
+        </div>
+
+      </div>
+
+      <!-- ============================================================
+           MOBILE NATIVE DELIVER COMPONENT (Reference Image Style)
+           Strictly active at max-width: 768px. Auto-scrolls every 3s.
+      ============================================================ -->
+      <div class="mobile-deliver-container" id="mobileDeliverContainer">
+        <h2 class="mobile-deliver-title">We deliver</h2>
+        <div class="mobile-deliver-pill-wrap">
+          <button type="button" class="mobile-deliver-pill" id="mobileDeliverPill" aria-label="Next deliver capability">
+            <span class="mobile-deliver-pill-text" id="mobileDeliverPillText">AI automations</span>
+          </button>
+        </div>
+        <p class="mobile-deliver-desc" id="mobileDeliverDesc">
+          Autonomous workflows, LLMs &amp; intelligent system integrations
+        </p>
+        <div class="mobile-deliver-dots" id="mobileDeliverDots">
+          <span class="mobile-deliver-dot active"></span>
+          <span class="mobile-deliver-dot"></span>
+          <span class="mobile-deliver-dot"></span>
+          <span class="mobile-deliver-dot"></span>
+          <span class="mobile-deliver-dot"></span>
+          <span class="mobile-deliver-dot"></span>
+          <span class="mobile-deliver-dot"></span>
+        </div>
+      </div>
+    </section>
+    <section id="services-section">
+      <div style="max-width:1400px;margin:0 auto;">
+        <div class="services-header">
+          <span class="section-eyebrow">OUR SERVICES</span>
+          <h2 class="text-h2 section-title">Our Service Ecosystem</h2>
+         <center> <p class="services-subtitle">End-to-end solutions designed to accelerate your digital growth.</p>
+        </div>
+        <div style="width:100%;margin-top:3rem;position:relative;z-index:20;">
+          <div class="card-grid bento-section" id="bento-grid"></div>
+        </div>
+        <div class="services-view-all-wrap">
+          <a href="services.html" class="btn-services-view-all">
+            <span>View All Services</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </a>
+        </div>
+      </div>
+    </section>
+    <section id="projects-section" class="featured-projects-section">
+      <div class="projects-container">
+        <div class="projects-header">
+          <div class="projects-badge">OUR WORK</div>
+          <h2 class="projects-title">Featured Projects</h2>
+          <p class="projects-subtitle">Building digital experiences that solve real-world business problems.</p>
+        </div>
+        <div id="coverflow-wrapper" class="coverflow-wrapper"></div>
+      </div>
+    </section>
+    <section id="testimonials-section">
+      <div style="max-width:1400px;margin:0 auto;">
+        <div class="testimonials-header"><span class="section-eyebrow">Proven Excellence</span>
+          <h2 class="text-h2 section-title">Client Testimonials</h2>
+          <div class="testimonials-title-pill"></div>
+        </div>
+        <div class="testimonials-inner">
+          <div class="testimonial-stack-col">
+            <div class="testimonial-stack-wrap">
+              <div class="stack-bg-1"></div>
+              <div class="stack-bg-2"></div>
+              <div class="card-stack" id="card-stack"></div>
+              
+              <!-- Controls Container -->
+              <div class="stack-controls">
+                <button class="stack-arrow stack-arrow-prev" id="stack-prev" aria-label="Previous client">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="19" y1="12" x2="5" y2="12"></line>
+                    <polyline points="12 19 5 12 12 5"></polyline>
+                  </svg>
+                </button>
+                <div class="stack-dots" id="stack-dots"></div>
+                <button class="stack-arrow stack-arrow-next" id="stack-next" aria-label="Next client">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                    <polyline points="12 5 19 12 12 19"></polyline>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="testimonial-text-col">
+            <div class="testimonial-quote-card">
+
+<div class="testimonial-content-area" id="testimonial-content-area"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+  
+  <!-- PRE-FOOTER CTA SECTION -->
+  <section class="cta-section" id="cta">
+    <div class="cta-card reveal">
+      <!-- Full-Width Responsive Background Wrapper -->
+      <div class="cta-card-bg-wrapper" aria-hidden="true">
+        <img src="assets/CTC-d.png" class="cta-bg-img cta-img-dark hero-img-dark" alt="Turn ideas into digital experiences" loading="lazy" onerror="this.src='public/assets/CTC-d.png'" />
+        <img src="assets/CTC-l.png" class="cta-bg-img cta-img-light hero-img-light" alt="Turn ideas into digital experiences" loading="lazy" onerror="this.src='public/assets/CTC-l.png'" />
+        <div class="cta-card-gradient-overlay"></div>
+      </div>
+      <div class="cta-content">
+        <h2 class="cta-heading">Turn ideas into digital experiences.</h2>
+        <p class="cta-text">Discover how AROX Tech combines technology, design, and problem-solving to create digital products that move businesses forward.</p>
+        <div class="cta-actions">
+          <a href="contact.html" class="btn-primary">
+            <span>Start a Project</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-left: 6px; display: inline-block; vertical-align: middle;"><line x1="7" y1="17" x2="17" y2="7" /><polyline points="7 7 17 7 17 17" /></svg>
+          </a>
+          <a href="services.html" class="btn-secondary">
+            <span>Explore Services</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+      <footer>
+        <div class="footer-inner">
+            <!-- Background Watermark -->
+            <div class="footer-watermark">Arox Tech</div>
+
+            <!-- Main Footer Grid / Mobile Accordions -->
+            <div class="footer-grid">
+                <!-- Brand Section -->
+                <div class="footer-brand">
+                    <a href="index.html" class="footer-brand-logo">
+                        <img id="footer-logo-img" src="public/assets/logo/logo-dark.png" alt="Arox Tech" onerror="this.src='assets/logo/logo-dark.png'" />
+                    </a>
+                    <p class="footer-tagline">
+                        We build scalable software architectures, robust digital platforms, and high-impact AI solutions for modern businesses.
+                    </p>
+                    <!-- 4 Social Icons in a Single Row: Instagram, WhatsApp, Facebook, LinkedIn -->
+                    <div class="footer-socials">
+                        <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="footer-social-btn" aria-label="Instagram">
+                            <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                        </a>
+                        <a href="https://whatsapp.com" target="_blank" rel="noopener noreferrer" class="footer-social-btn" aria-label="WhatsApp">
+                            <svg viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
+                        </a>
+                        <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" class="footer-social-btn" aria-label="Facebook">
+                            <svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                        </a>
+                        <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" class="footer-social-btn" aria-label="LinkedIn">
+                            <svg viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Row 1 / Col 2: Company -->
+                <details class="footer-col footer-col-company" open>
+                    <summary class="footer-col-header">
+                        <div class="footer-col-header-left">
+                            <div>
+                                <h3 class="footer-col-title">Company</h3>
+                                <div class="footer-title-bar"></div>
+                            </div>
+                        </div>
+                        <div class="footer-chevron">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                        </div>
+                    </summary>
+                    <div class="footer-col-body">
+                        <ul class="footer-links">
+                            <li><a class="footer-link" href="about.html">About Us</a></li>
+                            <li><a class="footer-link" href="about.html#mission-section">Purpose &amp; Vision</a></li>
+                            <li><a class="footer-link" href="about.html#process-section">Operating Model</a></li>
+                            <li><a class="footer-link" href="apply.html">Careers</a></li>
+                            <li><a class="footer-link" href="services.html">Partners</a></li>
+                            <li><a class="footer-link" href="contact.html">Contact Us</a></li>
+                        </ul>
+                    </div>
+                </details>
+
+                <!-- Row 1 / Col 3: Services -->
+                <details class="footer-col footer-col-services" open>
+                    <summary class="footer-col-header">
+                        <div class="footer-col-header-left">
+                            <div>
+                                <h3 class="footer-col-title">Services</h3>
+                                <div class="footer-title-bar"></div>
+                            </div>
+                        </div>
+                        <div class="footer-chevron">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                        </div>
+                    </summary>
+                    <div class="footer-col-body">
+                        <ul class="footer-links">
+                            <li><a class="footer-link" href="services.html?service=development#domain-section-0"><span>Development</span><svg class="footer-arrow-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg></a></li>
+                            <li><a class="footer-link" href="services.html?service=creative#domain-section-1"><span>Creative &amp; Experience</span><svg class="footer-arrow-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg></a></li>
+                            <li><a class="footer-link" href="services.html?service=business#domain-section-2"><span>Business Solutions</span><svg class="footer-arrow-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg></a></li>
+                            <li><a class="footer-link" href="services.html?service=infrastructure#domain-section-3"><span>Infrastructure</span><svg class="footer-arrow-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg></a></li>
+                        </ul>
+                    </div>
+                </details>
+
+                <!-- Row 1 / Col 4: Training -->
+                <details class="footer-col footer-col-training" open>
+                    <summary class="footer-col-header">
+                        <div class="footer-col-header-left">
+                            <div>
+                                <h3 class="footer-col-title">Training</h3>
+                                <div class="footer-title-bar"></div>
+                            </div>
+                        </div>
+                        <div class="footer-chevron">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                        </div>
+                    </summary>
+                    <div class="footer-col-body">
+                        <ul class="footer-links">
+                            <li><a class="footer-link" href="detail.html?course=full-stack-web-development&amp;from=training">Full Stack Web Dev</a></li>
+                            <li><a class="footer-link" href="detail.html?course=data-science-and-ai&amp;from=training">Python &amp; Data Science</a></li>
+                            <li><a class="footer-link" href="detail.html?course=data-science-and-ai&amp;from=training">AI &amp; Machine Learning</a></li>
+                            <li><a class="footer-link" href="detail.html?course=cyber-security&amp;from=training">Cyber Security</a></li>
+                            <li><a class="footer-link" href="detail.html?course=devops-engineering&amp;from=training">Cloud &amp; DevOps</a></li>
+                            <li><a class="footer-link" href="detail.html?course=ui-ux-designing&amp;from=training">UI/UX Designing</a></li>
+                        </ul>
+                    </div>
+                </details>
+
+                <!-- Row 2 / Col 2: Internships -->
+                <details class="footer-col footer-col-internships" open>
+                    <summary class="footer-col-header">
+                        <div class="footer-col-header-left">
+                            <div>
+                                <h3 class="footer-col-title">Internship</h3>
+                                <div class="footer-title-bar"></div>
+                            </div>
+                        </div>
+                        <div class="footer-chevron">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                        </div>
+                    </summary>
+                    <div class="footer-col-body">
+                        <ul class="footer-links">
+                            <li><a class="footer-link" href="training.html?tab=internship&amp;domain=cse_it#internshipDomainWrap"><span>CSE &amp; IT</span><svg class="footer-arrow-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg></a></li>
+                            <li><a class="footer-link" href="training.html?tab=internship&amp;domain=ece#internshipDomainWrap"><span>ECE</span><svg class="footer-arrow-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg></a></li>
+                            <li><a class="footer-link" href="training.html?tab=internship&amp;domain=mech#internshipDomainWrap"><span>MECH</span><svg class="footer-arrow-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg></a></li>
+                            <li><a class="footer-link" href="training.html?tab=internship&amp;domain=management#internshipDomainWrap"><span>MANAGEMENT</span><svg class="footer-arrow-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg></a></li>
+                        </ul>
+                    </div>
+                </details>
+
+                <!-- Row 2 / Col 3: Contact -->
+                <details class="footer-col footer-col-contact" open>
+                    <summary class="footer-col-header">
+                        <div class="footer-col-header-left">
+                            <div>
+                                <h3 class="footer-col-title">Contact</h3>
+                                <div class="footer-title-bar"></div>
+                            </div>
+                        </div>
+                        <div class="footer-chevron">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                        </div>
+                    </summary>
+                    <div class="footer-col-body">
+                        <ul class="footer-contact-items">
+                            <li class="footer-contact-item">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                                <span>Salem, Tamil Nadu, India</span>
+                            </li>
+                            <li class="footer-contact-item">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13.1a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.56 2.38l3-.02a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.18 6.18l1.44-1.44a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7a2 2 0 0 1 1.72 2.03z"/></svg>
+                                <a href="tel:+911234567890">+91 12345 67890</a>
+                            </li>
+                            <li class="footer-contact-item">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                                <a href="mailto:info@aroxtech.com">info@aroxtech.com</a>
+                            </li>
+                            <li class="footer-contact-item">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                <span>Mon - Sat: 9:00 AM - 6:00 PM</span>
+                            </li>
+                        </ul>
+                    </div>
+                </details>
+            </div>
+        </div>
+
+        <!-- Footer Bottom Bar -->
+        <div class="footer-bottom">
+            <div class="footer-bottom-inner">
+                <p class="footer-copyright-bottom">&copy; <span>AROX Tech 2026</span> All Rights Reserved</p>
+                <div class="footer-bottom-right">
+                    <a href="#" class="footer-legal-link">Terms &amp; Conditions</a>
+                    <span class="footer-legal-sep">&bull;</span>
+                    <a href="#" class="footer-legal-link">Privacy Policy</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+  <script src="js/main.js" defer></script>
+  <script src="js/coverflow.js" defer></script>
+
+
+
+  <!-- Dynamic Theme Sync for Home Hero Background Image -->
+  <script>
+    (function() {
+      function syncHomeHeroImages() {
+        var isLight = document.documentElement.classList.contains('theme-light') || 
+                      document.documentElement.getAttribute('data-theme') === 'light' ||
+                      (!document.documentElement.classList.contains('dark') && !document.documentElement.classList.contains('theme-dark'));
+        var darkImgs = document.querySelectorAll('.hero-img-dark');
+        var lightImgs = document.querySelectorAll('.hero-img-light');
+        darkImgs.forEach(function(img) {
+          img.style.setProperty('display', isLight ? 'none' : 'block', 'important');
+        });
+        lightImgs.forEach(function(img) {
+          img.style.setProperty('display', isLight ? 'block' : 'none', 'important');
+        });
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', syncHomeHeroImages);
+      } else {
+        syncHomeHeroImages();
+      }
+
+      window.addEventListener('arox-theme-change', syncHomeHeroImages);
+
+      var themeObserver = new MutationObserver(function() {
+        syncHomeHeroImages();
+      });
+      themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['class', 'data-theme'] });
+    })();
+  </script>
+
+</body>
+</html>
+

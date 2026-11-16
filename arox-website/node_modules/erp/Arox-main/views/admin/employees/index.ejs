@@ -1,0 +1,429 @@
+<div class="erp-h1" style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; color: #000000;">
+  <div>
+    <div style="font-size: 24px; font-weight: 750;">Employees & Staff Directory</div>
+    <div style="font-size: 13px; color: #64748B; font-weight: 500; margin-top: 2px;">Manage team members, roles, permissions, departments and assignments</div>
+  </div>
+  <button onclick="openCreateEmployeeModal()" class="erp-btn erp-btn-primary" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; background: #000; color: #fff; border-radius: 8px; font-weight: 600; font-size: 13px; border: none; cursor: pointer;">
+    <i data-lucide="user-plus" style="width: 16px; height: 16px;"></i> Add New Employee
+  </button>
+</div>
+
+<!-- Interactive Catalogue Filter Toolbar (Apple + Google Material 3) -->
+<!-- Summary Metric Cards -->
+<%
+  const totalEmployees = employees ? employees.length : 0;
+  const activeEmployees = employees ? employees.filter(e => (e.status || 'active').toLowerCase() === 'active').length : 0;
+  const staffTrainers = employees ? employees.filter(e => e.role_name === 'employee' || (e.department || '').toLowerCase().includes('train') || (e.department || '').toLowerCase().includes('tech')).length : 0;
+  const adminOfficers = employees ? employees.filter(e => e.role_name === 'admin' || e.role_name === 'super_admin').length : 0;
+%>
+<div class="erp-grid-4" style="margin-bottom: 24px;">
+  <div class="erp-card" style="background: #FFFFFF; border: 1px solid #E2E8F0; padding: 20px;">
+    <div class="erp-card-header">
+      <div class="erp-card-icon" style="background: #000000; color: #FFFFFF;">
+        <i data-lucide="briefcase"></i>
+      </div>
+      <div class="erp-card-title" style="color: #64748B;">Total Staff</div>
+    </div>
+    <div class="erp-card-value" style="color: #000000;"><%= totalEmployees %></div>
+    <div class="erp-p" style="margin-top: 6px; color: #64748B; font-size: 12px;">Employees & management</div>
+  </div>
+
+  <div class="erp-card" style="background: #FFFFFF; border: 1px solid #E2E8F0; padding: 20px;">
+    <div class="erp-card-header">
+      <div class="erp-card-icon" style="background: #000000; color: #FFFFFF;">
+        <i data-lucide="user-check"></i>
+      </div>
+      <div class="erp-card-title" style="color: #64748B;">Active Members</div>
+    </div>
+    <div class="erp-card-value" style="color: #000000;"><%= activeEmployees %></div>
+    <div class="erp-p" style="margin-top: 6px; color: #16A34A; font-weight: 600; font-size: 12px;">Currently operational</div>
+  </div>
+
+  <div class="erp-card" style="background: #FFFFFF; border: 1px solid #E2E8F0; padding: 20px;">
+    <div class="erp-card-header">
+      <div class="erp-card-icon" style="background: #000000; color: #FFFFFF;">
+        <i data-lucide="user-cog"></i>
+      </div>
+      <div class="erp-card-title" style="color: #64748B;">Operations & Training</div>
+    </div>
+    <div class="erp-card-value" style="color: #000000;"><%= staffTrainers %></div>
+    <div class="erp-p" style="margin-top: 6px; color: #2563EB; font-weight: 600; font-size: 12px;">Instructional & CRM</div>
+  </div>
+
+  <div class="erp-card" style="background: #FFFFFF; border: 1px solid #E2E8F0; padding: 20px;">
+    <div class="erp-card-header">
+      <div class="erp-card-icon" style="background: #000000; color: #FFFFFF;">
+        <i data-lucide="shield-check"></i>
+      </div>
+      <div class="erp-card-title" style="color: #64748B;">Administrators</div>
+    </div>
+    <div class="erp-card-value" style="color: #000000;"><%= adminOfficers %></div>
+    <div class="erp-p" style="margin-top: 6px; color: #000000; font-weight: 600; font-size: 12px;">Privileged access</div>
+  </div>
+</div>
+<div class="catalogue-toolbar" data-catalogue="employees">
+  <div class="catalogue-filters-group">
+    <!-- Search Input -->
+    <div class="catalogue-search-wrap">
+      <i data-lucide="search"></i>
+      <input type="text" class="catalogue-search-input" placeholder="Search by name, email, designation...">
+    </div>
+
+    <!-- Status Filter -->
+    <select class="catalogue-select" data-filter="status" title="Filter by Status">
+      <option value="all">All Status</option>
+      <option value="active">Active</option>
+      <option value="inactive">Inactive</option>
+    </select>
+
+    <!-- Department Filter -->
+    <select class="catalogue-select" data-filter="department" title="Filter by Department">
+      <option value="all">All Departments</option>
+      <option value="training">Training</option>
+      <option value="operations">Operations</option>
+      <option value="sales">Sales & Marketing</option>
+      <option value="general">General Operations</option>
+    </select>
+
+    <!-- Sort Dropdown -->
+    <select class="catalogue-select" data-filter="sort" title="Sort records">
+      <option value="name">Name (A - Z)</option>
+      <option value="name_desc">Name (Z - A)</option>
+      <option value="newest">Newest First</option>
+    </select>
+
+    <!-- Reset Button -->
+    <button type="button" class="catalogue-reset-btn" title="Reset all filters">
+      <i data-lucide="rotate-ccw" style="width: 13px; height: 13px;"></i>
+      <span>Reset</span>
+    </button>
+
+    <!-- Result Counter -->
+    <span class="catalogue-count-badge">Showing <%= employees ? employees.length : 0 %> employees</span>
+  </div>
+
+  <!-- Segmented View Switcher: List vs Kanban/Grid -->
+  <div class="catalogue-view-switcher">
+    <button type="button" class="view-btn active" data-view="list" title="Table List View">
+      <i data-lucide="list"></i>
+      <span>List</span>
+    </button>
+    <button type="button" class="view-btn" data-view="kanban" title="Kanban Card Grid View">
+      <i data-lucide="layout-grid"></i>
+      <span>Kanban</span>
+    </button>
+  </div>
+</div>
+
+<!-- 1. LIST VIEW (Data Table) -->
+<div class="catalogue-list-view" data-catalogue="employees">
+  <div class="erp-card" style="padding: 0; background: #FFFFFF; border: 1px solid #E2E8F0; overflow: hidden; margin-bottom: 24px;">
+    <div style="padding: 18px 24px; border-bottom: 1px solid #E2E8F0; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+      <div>
+        <h3 style="margin: 0; font-size: 16px; font-weight: 700; color: #000;">Staff & Trainer Roster</h3>
+        <p style="margin: 2px 0 0; font-size: 12px; color: #64748B;">Complete employee details, roles, assignments and credentials.</p>
+      </div>
+    </div>
+
+    <div class="erp-table-container" style="border: none; border-radius: 0; margin-bottom: 0;">
+      <table class="erp-table">
+        <thead>
+          <tr>
+            <th style="color: #000;">Employee</th>
+            <th style="color: #000;">Designation & Dept</th>
+            <th style="color: #000;">Contact</th>
+            <th style="color: #000;">Role</th>
+            <th style="color: #000;">Status</th>
+            <th style="text-align: right; color: #000;">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (employees && employees.length > 0) { %>
+            <% employees.forEach(emp => { %>
+              <tr data-search="<%= (emp.first_name + ' ' + (emp.last_name || '') + ' ' + emp.email + ' ' + (emp.phone || '') + ' ' + (emp.designation || '') + ' ' + (emp.department || '')).toLowerCase() %>"
+                  data-status="<%= (emp.status || 'active').toLowerCase() %>"
+                  data-department="<%= (emp.department || '').toLowerCase() %>"
+                  data-name="<%= (emp.first_name + ' ' + (emp.last_name || '')).toLowerCase() %>"
+                  data-newest="<%= emp.id %>">
+                <td>
+                  <div style="display: flex; align-items: center; gap: 10px;">
+                    <div style="width: 36px; height: 36px; border-radius: 50%; background: #000; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px;">
+                      <%= (emp.first_name || 'E').charAt(0).toUpperCase() %>
+                    </div>
+                    <div>
+                      <div style="font-weight: 700; color: #000; font-size: 14px;"><%= emp.first_name %> <%= emp.last_name || '' %></div>
+                      <div style="font-size: 11px; color: #64748B;">ID: #EMP-<%= emp.id %></div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div style="font-weight: 600; color: #000; font-size: 13px;"><%= emp.designation || 'Staff Member' %></div>
+                  <div style="font-size: 11px; color: #64748B;"><%= emp.department || 'General Operations' %></div>
+                </td>
+                <td>
+                  <div style="font-size: 13px; color: #000;"><%= emp.email %></div>
+                  <div style="font-size: 11px; color: #64748B;"><%= emp.phone || 'No phone set' %></div>
+                </td>
+                <td>
+                  <span style="display: inline-block; padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; text-transform: uppercase; background: #F1F5F9; color: #000; border: 1px solid #CBD5E1;">
+                    <%= emp.role_name || (emp.role_id === 1 ? 'super_admin' : (emp.role_id === 2 ? 'admin' : 'employee')) %>
+                  </span>
+                </td>
+                <td>
+                  <% if (emp.status === 'active') { %>
+                    <span style="display: inline-block; padding: 2px 8px; background: #DCFCE7; color: #166534; border-radius: 99px; font-size: 11px; font-weight: 600;">Active</span>
+                  <% } else { %>
+                    <span style="display: inline-block; padding: 2px 8px; background: #F1F5F9; color: #64748B; border-radius: 99px; font-size: 11px; font-weight: 600;">Inactive</span>
+                  <% } %>
+                </td>
+                <td style="text-align: right;">
+                  <div style="display: inline-flex; gap: 6px;">
+                    <button onclick="openEditEmployeeById('<%= emp.id %>')" class="erp-btn erp-btn-secondary" style="padding: 4px 8px; font-size: 11px; border: 1px solid #CBD5E1; color: #000; cursor: pointer;">
+                      Edit
+                    </button>
+                    <% if (user && user.id !== emp.id) { %>
+                      <button onclick="deleteEmployee('<%= emp.id %>', '<%= emp.first_name %> <%= emp.last_name %>')" class="erp-btn" style="padding: 4px 8px; font-size: 11px; border: 1px solid #FECACA; background: #FEF2F2; color: #DC2626; cursor: pointer;">
+                        Delete
+                      </button>
+                    <% } %>
+                  </div>
+                </td>
+              </tr>
+            <% }); %>
+          <% } else { %>
+            <tr class="empty-state-row">
+              <td colspan="6" style="text-align: center; padding: 36px; color: #64748B;">No employees listed.</td>
+            </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- 2. KANBAN / GRID VIEW (Apple + Google Cards) -->
+<div class="catalogue-kanban-view" data-catalogue="employees" style="display: none;">
+  <% if (employees && employees.length > 0) { %>
+    <% employees.forEach(emp => { %>
+      <div class="kanban-item-card"
+           data-search="<%= (emp.first_name + ' ' + (emp.last_name || '') + ' ' + emp.email + ' ' + (emp.phone || '') + ' ' + (emp.designation || '') + ' ' + (emp.department || '')).toLowerCase() %>"
+           data-status="<%= (emp.status || 'active').toLowerCase() %>"
+           data-department="<%= (emp.department || '').toLowerCase() %>"
+           data-name="<%= (emp.first_name + ' ' + (emp.last_name || '')).toLowerCase() %>"
+           data-newest="<%= emp.id %>">
+        <div class="kanban-card-top">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <div style="width: 42px; height: 42px; border-radius: 50%; background: #000; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 16px;">
+              <%= (emp.first_name || 'E').charAt(0).toUpperCase() %>
+            </div>
+            <div>
+              <div class="kanban-card-title"><%= emp.first_name %> <%= emp.last_name || '' %></div>
+              <div class="kanban-card-subtitle">#EMP-<%= emp.id %></div>
+            </div>
+          </div>
+          <% if (emp.status === 'active') { %>
+            <span style="padding: 3px 8px; background: #DCFCE7; color: #166534; border-radius: 99px; font-size: 11px; font-weight: 700;">Active</span>
+          <% } else { %>
+            <span style="padding: 3px 8px; background: #F1F5F9; color: #64748B; border-radius: 99px; font-size: 11px; font-weight: 700;">Inactive</span>
+          <% } %>
+        </div>
+
+        <div class="kanban-card-body">
+          <div style="font-weight: 700; color: #000; font-size: 14px;"><%= emp.designation || 'Staff Member' %></div>
+          <div class="kanban-chip-row" style="margin-top: 4px;">
+            <span class="kanban-chip"><i data-lucide="building-2"></i> <%= emp.department || 'Operations' %></span>
+            <span class="kanban-chip" style="background:#000; color:#fff; text-transform: uppercase;">
+              <%= emp.role_name || (emp.role_id === 1 ? 'super_admin' : (emp.role_id === 2 ? 'admin' : 'employee')) %>
+            </span>
+          </div>
+          <div style="margin-top: 8px; font-size: 12px; color: #475569; display: flex; flex-direction: column; gap: 3px;">
+            <div><i data-lucide="mail" style="width: 12px; height: 12px; display: inline-block; vertical-align: middle;"></i> <%= emp.email %></div>
+            <div><i data-lucide="phone" style="width: 12px; height: 12px; display: inline-block; vertical-align: middle;"></i> <%= emp.phone || 'No phone' %></div>
+          </div>
+        </div>
+
+        <div class="kanban-card-footer">
+          <a href="mailto:<%= emp.email %>" class="erp-btn erp-btn-secondary" style="padding: 6px 12px; font-size: 12px; border: 1px solid #CBD5E1; color: #000; text-decoration: none; border-radius: 8px;">
+            <i data-lucide="mail" style="width: 13px; height: 13px;"></i> Email
+          </a>
+          <div style="display: inline-flex; gap: 6px;">
+            <button onclick="openEditEmployeeById('<%= emp.id %>')" class="erp-btn erp-btn-secondary" style="padding: 6px 12px; font-size: 12px; border: 1px solid #CBD5E1; color: #000; border-radius: 8px; cursor: pointer;">
+              Edit
+            </button>
+            <% if (user && user.id !== emp.id) { %>
+              <button onclick="deleteEmployee('<%= emp.id %>', '<%= emp.first_name %> <%= emp.last_name %>')" class="erp-btn" style="padding: 6px 12px; font-size: 12px; border: 1px solid #FECACA; background: #FEF2F2; color: #DC2626; border-radius: 8px; cursor: pointer;">
+                Delete
+              </button>
+            <% } %>
+          </div>
+        </div>
+      </div>
+    <% }); %>
+  <% } else { %>
+    <div class="kanban-empty-state">
+      <i data-lucide="users" style="width: 32px; height: 32px; margin-bottom: 8px; color: #94A3B8;"></i>
+      <div>No employees found.</div>
+    </div>
+  <% } %>
+</div>
+
+<!-- Modal: Create / Edit Employee -->
+<div id="employeeModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 99999; align-items: center; justify-content: center; padding: 16px;">
+  <div style="background: #FFFFFF; border-radius: 12px; width: 100%; max-width: 520px; padding: 24px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+      <h3 id="employeeModalTitle" style="margin: 0; font-size: 18px; font-weight: 700; color: #000;">Add New Employee</h3>
+      <button onclick="closeEmployeeModal()" style="border: none; background: transparent; font-size: 20px; cursor: pointer; color: #64748B;">&times;</button>
+    </div>
+
+    <form id="employeeForm" onsubmit="handleEmployeeSubmit(event)">
+      <input type="hidden" id="modalEmpId" value="">
+      
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+        <div>
+          <label style="display: block; font-size: 12px; font-weight: 700; color: #000; margin-bottom: 4px;">First Name *</label>
+          <input type="text" id="modalEmpFirst" required style="width: 100%; padding: 8px 12px; border: 1px solid #CBD5E1; border-radius: 6px;">
+        </div>
+        <div>
+          <label style="display: block; font-size: 12px; font-weight: 700; color: #000; margin-bottom: 4px;">Last Name *</label>
+          <input type="text" id="modalEmpLast" required style="width: 100%; padding: 8px 12px; border: 1px solid #CBD5E1; border-radius: 6px;">
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+        <div>
+          <label style="display: block; font-size: 12px; font-weight: 700; color: #000; margin-bottom: 4px;">Email Address *</label>
+          <input type="email" id="modalEmpEmail" required style="width: 100%; padding: 8px 12px; border: 1px solid #CBD5E1; border-radius: 6px;">
+        </div>
+        <div>
+          <label style="display: block; font-size: 12px; font-weight: 700; color: #000; margin-bottom: 4px;">Phone Number</label>
+          <input type="tel" id="modalEmpPhone" style="width: 100%; padding: 8px 12px; border: 1px solid #CBD5E1; border-radius: 6px;">
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+        <div>
+          <label style="display: block; font-size: 12px; font-weight: 700; color: #000; margin-bottom: 4px;">Designation</label>
+          <input type="text" id="modalEmpDesignation" placeholder="e.g. Senior Lead Trainer" style="width: 100%; padding: 8px 12px; border: 1px solid #CBD5E1; border-radius: 6px;">
+        </div>
+        <div>
+          <label style="display: block; font-size: 12px; font-weight: 700; color: #000; margin-bottom: 4px;">Department</label>
+          <input type="text" id="modalEmpDepartment" placeholder="e.g. Engineering & Mentorship" style="width: 100%; padding: 8px 12px; border: 1px solid #CBD5E1; border-radius: 6px;">
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px;">
+        <div>
+          <label style="display: block; font-size: 12px; font-weight: 700; color: #000; margin-bottom: 4px;">System Role</label>
+          <select id="modalEmpRole" style="width: 100%; padding: 8px 12px; border: 1px solid #CBD5E1; border-radius: 6px; background: #fff;">
+            <option value="employee">Employee / Trainer</option>
+            <option value="admin">Administrator</option>
+          </select>
+        </div>
+        <div>
+          <label style="display: block; font-size: 12px; font-weight: 700; color: #000; margin-bottom: 4px;">Status</label>
+          <select id="modalEmpStatus" style="width: 100%; padding: 8px 12px; border: 1px solid #CBD5E1; border-radius: 6px; background: #fff;">
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; gap: 10px;">
+        <button type="button" onclick="closeEmployeeModal()" class="erp-btn erp-btn-secondary" style="padding: 8px 16px; border: 1px solid #CBD5E1; color: #000; cursor: pointer;">Cancel</button>
+        <button type="submit" id="empSubmitBtn" class="erp-btn erp-btn-primary" style="padding: 8px 20px; background: #000; color: #fff; border-radius: 6px; font-weight: 600; cursor: pointer;">Save Employee</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  const allEmployeesMap = <%- JSON.stringify((employees || []).reduce((acc, emp) => ({ ...acc, [emp.id]: emp }), {})) %>;
+
+  function openEditEmployeeById(id) {
+    const emp = allEmployeesMap[id];
+    if (!emp) return console.warn('Employee not found:', id);
+    const role = emp.role_name || (emp.role_id === 4 ? 'employee' : 'admin');
+    openEditEmployeeModal(emp.id, emp.first_name, emp.last_name || '', emp.email, emp.phone || '', role, emp.designation || '', emp.department || '', emp.status);
+  }
+
+  function openCreateEmployeeModal() {
+    document.getElementById('employeeModalTitle').textContent = 'Add New Employee';
+    document.getElementById('modalEmpId').value = '';
+    document.getElementById('modalEmpFirst').value = '';
+    document.getElementById('modalEmpLast').value = '';
+    document.getElementById('modalEmpEmail').value = '';
+    document.getElementById('modalEmpPhone').value = '';
+    document.getElementById('modalEmpDesignation').value = '';
+    document.getElementById('modalEmpDepartment').value = '';
+    document.getElementById('modalEmpRole').value = 'employee';
+    document.getElementById('modalEmpStatus').value = 'active';
+    document.getElementById('employeeModal').style.display = 'flex';
+  }
+
+  function openEditEmployeeModal(id, first, last, email, phone, role, designation, department, status) {
+    document.getElementById('employeeModalTitle').textContent = `Edit Employee: ${first} ${last}`;
+    document.getElementById('modalEmpId').value = id;
+    document.getElementById('modalEmpFirst').value = first;
+    document.getElementById('modalEmpLast').value = last;
+    document.getElementById('modalEmpEmail').value = email;
+    document.getElementById('modalEmpPhone').value = phone;
+    document.getElementById('modalEmpDesignation').value = designation;
+    document.getElementById('modalEmpDepartment').value = department;
+    document.getElementById('modalEmpRole').value = role.includes('admin') ? 'admin' : 'employee';
+    document.getElementById('modalEmpStatus').value = status || 'active';
+    document.getElementById('employeeModal').style.display = 'flex';
+  }
+
+  function closeEmployeeModal() {
+    document.getElementById('employeeModal').style.display = 'none';
+  }
+
+  async function handleEmployeeSubmit(e) {
+    e.preventDefault();
+    const id = document.getElementById('modalEmpId').value;
+    const first_name = document.getElementById('modalEmpFirst').value.trim();
+    const last_name = document.getElementById('modalEmpLast').value.trim();
+    const email = document.getElementById('modalEmpEmail').value.trim();
+    const phone = document.getElementById('modalEmpPhone').value.trim();
+    const designation = document.getElementById('modalEmpDesignation').value.trim();
+    const department = document.getElementById('modalEmpDepartment').value.trim();
+    const role = document.getElementById('modalEmpRole').value;
+    const status = document.getElementById('modalEmpStatus').value;
+
+    const payload = { first_name, last_name, email, phone, designation, department, role, status };
+    const btn = document.getElementById('empSubmitBtn');
+    btn.disabled = true;
+
+    try {
+      const url = id ? `/admin/users/${id}` : '/admin/users';
+      const method = id ? 'PUT' : 'POST';
+      const res = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || data.message || 'Operation failed');
+
+      closeEmployeeModal();
+      window.location.reload();
+    } catch (err) {
+      alert(err.message);
+    } finally {
+      btn.disabled = false;
+    }
+  }
+
+  async function deleteEmployee(id, name) {
+    if (!confirm(`Are you sure you want to delete ${name}?`)) return;
+    try {
+      const res = await fetch(`/admin/users/${id}`, { method: 'DELETE' });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to delete');
+      window.location.reload();
+    } catch (err) {
+      alert(err.message);
+    }
+  }
+</script>
+

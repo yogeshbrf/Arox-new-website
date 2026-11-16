@@ -1,0 +1,475 @@
+<div class="erp-h1" style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; color: #000000;">
+  <div>
+    <div style="font-size: 24px; font-weight: 750;">Employee Tasks & Deliverables</div>
+    <div style="font-size: 13px; color: #64748B; font-weight: 500; margin-top: 2px;">Track assigned deliverables, outreach activities, and administrative deadlines</div>
+  </div>
+  <button onclick="openCreateTaskModal()" class="erp-btn erp-btn-sm" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; background: #000; color: #fff; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; border: none;">
+    <i data-lucide="plus" style="width: 15px; height: 15px;"></i>
+    <span>Create Task</span>
+  </button>
+</div>
+
+<!-- Interactive Catalogue Filter Toolbar (Apple + Google Material 3) -->
+<!-- Summary Metric Cards -->
+<%
+  const totalTasks = tasks ? tasks.length : 0;
+  const completedTasks = tasks ? tasks.filter(t => t.status === 'completed').length : 0;
+  const inProgressTasks = tasks ? tasks.filter(t => t.status === 'in_progress' || t.status === 'todo' || t.status === 'review').length : 0;
+  const highPriorityTasks = tasks ? tasks.filter(t => (t.priority || '').toLowerCase() === 'high').length : 0;
+%>
+<div class="erp-grid-4" style="margin-bottom: 24px;">
+  <div class="erp-card" style="background: #FFFFFF; border: 1px solid #E2E8F0; padding: 20px;">
+    <div class="erp-card-header">
+      <div class="erp-card-icon" style="background: #000000; color: #FFFFFF;">
+        <i data-lucide="check-square"></i>
+      </div>
+      <div class="erp-card-title" style="color: #64748B;">Total Tasks</div>
+    </div>
+    <div class="erp-card-value" style="color: #000000;"><%= totalTasks %></div>
+    <div class="erp-p" style="margin-top: 6px; color: #64748B; font-size: 12px;">Delegated assignments</div>
+  </div>
+
+  <div class="erp-card" style="background: #FFFFFF; border: 1px solid #E2E8F0; padding: 20px;">
+    <div class="erp-card-header">
+      <div class="erp-card-icon" style="background: #000000; color: #FFFFFF;">
+        <i data-lucide="check-circle-2"></i>
+      </div>
+      <div class="erp-card-title" style="color: #64748B;">Completed</div>
+    </div>
+    <div class="erp-card-value" style="color: #000000;"><%= completedTasks %></div>
+    <div class="erp-p" style="margin-top: 6px; color: #16A34A; font-weight: 600; font-size: 12px;">Successfully resolved</div>
+  </div>
+
+  <div class="erp-card" style="background: #FFFFFF; border: 1px solid #E2E8F0; padding: 20px;">
+    <div class="erp-card-header">
+      <div class="erp-card-icon" style="background: #000000; color: #FFFFFF;">
+        <i data-lucide="clock"></i>
+      </div>
+      <div class="erp-card-title" style="color: #64748B;">In Progress</div>
+    </div>
+    <div class="erp-card-value" style="color: #000000;"><%= inProgressTasks %></div>
+    <div class="erp-p" style="margin-top: 6px; color: #D97706; font-weight: 600; font-size: 12px;">Active queue</div>
+  </div>
+
+  <div class="erp-card" style="background: #FFFFFF; border: 1px solid #E2E8F0; padding: 20px;">
+    <div class="erp-card-header">
+      <div class="erp-card-icon" style="background: #000000; color: #FFFFFF;">
+        <i data-lucide="alert-circle"></i>
+      </div>
+      <div class="erp-card-title" style="color: #64748B;">High Priority</div>
+    </div>
+    <div class="erp-card-value" style="color: #000000;"><%= highPriorityTasks %></div>
+    <div class="erp-p" style="margin-top: 6px; color: #DC2626; font-weight: 600; font-size: 12px;">Urgent deliverables</div>
+  </div>
+</div>
+<div class="catalogue-toolbar" data-catalogue="emp_tasks">
+  <div class="catalogue-filters-group">
+    <!-- Search Input -->
+    <div class="catalogue-search-wrap">
+      <i data-lucide="search"></i>
+      <input type="text" class="catalogue-search-input" placeholder="Search tasks, descriptions, deals...">
+    </div>
+
+    <!-- Status Filter -->
+    <select class="catalogue-select" data-filter="status" title="Filter by Status">
+      <option value="all">All Statuses</option>
+      <option value="todo">To Do</option>
+      <option value="in_progress">In Progress</option>
+      <option value="review">Review</option>
+      <option value="completed">Completed</option>
+    </select>
+
+    <!-- Priority Filter -->
+    <select class="catalogue-select" data-filter="priority" title="Filter by Priority">
+      <option value="all">All Priorities</option>
+      <option value="high">High Priority</option>
+      <option value="medium">Medium Priority</option>
+      <option value="low">Low Priority</option>
+    </select>
+
+    <!-- Category Filter -->
+    <select class="catalogue-select" data-filter="category" title="Filter by Category">
+      <option value="all">All Categories</option>
+      <option value="client_outreach">Client Outreach</option>
+      <option value="lead_qualification">Lead Qualification</option>
+      <option value="follow_up">Follow-up Call</option>
+      <option value="meeting">Meeting Prep</option>
+      <option value="documentation">Documentation</option>
+      <option value="other">Other</option>
+    </select>
+
+    <!-- Sort Dropdown -->
+    <select class="catalogue-select" data-filter="sort" title="Sort records">
+      <option value="newest">Newest First</option>
+      <option value="priority">Priority Order</option>
+      <option value="due_date">Due Date</option>
+    </select>
+
+    <!-- Reset Button -->
+    <button type="button" class="catalogue-reset-btn" title="Reset all filters">
+      <i data-lucide="rotate-ccw" style="width: 13px; height: 13px;"></i>
+      <span>Reset</span>
+    </button>
+
+    <!-- Result Counter -->
+    <span class="catalogue-count-badge">Showing <%= tasks ? tasks.length : 0 %> tasks</span>
+  </div>
+
+  <!-- Segmented View Switcher: List vs Kanban/Grid -->
+  <div class="catalogue-view-switcher">
+    <button type="button" class="view-btn active" data-view="list" title="Table List View">
+      <i data-lucide="list"></i>
+      <span>List</span>
+    </button>
+    <button type="button" class="view-btn" data-view="kanban" title="Kanban Card Grid View">
+      <i data-lucide="layout-grid"></i>
+      <span>Kanban</span>
+    </button>
+  </div>
+</div>
+
+<!-- 1. LIST VIEW (Data Table) -->
+<div class="catalogue-list-view" data-catalogue="emp_tasks">
+  <div class="erp-card" style="background: #fff; border: 1px solid #E2E8F0; border-radius: 12px; overflow-x: auto; padding: 0;">
+    <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 13px;">
+      <thead>
+        <tr style="background: #F8FAFC; border-bottom: 1px solid #E2E8F0; font-size: 11px; text-transform: uppercase; color: #64748B; font-weight: 700;">
+          <th style="padding: 12px 16px; width: 40px;"></th>
+          <th style="padding: 12px 16px;">Task Title</th>
+          <th style="padding: 12px 16px;">Category</th>
+          <th style="padding: 12px 16px;">Priority</th>
+          <th style="padding: 12px 16px;">Due Date</th>
+          <th style="padding: 12px 16px;">Status</th>
+          <th style="padding: 12px 16px; text-align: right;">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (tasks && tasks.length > 0) { %>
+          <% tasks.forEach(task => { %>
+            <tr style="border-bottom: 1px solid #E2E8F0;" id="task-row-<%= task.id %>"
+                data-search="<%= (task.title + ' ' + (task.description || '') + ' ' + (task.category || '') + ' ' + (task.lead_title || '')).toLowerCase() %>"
+                data-status="<%= (task.status || 'todo').toLowerCase() %>"
+                data-priority="<%= (task.priority || 'medium').toLowerCase() %>"
+                data-category="<%= (task.category || 'other').toLowerCase() %>"
+                data-newest="<%= task.id %>"
+                data-due_date="<%= task.due_date || '9999-99-99' %>">
+              <td style="padding: 12px 16px;">
+                <input type="checkbox" <%= task.status === 'completed' ? 'checked' : '' %>
+                       onchange="updateTaskStageDropdown('<%= task.id %>', this.checked ? 'completed' : 'todo')"
+                       style="width: 17px; height: 17px; accent-color: #000; cursor: pointer;">
+              </td>
+              <td style="padding: 12px 16px;">
+                <div style="font-weight: 700; color: <%= task.status === 'completed' ? '#64748B; text-decoration: line-through;' : '#000;' %>">
+                  <%= task.title %>
+                </div>
+                <% if (task.description) { %>
+                  <div style="font-size: 11.5px; color: #64748B; margin-top: 2px;"><%= task.description %></div>
+                <% } %>
+                <% if (task.lead_title) { %>
+                  <div style="font-size: 11px; color: #000; margin-top: 2px;">
+                    <i data-lucide="target" style="width: 11px; height: 11px; display: inline-block;"></i> Linked: <%= task.lead_title %>
+                  </div>
+                <% } %>
+              </td>
+              <td style="padding: 12px 16px;">
+                <span style="font-size: 11px; font-weight: 600; padding: 2px 7px; background: #F1F5F9; border-radius: 4px; text-transform: uppercase;">
+                  <%= (task.category || 'other').replace('_', ' ') %>
+                </span>
+              </td>
+              <td style="padding: 12px 16px;">
+                <% if (task.priority === 'high') { %>
+                  <span style="font-size: 10px; font-weight: 700; padding: 2px 6px; background: #FEE2E2; color: #B91C1C; border-radius: 4px;">HIGH</span>
+                <% } else if (task.priority === 'medium') { %>
+                  <span style="font-size: 10px; font-weight: 600; padding: 2px 6px; background: #FEF3C7; color: #B45309; border-radius: 4px;">MED</span>
+                <% } else { %>
+                  <span style="font-size: 10px; font-weight: 500; padding: 2px 6px; background: #F1F5F9; color: #64748B; border-radius: 4px;">LOW</span>
+                <% } %>
+              </td>
+              <td style="padding: 12px 16px; font-size: 12px; color: #475569;">
+                <i data-lucide="calendar" style="width: 12px; height: 12px; display: inline-block; vertical-align: middle;"></i>
+                <%= task.due_date || 'No deadline' %>
+              </td>
+              <td style="padding: 12px 16px;">
+                <select onchange="updateTaskStageDropdown('<%= task.id %>', this.value)" style="font-size: 11.5px; font-weight: 600; padding: 4px 8px; border: 1px solid #CBD5E1; border-radius: 6px; background: #fff; cursor: pointer;">
+                  <option value="todo" <%= task.status === 'todo' ? 'selected' : '' %>>To Do</option>
+                  <option value="in_progress" <%= task.status === 'in_progress' ? 'selected' : '' %>>In Progress</option>
+                  <option value="review" <%= task.status === 'review' ? 'selected' : '' %>>Review</option>
+                  <option value="completed" <%= task.status === 'completed' ? 'selected' : '' %>>Completed ✓</option>
+                </select>
+              </td>
+              <td style="padding: 12px 16px; text-align: right; white-space: nowrap;">
+                <button type="button" onclick="openEditTaskById('<%= task.id %>')" class="erp-btn erp-btn-secondary" style="padding: 3px 8px; font-size: 11px; border: 1px solid #CBD5E1; color: #000; border-radius: 6px; cursor: pointer; margin-right: 4px;">
+                  Edit
+                </button>
+                <button type="button" onclick="deleteEmpTask('<%= task.id %>')" class="erp-btn" style="padding: 3px 8px; font-size: 11px; border: 1px solid #FECACA; background: #FEF2F2; color: #DC2626; border-radius: 6px; cursor: pointer;">
+                  Delete
+                </button>
+              </td>
+            </tr>
+          <% }) %>
+        <% } %>
+        <tr class="empty-state-row" style="display: <%= (!tasks || tasks.length === 0) ? '' : 'none' %>;">
+          <td colspan="7" style="padding: 32px; text-align: center; color: #64748B;">No tasks matching current filters.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- 2. KANBAN / GRID VIEW (Material 3 Cards) -->
+<div class="catalogue-kanban-view" data-catalogue="emp_tasks">
+  <% if (tasks && tasks.length > 0) { %>
+    <% tasks.forEach(task => { %>
+      <div class="kanban-item-card"
+           data-search="<%= (task.title + ' ' + (task.description || '') + ' ' + (task.category || '') + ' ' + (task.lead_title || '')).toLowerCase() %>"
+           data-status="<%= (task.status || 'todo').toLowerCase() %>"
+           data-priority="<%= (task.priority || 'medium').toLowerCase() %>"
+           data-category="<%= (task.category || 'other').toLowerCase() %>"
+           data-newest="<%= task.id %>"
+           data-due_date="<%= task.due_date || '9999-99-99' %>">
+        <div class="kanban-card-top">
+          <div>
+            <div class="kanban-card-title" style="<%= task.status === 'completed' ? 'text-decoration: line-through; color: #64748B;' : '' %>">
+              <%= task.title %>
+            </div>
+            <div class="kanban-card-subtitle">
+              <i data-lucide="tag" style="width: 11px; height: 11px; display: inline-block;"></i> <%= (task.category || 'other').replace('_', ' ').toUpperCase() %>
+            </div>
+          </div>
+          <% if (task.status === 'completed') { %>
+            <span style="font-size: 10px; font-weight: 700; padding: 2px 7px; background: #DCFCE7; color: #166534; border-radius: 4px; text-transform: uppercase;">Done</span>
+          <% } else if (task.status === 'in_progress') { %>
+            <span style="font-size: 10px; font-weight: 700; padding: 2px 7px; background: #E0E7FF; color: #3730A3; border-radius: 4px; text-transform: uppercase;">In Progress</span>
+          <% } else { %>
+            <span style="font-size: 10px; font-weight: 700; padding: 2px 7px; background: #F1F5F9; color: #000; border-radius: 4px; text-transform: uppercase;">To Do</span>
+          <% } %>
+        </div>
+
+        <div class="kanban-card-body">
+          <% if (task.description) { %>
+            <div style="font-size: 12px; color: #475569; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+              <%= task.description %>
+            </div>
+          <% } %>
+
+          <div class="kanban-chip-row" style="margin-top: 8px;">
+            <% if (task.priority === 'high') { %>
+              <span class="kanban-chip" style="background: #FEE2E2; color: #B91C1C; font-weight: 700;">HIGH</span>
+            <% } else if (task.priority === 'medium') { %>
+              <span class="kanban-chip" style="background: #FEF3C7; color: #B45309; font-weight: 700;">MED</span>
+            <% } else { %>
+              <span class="kanban-chip" style="background: #F1F5F9; color: #64748B;">LOW</span>
+            <% } %>
+
+            <span class="kanban-chip">
+              <i data-lucide="clock"></i> <%= task.due_date || 'No deadline' %>
+            </span>
+
+            <% if (task.lead_title) { %>
+              <span class="kanban-chip">
+                <i data-lucide="target"></i> <%= task.lead_title %>
+              </span>
+            <% } %>
+          </div>
+        </div>
+
+        <div class="kanban-card-footer">
+          <div style="display: flex; align-items: center; gap: 6px;">
+            <span style="font-size: 11px; color: #64748B;">Status:</span>
+            <select onchange="updateTaskStageDropdown('<%= task.id %>', this.value)" style="font-size: 11px; font-weight: 600; padding: 3px 6px; border: 1px solid #CBD5E1; border-radius: 6px; background: #fff; cursor: pointer;">
+              <option value="todo" <%= task.status === 'todo' ? 'selected' : '' %>>To Do</option>
+              <option value="in_progress" <%= task.status === 'in_progress' ? 'selected' : '' %>>In Progress</option>
+              <option value="review" <%= task.status === 'review' ? 'selected' : '' %>>Review</option>
+              <option value="completed" <%= task.status === 'completed' ? 'selected' : '' %>>Completed</option>
+            </select>
+          </div>
+          <div style="display: flex; gap: 4px;">
+            <button type="button" onclick="openEditTaskById('<%= task.id %>')" class="erp-btn erp-btn-secondary" style="padding: 4px 8px; font-size: 11px; border: 1px solid #CBD5E1; color: #000; border-radius: 6px; cursor: pointer;">
+              Edit
+            </button>
+            <button type="button" onclick="deleteEmpTask('<%= task.id %>')" class="erp-btn" style="padding: 4px 8px; font-size: 11px; border: 1px solid #FECACA; background: #FEF2F2; color: #DC2626; border-radius: 6px; cursor: pointer;">
+              Delete
+            </button>
+          </div>
+        </div>
+      </div>
+    <% }) %>
+  <% } %>
+  <div class="kanban-empty-state" style="display: <%= (!tasks || tasks.length === 0) ? 'block' : 'none' %>;">
+    <i data-lucide="check-square" style="width: 36px; height: 36px; margin: 0 auto 10px; color: #94A3B8;"></i>
+    <div style="font-weight: 700; font-size: 15px; color: #000;">No Tasks Found</div>
+    <div style="font-size: 12px; color: #64748B; margin-top: 4px;">Organize your day by creating an outreach or administrative task.</div>
+  </div>
+</div>
+
+<!-- Modal: Create / Edit Task -->
+<div id="createTaskModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center; padding: 16px;">
+  <div style="background: #fff; border-radius: 14px; width: 100%; max-width: 480px; padding: 24px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+      <h3 style="font-size: 18px; font-weight: 750; color: #000; margin: 0;" id="taskModalHeading">Create New Task</h3>
+      <button onclick="closeCreateTaskModal()" style="background: none; border: none; font-size: 20px; cursor: pointer; color: #64748B;">&times;</button>
+    </div>
+
+    <form id="createTaskForm" onsubmit="handleCreateTask(event)">
+      <input type="hidden" id="modalTaskId" name="id" value="">
+      <div style="display: flex; flex-direction: column; gap: 12px;">
+        <div>
+          <label style="font-size: 12px; font-weight: 600; color: #334155; display: block; margin-bottom: 4px;">Task Title *</label>
+          <input type="text" id="taskModalTitle" name="title" required placeholder="e.g. Follow up on proposal sent to Apex Systems" style="width: 100%; height: 38px; padding: 0 10px; border: 1px solid #CBD5E1; border-radius: 6px; font-size: 13px;">
+        </div>
+
+        <div>
+          <label style="font-size: 12px; font-weight: 600; color: #334155; display: block; margin-bottom: 4px;">Description</label>
+          <textarea id="taskModalDescription" name="description" rows="2" placeholder="Specific action items, phone numbers, or links..." style="width: 100%; padding: 8px 10px; border: 1px solid #CBD5E1; border-radius: 6px; font-size: 13px; resize: vertical;"></textarea>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div>
+            <label style="font-size: 12px; font-weight: 600; color: #334155; display: block; margin-bottom: 4px;">Category</label>
+            <select id="taskModalCategory" name="category" style="width: 100%; height: 38px; padding: 0 10px; border: 1px solid #CBD5E1; border-radius: 6px; font-size: 13px; background: #fff;">
+              <option value="client_outreach">Client Outreach</option>
+              <option value="lead_qualification">Lead Qualification</option>
+              <option value="follow_up">Follow-up Call</option>
+              <option value="meeting">Meeting Preparation</option>
+              <option value="documentation">Documentation / MOU</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size: 12px; font-weight: 600; color: #334155; display: block; margin-bottom: 4px;">Priority</label>
+            <select id="taskModalPriority" name="priority" style="width: 100%; height: 38px; padding: 0 10px; border: 1px solid #CBD5E1; border-radius: 6px; font-size: 13px; background: #fff;">
+              <option value="high">High Priority</option>
+              <option value="medium" selected>Medium Priority</option>
+              <option value="low">Low Priority</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div>
+            <label style="font-size: 12px; font-weight: 600; color: #334155; display: block; margin-bottom: 4px;">Due Date</label>
+            <input type="date" id="taskModalDueDate" name="due_date" style="width: 100%; height: 38px; padding: 0 10px; border: 1px solid #CBD5E1; border-radius: 6px; font-size: 13px;">
+          </div>
+          <div>
+            <label style="font-size: 12px; font-weight: 600; color: #334155; display: block; margin-bottom: 4px;">Linked Deal (Optional)</label>
+            <select id="taskModalLeadId" name="lead_id" style="width: 100%; height: 38px; padding: 0 10px; border: 1px solid #CBD5E1; border-radius: 6px; font-size: 13px; background: #fff;">
+              <option value="">-- None --</option>
+              <% if (leads && leads.length > 0) { %>
+                <% leads.forEach(l => { %>
+                  <option value="<%= l.id %>"><%= l.title %></option>
+                <% }) %>
+              <% } %>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 18px;">
+        <button type="button" onclick="closeCreateTaskModal()" style="padding: 8px 16px; background: #F1F5F9; color: #334155; border: none; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer;">Cancel</button>
+        <button type="submit" id="saveTaskBtn" style="padding: 8px 18px; background: #000; color: #fff; border: none; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer;">Save Task</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  const allTasksMap = <%- JSON.stringify((tasks || []).reduce((acc, t) => { acc[t.id] = t; return acc; }, {})) %>;
+
+  function openCreateTaskModal() {
+    document.getElementById('taskModalHeading').textContent = 'Create New Task';
+    document.getElementById('modalTaskId').value = '';
+    document.getElementById('createTaskForm').reset();
+    document.getElementById('createTaskModal').style.display = 'flex';
+  }
+
+  function openEditTaskById(id) {
+    const task = allTasksMap[id];
+    if (!task) return;
+    document.getElementById('taskModalHeading').textContent = 'Edit Task: ' + task.title;
+    document.getElementById('modalTaskId').value = task.id;
+    document.getElementById('taskModalTitle').value = task.title || '';
+    document.getElementById('taskModalDescription').value = task.description || '';
+    document.getElementById('taskModalCategory').value = task.category || 'other';
+    document.getElementById('taskModalPriority').value = task.priority || 'medium';
+    document.getElementById('taskModalDueDate').value = task.due_date ? task.due_date.split('T')[0] : '';
+    document.getElementById('taskModalLeadId').value = task.lead_id || '';
+    document.getElementById('createTaskModal').style.display = 'flex';
+  }
+
+  function closeCreateTaskModal() {
+    document.getElementById('createTaskModal').style.display = 'none';
+  }
+
+  async function updateTaskStageDropdown(id, status) {
+    try {
+      const res = await fetch(`/api/employee/tasks/${id}/status`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status })
+      });
+      const data = await res.json();
+      if (data.success) {
+        window.location.reload();
+      } else {
+        alert(data.message || 'Failed to update task');
+      }
+    } catch (e) {
+      alert('Error updating task status');
+    }
+  }
+
+  async function deleteEmpTask(id) {
+    if (!confirm('Are you sure you want to delete this task?')) return;
+    try {
+      const res = await fetch(`/api/employee/tasks/${id}`, { method: 'DELETE' });
+      const data = await res.json();
+      if (data.success) {
+        window.location.reload();
+      } else {
+        alert(data.message || 'Failed to delete task');
+      }
+    } catch (e) {
+      alert('Error deleting task');
+    }
+  }
+
+  async function handleCreateTask(e) {
+    e.preventDefault();
+    const btn = document.getElementById('saveTaskBtn');
+    const id = document.getElementById('modalTaskId').value;
+    btn.disabled = true;
+    btn.textContent = 'Saving...';
+
+    const payload = {
+      title: document.getElementById('taskModalTitle').value.trim(),
+      description: document.getElementById('taskModalDescription').value.trim(),
+      category: document.getElementById('taskModalCategory').value,
+      priority: document.getElementById('taskModalPriority').value,
+      due_date: document.getElementById('taskModalDueDate').value || null,
+      lead_id: document.getElementById('taskModalLeadId').value || null
+    };
+
+    const url = id ? `/api/employee/tasks/${id}` : '/api/employee/tasks';
+    const method = id ? 'PUT' : 'POST';
+
+    try {
+      const res = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const result = await res.json();
+      if (result.success) {
+        window.location.reload();
+      } else {
+        alert(result.message || 'Failed to save task');
+        btn.disabled = false;
+        btn.textContent = 'Save Task';
+      }
+    } catch (err) {
+      alert('Error saving task');
+      btn.disabled = false;
+      btn.textContent = 'Save Task';
+    }
+  }
+</script>

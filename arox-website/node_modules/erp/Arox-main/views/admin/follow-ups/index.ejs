@@ -1,0 +1,409 @@
+<style>
+  .admin-tab-link {
+    padding: 6px 14px; font-size: 12px; font-weight: 600; border-radius: 6px; text-decoration: none; color: #64748B; background: transparent; transition: all 0.15s ease;
+  }
+  .admin-tab-link.active {
+    color: #000; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
+</style>
+
+<div style="margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+  <div>
+    <h1 style="font-size: 1.5rem; font-weight: 750; margin: 0; color: #000000;">Company Follow-ups & Communications</h1>
+    <p style="font-size: 13px; color: #64748B; margin: 4px 0 0 0;">Monitor client touchpoints, meeting schedules, and conversion logs across your team.</p>
+  </div>
+  <div>
+    <button onclick="openScheduleFollowUpModal()" class="erp-btn erp-btn-primary" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; background: #000; color: #fff; border-radius: 8px; font-weight: 600; font-size: 13px; border: none; cursor: pointer;">
+      <i data-lucide="calendar-plus" style="width: 15px; height: 15px;"></i> Schedule Follow-up
+    </button>
+  </div>
+</div>
+
+<!-- Summary Metric Cards -->
+<div class="erp-grid-4" style="margin-bottom: 24px;">
+  <div class="erp-card" style="background: #FFFFFF; border: 1px solid #E2E8F0; padding: 20px;">
+    <div class="erp-card-header">
+      <div class="erp-card-icon" style="background: #000000; color: #FFFFFF;">
+        <i data-lucide="calendar"></i>
+      </div>
+      <div class="erp-card-title" style="color: #64748B;">Total Follow-ups</div>
+    </div>
+    <div class="erp-card-value" style="color: #000000;"><%= stats.total || 0 %></div>
+    <div class="erp-p" style="margin-top: 6px; color: #64748B; font-size: 12px;">Organization-wide communication</div>
+  </div>
+
+  <div class="erp-card" style="background: #FFFFFF; border: 1px solid #E2E8F0; padding: 20px;">
+    <div class="erp-card-header">
+      <div class="erp-card-icon" style="background: #000000; color: #FFFFFF;">
+        <i data-lucide="phone-call"></i>
+      </div>
+      <div class="erp-card-title" style="color: #64748B;">Scheduled Today</div>
+    </div>
+    <div class="erp-card-value" style="color: #000000;"><%= stats.today || 0 %></div>
+    <div class="erp-p" style="margin-top: 6px; color: #0284C7; font-weight: 600; font-size: 12px;">Assigned calls & meetings</div>
+  </div>
+
+  <div class="erp-card" style="background: #FFFFFF; border: 1px solid #E2E8F0; padding: 20px;">
+    <div class="erp-card-header">
+      <div class="erp-card-icon" style="background: #000000; color: #FFFFFF;">
+        <i data-lucide="alert-circle"></i>
+      </div>
+      <div class="erp-card-title" style="color: #64748B;">Overdue Action</div>
+    </div>
+    <div class="erp-card-value" style="color: #DC2626;"><%= stats.overdue || 0 %></div>
+    <div class="erp-p" style="margin-top: 6px; color: #DC2626; font-weight: 600; font-size: 12px;">Requires follow-up attention</div>
+  </div>
+
+  <div class="erp-card" style="background: #FFFFFF; border: 1px solid #E2E8F0; padding: 20px;">
+    <div class="erp-card-header">
+      <div class="erp-card-icon" style="background: #000000; color: #FFFFFF;">
+        <i data-lucide="check-circle-2"></i>
+      </div>
+      <div class="erp-card-title" style="color: #64748B;">Completed History</div>
+    </div>
+    <div class="erp-card-value" style="color: #000000;"><%= stats.completed || 0 %></div>
+    <div class="erp-p" style="margin-top: 6px; color: #16A34A; font-weight: 600; font-size: 12px;">Successfully resolved interactions</div>
+  </div>
+</div>
+
+<!-- Tabs & Employee Filter -->
+<div class="erp-card" style="background: #FFFFFF; border: 1px solid #E2E8F0; padding: 14px 18px; border-radius: 12px; margin-bottom: 24px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px;">
+  <div style="display: inline-flex; background: #F1F5F9; padding: 3px; border-radius: 8px;">
+    <a href="/admin/follow-ups?tab=all" class="admin-tab-link <%= activeTab === 'all' ? 'active' : '' %>">
+      All (<%= stats.total %>)
+    </a>
+    <a href="/admin/follow-ups?tab=today" class="admin-tab-link <%= activeTab === 'today' ? 'active' : '' %>">
+      Today (<%= stats.today %>)
+    </a>
+    <a href="/admin/follow-ups?tab=overdue" class="admin-tab-link <%= activeTab === 'overdue' ? 'active' : '' %>">
+      Overdue (<%= stats.overdue %>)
+    </a>
+    <a href="/admin/follow-ups?tab=completed" class="admin-tab-link <%= activeTab === 'completed' ? 'active' : '' %>">
+      Completed (<%= stats.completed %>)
+    </a>
+  </div>
+
+  <form method="GET" action="/admin/follow-ups" style="display: flex; gap: 8px; align-items: center;">
+    <input type="hidden" name="tab" value="<%= activeTab %>">
+    <select name="employee_id" onchange="this.form.submit()" style="height: 36px; padding: 0 10px; border: 1px solid #CBD5E1; border-radius: 6px; font-size: 13px; background: #fff;">
+      <option value="">All Staff Members</option>
+      <% if (employees && employees.length > 0) { %>
+        <% employees.forEach(emp => { %>
+          <option value="<%= emp.id %>" <%= filters.employee_id == emp.id ? 'selected' : '' %>>
+            <%= emp.first_name %> <%= emp.last_name %>
+          </option>
+        <% }) %>
+      <% } %>
+    </select>
+  </form>
+</div>
+
+<!-- Follow-ups Table -->
+<div class="erp-card" style="background: #fff; border: 1px solid #E2E8F0; border-radius: 12px; overflow-x: auto;">
+  <table class="erp-table">
+    <thead>
+      <tr>
+        <th>Scheduled At</th>
+        <th>Title & Agenda</th>
+        <th>Client / Deal</th>
+        <th>Type</th>
+        <th>Staff Member</th>
+        <th>Status / Result</th>
+        <th style="text-align: right;">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% if (followUps && followUps.length > 0) { %>
+        <% followUps.forEach(f => { %>
+          <tr>
+            <td style="font-size: 12px; color: #475569; white-space: nowrap;">
+              <strong><%= new Date(f.scheduled_at).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' }) %></strong>
+              <div style="font-size: 11px; color: #64748B;"><%= new Date(f.scheduled_at).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }) %></div>
+            </td>
+            <td>
+              <div style="font-weight: 700; color: #000;"><%= f.title %></div>
+              <% if (f.notes) { %>
+                <div style="font-size: 11px; font-weight: 400; color: #64748B;"><%= f.notes %></div>
+              <% } %>
+            </td>
+            <td style="color: #334155; font-weight: 500;">
+              <%= f.lead_title || f.lead_company || f.client_company || 'Direct Outreach' %>
+            </td>
+            <td style="text-transform: capitalize; font-weight: 600; font-size: 12px;">
+              <%= (f.type || 'phone_call').replace(/_/g, ' ') %>
+            </td>
+            <td style="font-weight: 600; color: #000;">
+              <%= f.employee_first_name || 'Staff' %> <%= f.employee_last_name || '' %>
+            </td>
+            <td>
+              <% if (f.status === 'completed') { %>
+                <span class="erp-badge erp-badge-success">
+                  Done (<%= f.outcome || 'Logged' %>)
+                </span>
+              <% } else if (new Date(f.scheduled_at) < new Date()) { %>
+                <span class="erp-badge erp-badge-danger">
+                  Overdue
+                </span>
+              <% } else { %>
+                <span class="erp-badge erp-badge-secondary">
+                  Scheduled
+                </span>
+              <% } %>
+            </td>
+            <td style="text-align: right; white-space: nowrap;">
+              <% if (f.status !== 'completed') { %>
+                <button type="button" data-id="<%= f.id %>" data-title="<%= (f.title || '').replace(/"/g, '&quot;') %>" onclick="openCompleteModal(this.getAttribute('data-id'), this.getAttribute('data-title'))" class="erp-btn erp-btn-secondary" style="padding: 4px 10px; font-size: 11px; font-weight: 600; margin-right: 4px;">
+                  Complete
+                </button>
+              <% } %>
+              <button type="button" data-id="<%= f.id %>" data-title="<%= (f.title || '').replace(/"/g, '&quot;') %>" onclick="deleteFollowUp(this.getAttribute('data-id'), this.getAttribute('data-title'))" class="erp-btn erp-btn-ghost" style="padding: 4px 6px; color: #DC2626;" title="Remove Follow-up">
+                <i data-lucide="trash-2" style="width: 14px; height: 14px;"></i>
+              </button>
+            </td>
+          </tr>
+        <% }) %>
+      <% } else { %>
+        <tr>
+          <td colspan="7" style="padding: 36px; text-align: center; color: #64748B;">No follow-ups recorded for this view.</td>
+        </tr>
+      <% } %>
+    </tbody>
+  </table>
+</div>
+
+<!-- Modal: Schedule Follow-up -->
+<div id="scheduleFollowUpModal" class="modal-overlay" style="display: none;">
+  <div class="modal" style="max-width: 540px;">
+    <div class="modal-header">
+      <h3 class="modal-title">Schedule New Follow-up</h3>
+      <button type="button" class="modal-close" onclick="closeScheduleFollowUpModal()">&times;</button>
+    </div>
+    <form id="scheduleFollowUpForm" onsubmit="handleScheduleFollowUpSubmit(event)">
+      <div class="modal-body" style="display: flex; flex-direction: column; gap: 14px;">
+        <div>
+          <label style="display: block; font-size: 12px; font-weight: 700; color: #000; margin-bottom: 4px;">Follow-up Title / Agenda *</label>
+          <input type="text" id="fuTitle" required placeholder="e.g. Discuss Batch Pricing & Syllabus" class="erp-input">
+        </div>
+
+        <div class="grid-2" style="gap: 12px;">
+          <div>
+            <label style="display: block; font-size: 12px; font-weight: 700; color: #000; margin-bottom: 4px;">Communication Type</label>
+            <select id="fuType" class="erp-input">
+              <option value="phone_call">Phone Call</option>
+              <option value="video_call">Video Conference / Zoom</option>
+              <option value="email">Email Follow-up</option>
+              <option value="campus_visit">Campus Visit</option>
+              <option value="in_person">In-Person Meeting</option>
+            </select>
+          </div>
+          <div>
+            <label style="display: block; font-size: 12px; font-weight: 700; color: #000; margin-bottom: 4px;">Scheduled Date & Time *</label>
+            <input type="datetime-local" id="fuScheduledAt" required class="erp-input">
+          </div>
+        </div>
+
+        <div class="grid-2" style="gap: 12px;">
+          <div>
+            <label style="display: block; font-size: 12px; font-weight: 700; color: #000; margin-bottom: 4px;">Link to Deal / Lead</label>
+            <select id="fuLeadId" class="erp-input">
+              <option value="">None (Independent)</option>
+              <% if (leads && leads.length > 0) { %>
+                <% leads.forEach(l => { %>
+                  <option value="<%= l.id %>"><%= l.title %> (<%= l.company_name || 'Individual' %>)</option>
+                <% }) %>
+              <% } %>
+            </select>
+          </div>
+          <div>
+            <label style="display: block; font-size: 12px; font-weight: 700; color: #000; margin-bottom: 4px;">Assign Staff Member</label>
+            <select id="fuEmployeeId" class="erp-input">
+              <% if (employees && employees.length > 0) { %>
+                <% employees.forEach(emp => { %>
+                  <option value="<%= emp.id %>" <%= emp.id === user.id ? 'selected' : '' %>><%= emp.first_name %> <%= emp.last_name %></option>
+                <% }) %>
+              <% } %>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label style="display: block; font-size: 12px; font-weight: 700; color: #000; margin-bottom: 4px;">Preparation Notes / Objective</label>
+          <textarea id="fuNotes" rows="2" class="erp-input" placeholder="Topics to cover, client objections, specific requirements..." style="resize: vertical;"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" onclick="closeScheduleFollowUpModal()" class="erp-btn erp-btn-secondary">Cancel</button>
+        <button type="submit" id="btnFuSubmit" class="erp-btn erp-btn-primary">Schedule Now</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal: Complete Follow-up -->
+<div id="completeFollowUpModal" class="modal-overlay" style="display: none;">
+  <div class="modal" style="max-width: 480px;">
+    <div class="modal-header">
+      <h3 class="modal-title">Log Follow-up Outcome</h3>
+      <button type="button" class="modal-close" onclick="closeCompleteModal()">&times;</button>
+    </div>
+    <form id="completeFollowUpForm" onsubmit="handleCompleteSubmit(event)">
+      <input type="hidden" id="completeFuId" value="">
+      <div class="modal-body" style="display: flex; flex-direction: column; gap: 14px;">
+        <div style="font-size: 13px; color: #334155;" id="completeFuTitleDisplay"></div>
+
+        <div>
+          <label style="display: block; font-size: 12px; font-weight: 700; color: #000; margin-bottom: 4px;">Meeting Outcome *</label>
+          <select id="completeOutcome" class="erp-input">
+            <option value="interested">Interested - Follow-up Again</option>
+            <option value="meeting_scheduled">Formal Demo / Meeting Booked</option>
+            <option value="proposal_requested">Proposal / Quotation Requested</option>
+            <option value="deal_closed">Deal Closed / Won ✓</option>
+            <option value="not_interested">Not Interested at this time</option>
+            <option value="no_answer">No Answer / Left Voicemail</option>
+          </select>
+        </div>
+
+        <div>
+          <label style="display: block; font-size: 12px; font-weight: 700; color: #000; margin-bottom: 4px;">Outcome Notes & Action Items</label>
+          <textarea id="completeNotes" rows="3" class="erp-input" placeholder="Summary of discussion, next steps agreed upon..." style="resize: vertical;"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" onclick="closeCompleteModal()" class="erp-btn erp-btn-secondary">Cancel</button>
+        <button type="submit" id="btnCompleteSubmit" class="erp-btn erp-btn-primary">Save Outcome</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div id="erpToast" class="erp-toast"></div>
+
+<script>
+  function showToast(msg, type = 'success') {
+    const toast = document.getElementById('erpToast');
+    if (!toast) return;
+    toast.textContent = msg;
+    toast.className = `erp-toast show ${type}`;
+    setTimeout(() => { toast.className = 'erp-toast'; }, 3500);
+  }
+
+  function openScheduleFollowUpModal() {
+    document.getElementById('scheduleFollowUpForm').reset();
+    // Default to tomorrow 10 AM
+    const tmrw = new Date();
+    tmrw.setDate(tmrw.getDate() + 1);
+    tmrw.setHours(10, 0, 0, 0);
+    const localIso = new Date(tmrw.getTime() - tmrw.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+    document.getElementById('fuScheduledAt').value = localIso;
+    document.getElementById('scheduleFollowUpModal').style.display = 'flex';
+  }
+
+  function closeScheduleFollowUpModal() {
+    document.getElementById('scheduleFollowUpModal').style.display = 'none';
+  }
+
+  function openCompleteModal(id, title) {
+    document.getElementById('completeFuId').value = id;
+    document.getElementById('completeFuTitleDisplay').textContent = 'Follow-up: ' + title;
+    document.getElementById('completeNotes').value = '';
+    document.getElementById('completeFollowUpModal').style.display = 'flex';
+  }
+
+  function closeCompleteModal() {
+    document.getElementById('completeFollowUpModal').style.display = 'none';
+  }
+
+  async function handleScheduleFollowUpSubmit(e) {
+    e.preventDefault();
+    const btn = document.getElementById('btnFuSubmit');
+    const origText = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = 'Scheduling...';
+
+    const payload = {
+      title: document.getElementById('fuTitle').value.trim(),
+      type: document.getElementById('fuType').value,
+      scheduled_at: document.getElementById('fuScheduledAt').value,
+      lead_id: document.getElementById('fuLeadId').value || null,
+      employee_id: parseInt(document.getElementById('fuEmployeeId').value) || null,
+      notes: document.getElementById('fuNotes').value.trim()
+    };
+
+    try {
+      const res = await fetch('/api/employee/follow-ups', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        showToast(data.message || 'Follow-up scheduled successfully!', 'success');
+        closeScheduleFollowUpModal();
+        setTimeout(() => window.location.reload(), 700);
+      } else {
+        throw new Error(data.message || 'Failed to schedule follow-up');
+      }
+    } catch (err) {
+      showToast(err.message, 'error');
+      btn.disabled = false;
+      btn.textContent = origText;
+    }
+  }
+
+  async function handleCompleteSubmit(e) {
+    e.preventDefault();
+    const id = document.getElementById('completeFuId').value;
+    const btn = document.getElementById('btnCompleteSubmit');
+    const origText = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = 'Saving...';
+
+    const payload = {
+      outcome: document.getElementById('completeOutcome').value,
+      notes: document.getElementById('completeNotes').value.trim()
+    };
+
+    try {
+      const res = await fetch(`/api/employee/follow-ups/${id}/complete`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        showToast('Follow-up logged as completed!', 'success');
+        closeCompleteModal();
+        setTimeout(() => window.location.reload(), 700);
+      } else {
+        throw new Error(data.message || 'Failed to complete follow-up');
+      }
+    } catch (err) {
+      showToast(err.message, 'error');
+      btn.disabled = false;
+      btn.textContent = origText;
+    }
+  }
+
+  async function deleteFollowUp(id, title) {
+    if (!confirm(`Are you sure you want to remove follow-up "${title}"?`)) return;
+    try {
+      const res = await fetch(`/api/employee/follow-ups/${id}`, { method: 'DELETE' });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        showToast('Follow-up removed successfully', 'success');
+        setTimeout(() => window.location.reload(), 700);
+      } else {
+        throw new Error(data.message || 'Failed to remove follow-up');
+      }
+    } catch (err) {
+      showToast(err.message, 'error');
+    }
+  }
+
+  document.getElementById('scheduleFollowUpModal')?.addEventListener('click', (e) => {
+    if (e.target === document.getElementById('scheduleFollowUpModal')) closeScheduleFollowUpModal();
+  });
+  document.getElementById('completeFollowUpModal')?.addEventListener('click', (e) => {
+    if (e.target === document.getElementById('completeFollowUpModal')) closeCompleteModal();
+  });
+</script>

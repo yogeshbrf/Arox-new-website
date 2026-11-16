@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <style id="arox-critical-theme">
+        html { background-color: #000000; }
+        html.theme-light, html.theme-light body, html:not(.dark) { background-color: #FFFFFF !important; color-scheme: light; }
+        html.theme-dark, html.theme-dark body, html.dark { background-color: #000000 !important; color-scheme: dark; }
+    </style>
+    <script>
+        (function () {
+            try {
+                var storedTheme = localStorage.getItem('arox-theme') || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+                var isDark = storedTheme === 'dark';
+                var root = document.documentElement;
+                root.className = (root.className ? root.className.replace(/theme-[a-z]+|dark/g, '').trim() + ' ' : '') + 'theme-' + storedTheme + (isDark ? ' dark' : '');
+                root.style.colorScheme = storedTheme;
+                root.style.backgroundColor = isDark ? '#000000' : '#FFFFFF';
+
+                var logoSrc = isDark ? 'public/assets/logo/logo-dark.png' : 'public/assets/logo/logo-light.png';
+                var syncElements = function () {
+                    var logo = document.getElementById('nav-logo-img');
+                    if (logo && logo.getAttribute('src') !== logoSrc) logo.src = logoSrc;
+                    var fLogo = document.getElementById('footer-logo-img');
+                    if (fLogo && fLogo.getAttribute('src') !== logoSrc) fLogo.src = logoSrc;
+                    var cb = document.getElementById('theme-checkbox') || document.getElementById('checkbox');
+                    if (cb && cb.checked !== !isDark) cb.checked = !isDark;
+                };
+
+                var obs = new MutationObserver(syncElements);
+                obs.observe(root, { childList: true, subtree: true });
+
+                document.addEventListener('DOMContentLoaded', function () {
+                    obs.disconnect();
+                    document.querySelectorAll('#nav-logo-img, #footer-logo-img, .nav-logo img, .footer-brand-logo img').forEach(function (el) {
+                        if (el) el.src = logoSrc;
+                    });
+                    document.querySelectorAll('#checkbox, #theme-checkbox, .theme-switch-checkbox').forEach(function (cb) {
+                        cb.checked = !isDark;
+                    });
+                });
+            } catch (e) {
+                document.documentElement.className = 'theme-dark dark';
+            }
+        })();
+    </script>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/detail.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="page-title">Arox Tech - Course Detail</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- AOS Animation Library CSS -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="noise-overlay" aria-hidden="true"></div>
+
+    <!-- ─── HEADER / NAVIGATION (TRAINING PAGE DESIGN) ─── -->
+<header id="site-header">
+  <div class="nav-inner">
+    <div class="nav-left">
+      <a href="index.html" class="nav-logo">
+        <img id="nav-logo-img" src="public/assets/logo/logo-dark.png" alt="Arox Tech Logo"
+          onerror="this.style.display='none';document.getElementById('nav-logo-text').style.display='block'" />
+        <span id="nav-logo-text"
+          style="display:none;font-family:var(--font-display);font-weight:800;font-size:1.25rem;color:var(--heading);letter-spacing:-.03em;">AROX</span>
+        <span class="mobile-breadcrumb-sep">/</span>
+        <span class="mobile-breadcrumb-current">Training</span>
+      </a>
+      <div class="nav-divider">/</div>
+      <nav class="nav-links" aria-label="Main navigation">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="about.html" class="nav-link">About</a>
+        <a href="services.html" class="nav-link">Services</a>
+        <a href="courses.html" class="nav-link">Training</a>
+        <a href="contact.html" class="nav-link">Contact</a>
+      </nav>
+    </div>
+    <div class="nav-right">
+      <a href="/login" class="nav-login">Sign In</a>
+      <label class="switch" title="Toggle theme">
+        <input id="theme-checkbox" type="checkbox" aria-label="Toggle theme" />
+        <span class="slider">
+          <div class="star star_1"></div>
+          <div class="star star_2"></div>
+          <div class="star star_3"></div>
+          <svg viewBox="0 0 16 16" class="cloud_1 cloud">
+            <path
+              transform="matrix(.77976 0 0 .78395-299.99-418.63)"
+              fill="#fff"
+              d="m391.84 540.91c-.421-.329-.949-.524-1.523-.524-1.351 0-2.451 1.084-2.485 2.435-1.395.526-2.388 1.88-2.388 3.466 0 1.874 1.385 3.423 3.182 3.667v.034h12.73v-.006c1.775-.104 3.182-1.584 3.182-3.395 0-1.747-1.309-3.186-2.994-3.379.007-.106.011-.214.011-.322 0-2.707-2.271-4.901-5.072-4.901-2.073 0-3.856 1.202-4.643 2.925"
+            ></path>
+          </svg>
+        </span>
+      </label>
+      <button id="hamburger-btn" class="nav-hamburger" aria-label="Toggle mobile menu">
+        <svg id="hamburger-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24"
+          fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <line class="line-1" x1="4" y1="6" x2="20" y2="6"></line>
+          <line class="line-2" x1="4" y1="12" x2="20" y2="12"></line>
+          <line class="line-3" x1="4" y1="18" x2="20" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- Mobile Navigation Menu -->
+<div id="mobile-menu" aria-hidden="true">
+  <div class="mobile-menu-panel">
+    <nav class="mobile-nav">
+      <a href="index.html" class="mobile-nav-link">
+        <svg class="mobile-nav-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        <span>Home</span>
+      </a>
+      <a href="about.html" class="mobile-nav-link">
+        <svg class="mobile-nav-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+        <span>About</span>
+      </a>
+      <a href="services.html" class="mobile-nav-link">
+        <svg class="mobile-nav-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="7" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+        <span>Services</span>
+      </a>
+      <a href="courses.html" class="mobile-nav-link">
+        <svg class="mobile-nav-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+        <span>Training</span>
+      </a>
+      <a href="contact.html" class="mobile-nav-link">
+        <svg class="mobile-nav-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        <span>Contact</span>
+      </a>
+    </nav>
+    <div class="mobile-bottom">
+      <a href="/login" class="mobile-login-btn">
+        <svg class="mobile-nav-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+        <span>Sign In</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+    <!-- ─── HERO SECTION ─── -->
+    <main class="detail-hero">
+        <div class="grid-lines-bg" aria-hidden="true"></div>
+
+        <div class="detail-container">
+            <!-- Back / Breadcrumb Navigation -->
+            <div class="detail-breadcrumb-wrap" data-aos="fade-down" data-aos-duration="600">
+                <a href="courses.html?tab=training&section=courses#hscrollSection" id="back-to-courses-btn" class="detail-back-btn">
+                    <i class="fa-solid fa-arrow-left-long"></i> Back to Courses
+                </a>
+            </div>
+
+            <div class="hero-grid">
+                <!-- Left Content -->
+                <div data-aos="fade-right" data-aos-duration="1000">
+                   
+
+                    <h1 class="hero-title">Become an <br />
+                        <span class="accent">Industry Ready</span><br />
+                        <span id="hero-title">Full Stack Developer</span>
+                    </h1>
+
+                    <p id="hero-desc" class="hero-desc">
+                        Work on live projects, get mentored by industry experts and kickstart your career in tech.
+                    </p>
+
+                    <!-- Dynamically Populated 6 Hero Features -->
+                    <div class="hero-features" id="hero-features-list">
+                        <div class="feat"><div class="feat-check"><i class="fa-solid fa-check"></i></div> Live Projects</div>
+                        <div class="feat"><div class="feat-check"><i class="fa-solid fa-check"></i></div> Hands-on Experience</div>
+                        <div class="feat"><div class="feat-check"><i class="fa-solid fa-check"></i></div> Practical Curriculum</div>
+                        <div class="feat"><div class="feat-check"><i class="fa-solid fa-check"></i></div> Mentorship by Experts</div>
+                        <div class="feat"><div class="feat-check"><i class="fa-solid fa-check"></i></div> Placement Guidance</div>
+                        <div class="feat"><div class="feat-check"><i class="fa-solid fa-check"></i></div> Career Growth</div>
+                    </div>
+
+                    <div class="hero-btns">
+                        <a href="courses.html" class="btn-primary">
+                            Explore Courses <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-left: 6px; display: inline-block; vertical-align: middle;">
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                                <polyline points="12 5 19 12 12 19"></polyline>
+                            </svg>
+                        </a>
+                        <a href="apply.html" id="apply-link" class="btn-outline">
+                            Apply Now <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-left: 6px; display: inline-block; vertical-align: middle;">
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                                <polyline points="12 5 19 12 12 19"></polyline>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Right Side Hero Visual Graphic -->
+                <div class="hero-visual" data-aos="fade-left" data-aos-duration="1000">
+                    <div class="hero-visual-inner">
+                                                <img id="hero-course-image" src="assets/detail page images/Neon Full-Stack Developer Workspace.png" alt="Course Visual Graphic" class="hero-floating-img" />
+                    </div>
+                </div>
+
+
+
+            </div>
+        </div>
+        <div class="scroll-indicator"><div class="mouse-wheel"></div></div>
+    </main>
+
+    <!-- ─── SYLLABUS / CURRICULUM SECTION (3-COLUMN INTERACTIVE) ─── -->
+    <section class="detail-section" id="curriculum-interactive-section">
+        <div class="detail-container">
+            <div class="detail-card" data-aos="fade-up">
+                <div style="margin-bottom:2.5rem;padding-bottom:1rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:1rem;">
+                    <div>
+                        <h2 class="section-heading" style="margin-bottom:0.5rem;">What You'll Learn & Tools</h2>
+                        <p class="section-subtext" style="margin-top:0;">Explore course modules, tools, and practical lab details.</p>
+                    </div>
+                    <div class="scroll-progress-badge">
+                        <i class="fa-solid fa-layer-group"></i> Comprehensive Curriculum
+                    </div>
+                </div>
+
+                <div class="syllabus-3col-grid" id="syllabus-content-area">
+                    <!-- COL 1: Tools Used (Static / Sticky) -->
+                    <div class="syl-col syl-col-tools">
+                        <div class="sticky-col-wrapper">
+                            <h3 class="col-title">
+                                <span class="accent-bar"></span>
+                                Tools Used
+                            </h3>
+                            <p class="col-subtitle">Technologies covered in this course</p>
+                            <div class="tools-stack-list" id="tech-stack-container">
+                                <!-- Dynamically generated tool badges -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- COL 2: Course Content Topics (Scroll-driven arrival sequence) -->
+                    <div class="syl-col syl-col-topics">
+                        <h3 class="col-title">
+                            <span class="accent-bar" style="background:#3b82f6;"></span>
+                            Course Content
+                        </h3>
+                        <p class="col-subtitle">Select any module to view details</p>
+                        <div class="topics-timeline" id="curriculum-container">
+                            <!-- Dynamically generated arrival topics -->
+                        </div>
+                    </div>
+
+                    <!-- COL 3: Topic Details (Sticky & Dynamic smooth transition) -->
+                    <div class="syl-col syl-col-detail">
+                        <div class="sticky-col-wrapper">
+                            <h3 class="col-title">
+                                <span class="accent-bar" style="background:#10b981;"></span>
+                                Module Details
+                            </h3>
+                            <p class="col-subtitle">Live breakdown for current active topic</p>
+                            <div class="topic-detail-card" id="topic-detail-panel">
+                                <!-- Dynamically updated detail content -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ─── STUDENT REVIEWS SECTION ─── -->
+    <section class="detail-section" id="reviews-section">
+        <div class="detail-container">
+            <div class="detail-card reviews-card-wrap" data-aos="fade-up">
+                <h2 class="section-heading">What Our Students Say</h2>
+                <p class="section-subtext" style="margin-top:-1.5rem;margin-bottom:2rem;">Authentic feedback from graduates currently thriving in the tech industry.</p>
+
+                <!-- Dynamically Populated Review Cards -->
+                <div class="grid-3" id="reviews-container" style="margin-bottom:1.5rem;">
+                    <!-- Dynamic review cards injected by js/detail.js -->
+                </div>
+
+                <div style="display:flex;justify-content:center;margin-top:2rem;">
+                    <a href="about.html" class="btn-outline" style="padding:0.6rem 1.75rem;font-size:0.875rem;">
+                        Read Trainee Stories <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-left: 6px; display: inline-block; vertical-align: middle;">
+                          <line x1="5" y1="12" x2="19" y2="12"></line>
+                          <polyline points="12 5 19 12 12 19"></polyline>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ─── FAQ SECTION ─── -->
+    <section class="detail-section">
+        <div class="detail-container">
+            <div class="detail-card" data-aos="fade-up">
+                <div class="faq-grid">
+                    <!-- Left: Dynamic Accordion -->
+                    <div>
+                        <h2 class="section-heading">Frequently Asked Questions</h2>
+                        <div id="faq-accordion" style="display:flex;flex-direction:column;gap:0.75rem;">
+                            <!-- Dynamic FAQ items injected by js/detail.js -->
+                        </div>
+                    </div>
+
+                    <!-- Right: Illustration (Outside of boxed card) -->
+                    <div style="display:flex;justify-content:center;align-items:center;" data-aos="zoom-in">
+                        <img src="assets/image.png"
+                            alt="AROX FAQ Support"
+                            style="width:100%;max-width:440px;height:auto;object-fit:contain;filter:none;box-shadow:none;">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PRE-FOOTER CTA SECTION (MATCHING TRAINING DESIGN) -->
+    <section class="cta-section" id="cta">
+      <div class="cta-card reveal">
+        <div class="cta-content">
+          <h2 class="cta-heading">Learn technology by building it.</h2>
+          <p class="cta-text">Develop practical skills through structured training, real-world projects, and guided learning designed for students and aspiring technology professionals.</p>
+          <div class="cta-actions">
+            <a href="javascript:void(0)" id="cta-apply-link" class="btn-primary">
+              <span>Apply Now</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-left: 6px; display: inline-block; vertical-align: middle;"><line x1="7" y1="17" x2="17" y2="7" /><polyline points="7 7 17 7 17 17" /></svg>
+            </a>
+            <a href="courses.html" class="btn-secondary">
+              <span>Explore Courses</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── FOOTER ─── -->
+        <footer>
+        <div class="footer-inner">
+            <!-- Background Watermark -->
+            <div class="footer-watermark">Arox Tech</div>
+
+            <!-- Main Footer Grid / Mobile Accordions -->
+            <div class="footer-grid">
+                <!-- Brand Section -->
+                <div class="footer-brand">
+                    <a href="index.html" class="footer-brand-logo">
+                        <img id="footer-logo-img" src="public/assets/logo/logo-dark.png" alt="Arox Tech" onerror="this.src='assets/logo/logo-dark.png'" />
+                    </a>
+                    <p class="footer-tagline">
+                        We build scalable software architectures, robust digital platforms, and high-impact AI solutions for modern businesses.
+                    </p>
+                    <!-- 4 Social Icons in a Single Row: Instagram, WhatsApp, Facebook, LinkedIn -->
+                    <div class="footer-socials">
+                        <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="footer-social-btn" aria-label="Instagram">
+                            <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                        </a>
+                        <a href="https://whatsapp.com" target="_blank" rel="noopener noreferrer" class="footer-social-btn" aria-label="WhatsApp">
+                            <svg viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
+                        </a>
+                        <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" class="footer-social-btn" aria-label="Facebook">
+                            <svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                        </a>
+                        <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" class="footer-social-btn" aria-label="LinkedIn">
+                            <svg viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Row 1 / Col 2: Company -->
+                <details class="footer-col footer-col-company" open>
+                    <summary class="footer-col-header">
+                        <div class="footer-col-header-left">
+                            <div>
+                                <h3 class="footer-col-title">Company</h3>
+                                <div class="footer-title-bar"></div>
+                            </div>
+                        </div>
+                        <div class="footer-chevron">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                        </div>
+                    </summary>
+                    <div class="footer-col-body">
+                        <ul class="footer-links">
+                            <li><a class="footer-link" href="about.html">About Us</a></li>
+                            <li><a class="footer-link" href="about.html#mission-section">Purpose &amp; Vision</a></li>
+                            <li><a class="footer-link" href="about.html#process-section">Operating Model</a></li>
+                            <li><a class="footer-link" href="apply.html">Careers</a></li>
+                            <li><a class="footer-link" href="services.html">Partners</a></li>
+                            <li><a class="footer-link" href="contact.html">Contact Us</a></li>
+                        </ul>
+                    </div>
+                </details>
+
+                <!-- Row 1 / Col 3: Services -->
+                <details class="footer-col footer-col-services" open>
+                    <summary class="footer-col-header">
+                        <div class="footer-col-header-left">
+                            <div>
+                                <h3 class="footer-col-title">Services</h3>
+                                <div class="footer-title-bar"></div>
+                            </div>
+                        </div>
+                        <div class="footer-chevron">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                        </div>
+                    </summary>
+                    <div class="footer-col-body">
+                        <ul class="footer-links">
+                            <li><a class="footer-link" href="services.html?service=development#domain-section-0"><span>Development</span><svg class="footer-arrow-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg></a></li>
+                            <li><a class="footer-link" href="services.html?service=creative#domain-section-1"><span>Creative &amp; Experience</span><svg class="footer-arrow-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg></a></li>
+                            <li><a class="footer-link" href="services.html?service=business#domain-section-2"><span>Business Solutions</span><svg class="footer-arrow-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg></a></li>
+                            <li><a class="footer-link" href="services.html?service=infrastructure#domain-section-3"><span>Infrastructure</span><svg class="footer-arrow-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg></a></li>
+                        </ul>
+                    </div>
+                </details>
+
+                <!-- Row 1 / Col 4: Training -->
+                <details class="footer-col footer-col-training" open>
+                    <summary class="footer-col-header">
+                        <div class="footer-col-header-left">
+                            <div>
+                                <h3 class="footer-col-title">Training</h3>
+                                <div class="footer-title-bar"></div>
+                            </div>
+                        </div>
+                        <div class="footer-chevron">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                        </div>
+                    </summary>
+                    <div class="footer-col-body">
+                        <ul class="footer-links">
+                            <li><a class="footer-link" href="detail.html?course=full-stack-web-development&amp;from=training">Full Stack Web Dev</a></li>
+                            <li><a class="footer-link" href="detail.html?course=data-science-and-ai&amp;from=training">Python &amp; Data Science</a></li>
+                            <li><a class="footer-link" href="detail.html?course=data-science-and-ai&amp;from=training">AI &amp; Machine Learning</a></li>
+                            <li><a class="footer-link" href="detail.html?course=cyber-security&amp;from=training">Cyber Security</a></li>
+                            <li><a class="footer-link" href="detail.html?course=devops-engineering&amp;from=training">Cloud &amp; DevOps</a></li>
+                            <li><a class="footer-link" href="detail.html?course=ui-ux-designing&amp;from=training">UI/UX Designing</a></li>
+                        </ul>
+                    </div>
+                </details>
+
+                <!-- Row 2 / Col 2: Internships -->
+                <details class="footer-col footer-col-internships" open>
+                    <summary class="footer-col-header">
+                        <div class="footer-col-header-left">
+                            <div>
+                                <h3 class="footer-col-title">Internship</h3>
+                                <div class="footer-title-bar"></div>
+                            </div>
+                        </div>
+                        <div class="footer-chevron">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                        </div>
+                    </summary>
+                    <div class="footer-col-body">
+                        <ul class="footer-links">
+                            <li><a class="footer-link" href="training.html?tab=internship&amp;domain=cse_it#internshipDomainWrap"><span>CSE &amp; IT</span><svg class="footer-arrow-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg></a></li>
+                            <li><a class="footer-link" href="training.html?tab=internship&amp;domain=ece#internshipDomainWrap"><span>ECE</span><svg class="footer-arrow-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg></a></li>
+                            <li><a class="footer-link" href="training.html?tab=internship&amp;domain=mech#internshipDomainWrap"><span>MECH</span><svg class="footer-arrow-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg></a></li>
+                            <li><a class="footer-link" href="training.html?tab=internship&amp;domain=management#internshipDomainWrap"><span>MANAGEMENT</span><svg class="footer-arrow-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg></a></li>
+                        </ul>
+                    </div>
+                </details>
+
+                <!-- Row 2 / Col 3: Contact -->
+                <details class="footer-col footer-col-contact" open>
+                    <summary class="footer-col-header">
+                        <div class="footer-col-header-left">
+                            <div>
+                                <h3 class="footer-col-title">Contact</h3>
+                                <div class="footer-title-bar"></div>
+                            </div>
+                        </div>
+                        <div class="footer-chevron">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                        </div>
+                    </summary>
+                    <div class="footer-col-body">
+                        <ul class="footer-contact-items">
+                            <li class="footer-contact-item">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                                <span>Salem, Tamil Nadu, India</span>
+                            </li>
+                            <li class="footer-contact-item">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13.1a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.56 2.38l3-.02a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.18 6.18l1.44-1.44a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7a2 2 0 0 1 1.72 2.03z"/></svg>
+                                <a href="tel:+911234567890">+91 12345 67890</a>
+                            </li>
+                            <li class="footer-contact-item">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                                <a href="mailto:info@aroxtech.com">info@aroxtech.com</a>
+                            </li>
+                            <li class="footer-contact-item">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                <span>Mon - Sat: 9:00 AM - 6:00 PM</span>
+                            </li>
+                        </ul>
+                    </div>
+                </details>
+            </div>
+        </div>
+
+        <!-- Footer Bottom Bar -->
+        <div class="footer-bottom">
+            <div class="footer-bottom-inner">
+                <p class="footer-copyright-bottom">&copy; <span>AROX Tech 2026</span> All Rights Reserved</p>
+                <div class="footer-bottom-right">
+                    <a href="#" class="footer-legal-link">Terms &amp; Conditions</a>
+                    <span class="footer-legal-sep">&bull;</span>
+                    <a href="#" class="footer-legal-link">Privacy Policy</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ─── IN-PAGE STUDENT APPLICATION MODAL (4-STEP SPLIT-SCREEN) ─── -->
+    <div id="studentApplyBackdrop" class="modal-backdrop student-apply-backdrop" role="dialog" aria-modal="true" aria-hidden="true">
+        <div class="modal-window">
+            <div class="modal-right-panel" id="modal-right-panel">
+                <button type="button" class="modal-close-btn" id="closeStudentModalBtn" aria-label="Close modal">&times;</button>
+
+                <!-- STEPPER HEADER INDICATOR -->
+                <div class="modal-stepper-header" id="modal-stepper-header">
+                    <div class="stepper-nodes-row">
+                        <div class="modal-step-node active" id="mstep-node-1">
+                            <div class="mstep-circle" id="mstep-circle-1">1</div>
+                            <span id="mstep-lbl-1">Personal</span>
+                        </div>
+                        <div class="mstep-line-wrap">
+                            <div class="mstep-line" id="mstep-line-1"></div>
+                        </div>
+                        <div class="modal-step-node" id="mstep-node-2">
+                            <div class="mstep-circle" id="mstep-circle-2">2</div>
+                            <span id="mstep-lbl-2">College</span>
+                        </div>
+                        <div class="mstep-line-wrap">
+                            <div class="mstep-line" id="mstep-line-2"></div>
+                        </div>
+                        <div class="modal-step-node" id="mstep-node-3">
+                            <div class="mstep-circle" id="mstep-circle-3">3</div>
+                            <span id="mstep-lbl-3">Course</span>
+                        </div>
+                        <div class="mstep-line-wrap">
+                            <div class="mstep-line" id="mstep-line-3"></div>
+                        </div>
+                        <div class="modal-step-node" id="mstep-node-4">
+                            <div class="mstep-circle" id="mstep-circle-4">4</div>
+                            <span id="mstep-lbl-4">Preview</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- STEP 1: Personal Information -->
+                <div class="modal-panel-view active" id="modal-view-form-step1">
+                    <div class="google-form-container">
+                        <div class="google-form-header">
+                            <h3 class="google-form-title">Personal Information</h3>
+                            <p class="google-form-subtitle">Step 1 of 4: Tell us about yourself</p>
+                        </div>
+                        <form id="google-form-1" onsubmit="return false;">
+                            <div class="arox-field-group">
+                                <label class="arox-field-label" for="form-name">Full Name *</label>
+                                <input type="text" class="arox-input" id="form-name" placeholder="e.g. Karthik Subramanian" required>
+                            </div>
+                            <div class="arox-field-group">
+                                <label class="arox-field-label" for="form-email">Email Address *</label>
+                                <input type="email" class="arox-input" id="form-email" placeholder="e.g. karthik.s@gmail.com" required>
+                            </div>
+                            <div class="arox-field-row">
+                                <div class="arox-field-group">
+                                    <label class="arox-field-label" for="form-phone">Contact Number (+91) *</label>
+                                    <input type="tel" class="arox-input" id="form-phone" placeholder="e.g. 9876543210" required>
+                                </div>
+                                <div class="arox-field-group">
+                                    <label class="arox-field-label" for="form-gender">Gender *</label>
+                                    <select class="arox-select" id="form-gender" required>
+                                        <option value="" disabled selected>Select gender...</option>
+                                        <option value="male">Male</option>
+                                        <option value="female">Female</option>
+                                        <option value="other">Other</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="error-msg" id="error-step1"></div>
+                            <div class="google-form-actions">
+                                <button type="button" class="google-btn-back" id="form-btn-cancel">Cancel</button>
+                                <button type="button" class="google-btn-next" id="form-btn-next-step2">Next &rarr;</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- STEP 2: College Information -->
+                <div class="modal-panel-view" id="modal-view-form-step2">
+                    <div class="google-form-container">
+                        <div class="google-form-header">
+                            <h3 class="google-form-title">College Information</h3>
+                            <p class="google-form-subtitle">Step 2 of 4: Your academic background</p>
+                        </div>
+                        <form id="google-form-2" onsubmit="return false;">
+                            <div class="arox-field-group">
+                                <label class="arox-field-label" for="form-college">College Name *</label>
+                                <input type="text" class="arox-input" id="form-college" placeholder="e.g. PSG College of Technology" required>
+                            </div>
+                            <div class="arox-field-group">
+                                <label class="arox-field-label" for="form-university">University *</label>
+                                <select class="arox-select" id="form-university" required>
+                                    <option value="" disabled selected>Select university...</option>
+                                    <option value="Anna University">Anna University</option>
+                                    <option value="Bharathiar University">Bharathiar University</option>
+                                    <option value="Bharathidasan University">Bharathidasan University</option>
+                                    <option value="Madras University">Madras University</option>
+                                    <option value="Periyar University">Periyar University</option>
+                                    <option value="Other">Other University</option>
+                                </select>
+                                <div class="arox-other-input-wrap" id="university-other-wrap" style="display: none;">
+                                    <input type="text" class="arox-input" id="form-university-other" placeholder="e.g. Enter your university name">
+                                </div>
+                            </div>
+                            <div class="arox-field-row">
+                                <div class="arox-field-group">
+                                    <label class="arox-field-label" for="form-degree">Degree *</label>
+                                    <select class="arox-select" id="form-degree" required>
+                                        <option value="" disabled selected>Select degree...</option>
+                                        <option value="B.E">B.E</option>
+                                        <option value="B.Tech">B.Tech</option>
+                                        <option value="B.Sc">B.Sc</option>
+                                        <option value="BCA">BCA</option>
+                                        <option value="B.Com">B.Com</option>
+                                        <option value="BBA">BBA</option>
+                                        <option value="M.E">M.E</option>
+                                        <option value="M.Tech">M.Tech</option>
+                                        <option value="M.Sc">M.Sc</option>
+                                        <option value="MCA">MCA</option>
+                                        <option value="MBA">MBA</option>
+                                        <option value="Diploma">Diploma</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                    <div class="arox-other-input-wrap" id="degree-other-wrap" style="display: none;">
+                                        <input type="text" class="arox-input" id="form-degree-other" placeholder="e.g. Enter your degree">
+                                    </div>
+                                </div>
+                                <div class="arox-field-group">
+                                    <label class="arox-field-label" for="form-grad-year">Graduation Year *</label>
+                                    <select class="arox-select" id="form-grad-year" required>
+                                        <option value="" disabled selected>Select year...</option>
+                                        <option value="2025">2025</option>
+                                        <option value="2026">2026</option>
+                                        <option value="2027">2027</option>
+                                        <option value="2028">2028</option>
+                                        <option value="2029">2029</option>
+                                        <option value="2030">2030</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="arox-field-group">
+                                <label class="arox-field-label" for="form-spec">Specialization / Department *</label>
+                                <select class="arox-select" id="form-spec" disabled required>
+                                    <option value="" disabled selected>Select degree first...</option>
+                                </select>
+                                <div class="arox-other-input-wrap" id="spec-other-wrap" style="display: none;">
+                                    <input type="text" class="arox-input" id="form-spec-other" placeholder="e.g. Robotics & Automation">
+                                </div>
+                            </div>
+                            <div class="error-msg" id="error-step2"></div>
+                            <div class="google-form-actions">
+                                <button type="button" class="google-btn-back" id="form-btn-back-step1">&larr; Back</button>
+                                <button type="button" class="google-btn-next" id="form-btn-next-step3">Next &rarr;</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- STEP 3: Course & Schedule Details -->
+                <div class="modal-panel-view" id="modal-view-form-step3">
+                    <div class="google-form-container">
+                        <div class="google-form-header">
+                            <h3 class="google-form-title">Course Information</h3>
+                            <p class="google-form-subtitle">Step 3 of 4: Select schedule &amp; learning mode</p>
+                        </div>
+                        <form id="google-form-3" onsubmit="return false;">
+                            <div class="arox-field-group">
+                                <label class="arox-field-label" for="form-selected-course">Selected Program</label>
+                                <input type="text" class="arox-input" id="form-selected-course" placeholder="Selected course will appear here" readonly>
+                            </div>
+                            <div class="arox-field-row">
+                                <div class="arox-field-group">
+                                    <label class="arox-field-label" for="form-start-date">Start Date *</label>
+                                    <input type="date" class="arox-input" id="form-start-date" required>
+                                </div>
+                                <div class="arox-field-group">
+                                    <label class="arox-field-label" for="form-duration">Learning Mode / Duration *</label>
+                                    <select class="arox-select" id="form-duration" required>
+                                        <option value="" disabled selected>Select learning mode / duration...</option>
+                                        <option value="15 Days">15 Days</option>
+                                        <option value="Online Live Mentored (3 Months)">Online Live Mentored (3 Months)</option>
+                                        <option value="In-Person Classroom (3 Months)">In-Person Classroom (3 Months)</option>
+                                        <option value="Fast-Track Hybrid (6 Weeks)">Fast-Track Hybrid (6 Weeks)</option>
+                                        <option value="Weekend Professional (4 Months)">Weekend Professional (4 Months)</option>
+                                        <option value="Self-Paced with Mentorship">Self-Paced with Mentorship</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="arox-field-group">
+                                <label class="arox-field-label">Requirements Needed</label>
+                                <div class="arox-req-grid">
+                                    <label class="arox-req-item"><input type="checkbox" name="req" value="Course Certificate"> Course Certificate</label>
+                                    <label class="arox-req-item"><input type="checkbox" name="req" value="Internship Report"> Internship Report</label>
+                                    <label class="arox-req-item"><input type="checkbox" name="req" value="Project Certificate"> Project Certificate</label>
+                                    <label class="arox-req-item"><input type="checkbox" name="req" value="Attendance"> Attendance</label>
+                                </div>
+                            </div>
+                            <!-- Referral / Discount Code -->
+                            <div class="arox-field-group">
+                                <label class="arox-field-label" for="form-referral-code">Referral / Promo Code (Optional)</label>
+                                <div style="display: flex; gap: 8px;">
+                                    <input type="text" class="arox-input" id="form-referral-code" placeholder="e.g. AROX2026, TECHFEST15" style="text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; flex: 1;">
+                                    <button type="button" class="google-btn-next" id="btn-validate-referral" style="padding: 0 18px; height: 42px; font-size: 0.8rem; width: auto; white-space: nowrap;">Apply</button>
+                                </div>
+                                <div id="referral-status-msg" style="font-size: 0.775rem; margin-top: 4px; font-weight: 600; display: none;"></div>
+                            </div>
+                            <div class="error-msg" id="error-step3"></div>
+                            <div class="google-form-actions">
+                                <button type="button" class="google-btn-back" id="form-btn-back-step2">&larr; Back</button>
+                                <button type="button" class="google-btn-next" id="form-btn-next-step4">Next &rarr;</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- STEP 4: Preview & Submit -->
+                <div class="modal-panel-view" id="modal-view-form-step4">
+                    <div class="google-form-container">
+                        <div class="google-form-header">
+                            <h3 class="google-form-title">Preview &amp; Submit</h3>
+                            <p class="google-form-subtitle">Step 4 of 4: Confirm your application</p>
+                        </div>
+                        <div id="modal-preview-summary" class="arox-preview-box">
+                            <!-- Dynamic Preview Content -->
+                        </div>
+                        <label style="display: flex; align-items: flex-start; gap: 8px; font-size: 0.8rem; color: var(--muted); cursor: pointer; margin-bottom: 1rem;">
+                            <input type="checkbox" id="form-confirm-check" style="margin-top: 2px; accent-color: #0066FF;">
+                            <span>I confirm that all provided details are accurate and ready for enrollment review.</span>
+                        </label>
+                        <div class="error-msg" id="error-step4"></div>
+                        <div class="google-form-actions">
+                            <button type="button" class="google-btn-back" id="form-btn-back-step3">&larr; Back</button>
+                            <button type="button" class="google-btn-next" id="form-btn-submit" style="background: #16a34a; border-color: #16a34a;">Submit Application ✓</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SUCCESS VIEW -->
+                <div class="modal-panel-view" id="modal-view-success">
+                    <div class="success-view" style="text-align: center; padding: 1.5rem 1rem;">
+                        <div class="success-icon-container" style="width: 64px; height: 64px; border-radius: 50%; background: rgba(22, 163, 74, 0.12); border: 2px solid #16a34a; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; color: #16a34a;">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                        </div>
+                        <h2 class="modal-title" style="font-size: 1.35rem; font-weight: 800; margin-bottom: 6px; color: var(--heading);">Enrollment Application Submitted!</h2>
+                        <p class="success-meta" id="success-meta-text" style="font-size: 0.85rem; color: var(--muted); margin-bottom: 1.25rem;">
+                            Your application has been registered successfully. Reference ID: <strong id="success-app-id" style="color: #0066ff; font-family: monospace;">AROX-2026-89412</strong>
+                        </p>
+                        <div id="success-summary-box" style="background: rgba(0,102,255,0.05); border: 1px solid rgba(0,102,255,0.15); border-radius: 12px; padding: 1rem; margin: 0 auto 1.5rem; max-width: 440px; font-size: 0.85rem; text-align: left; line-height: 1.6;">
+                        </div>
+                        <button type="button" class="google-btn-next" id="form-btn-done" style="background: #0066ff; margin: 0 auto; display: inline-block;">Done</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ─── SCRIPTS ─── -->
+    <!-- AOS Library -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init({ once: true, offset: 50, duration: 800, easing: 'ease-out-cubic' });
+        window.addEventListener('load', () => { document.body.style.opacity = '1'; });
+    </script>
+
+    <!-- Modular Course Data & Interactive Controller -->
+    <script src="js/courses-detail-data.js"></script>
+    <script src="js/enrollment-form-helper.js" defer></script>
+    <script src="js/detail.js" defer></script>
+
+    <!-- GSAP (must load before main.js) -->
+    <script src="js/gsap.min.js"></script>
+    <script src="js/ScrollTrigger.min.js"></script>
+    <!-- Global theme & nav JS -->
+    <script src="js/main.js" defer></script>
+
+
+</body>
+
+
+</html>
