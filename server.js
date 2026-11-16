@@ -295,9 +295,10 @@ function startListening(port, maxAttempts = 10) {
     });
 
     srv.on('error', (err) => {
+      const nextPort = parseInt(port, 10) + 1;
       if (err.code === 'EADDRINUSE' && maxAttempts > 0) {
-        logger.warn(`Port ${port} in use, trying ${port + 1}...`);
-        startListening(port + 1, maxAttempts - 1).then(resolve).catch(reject);
+        logger.warn(`Port ${port} in use, trying ${nextPort}...`);
+        startListening(nextPort, maxAttempts - 1).then(resolve).catch(reject);
       } else {
         reject(err);
       }
