@@ -6,6 +6,7 @@ const logger = require('../utils/logger');
 
 // Local SQLite database file path for 100% persistent storage
 const SEED_DB_FILE = path.resolve(__dirname, '..', 'database', 'arox.sqlite');
+const WASM_FILE = path.resolve(__dirname, '..', 'database', 'sql-wasm.wasm');
 const IS_VERCEL = !!(process.env.VERCEL || process.env.NOW_REGION);
 const DB_FILE = IS_VERCEL ? path.join(os.tmpdir(), 'arox.sqlite') : SEED_DB_FILE;
 
@@ -24,7 +25,7 @@ function saveDbToDisk() {
     }
     fs.writeFileSync(DB_FILE, buffer);
   } catch (err) {
-    logger.error('Failed to save SQLite DB to disk:', err.message);
+    logger.warn('SQLite write to disk notice (in-memory state intact):', err.message);
   }
 }
 
@@ -169,7 +170,23 @@ async function initDb() {
 
   initPromise = (async () => {
     try {
-      const SQL = await initSqlJs();
+      let wasmConfig = {};
+      try {
+        if (fs.existsSync(WASM_FILE)) {
+          wasmConfig = { wasmBinary: fs.readFileSync(WASM_FILE) };
+          logger.info(`✅ Loaded SQLite WebAssembly binary from ${WASM_FILE}`);
+        } else {
+          const fallbackWasm = path.resolve(__dirname, '..', '..', 'node_modules', 'sql.js', 'dist', 'sql-wasm.wasm');
+          if (fs.existsSync(fallbackWasm)) {
+            wasmConfig = { wasmBinary: fs.readFileSync(fallbackWasm) };
+            logger.info(`✅ Loaded SQLite WebAssembly binary from ${fallbackWasm}`);
+          }
+        }
+      } catch (wErr) {
+        logger.warn('SQLite wasmBinary read notice:', wErr.message);
+      }
+
+      const SQL = await initSqlJs(wasmConfig);
       let db;
 
       if (IS_VERCEL && !fs.existsSync(DB_FILE) && fs.existsSync(SEED_DB_FILE)) {

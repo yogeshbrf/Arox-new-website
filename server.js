@@ -44,53 +44,10 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(cookieParser());
 
-// Database Initialization Middleware for Serverless / Cloud Cold Starts
-let isDbReady = false;
-let dbInitPromise = null;
-
-async function ensureDatabase() {
-  if (isDbReady) return;
-  if (!dbInitPromise) {
-    dbInitPromise = (async () => {
-      await initDb();
-      try {
-        const { migrate } = require('./erp/database/migrate');
-        migrate();
-      } catch (mErr) {
-        logger.warn('Migration warning:', mErr.message);
-      }
-      isDbReady = true;
-    })();
-  }
-  return dbInitPromise;
-}
-
-app.use(async (req, res, next) => {
-  try {
-    await ensureDatabase();
-    next();
-  } catch (err) {
-    logger.error('Database connection error:', err);
-    res.status(500).json({ error: 'Database service unavailable' });
-  }
-});
-
-// Organization settings & view locals
-app.use((req, res, next) => {
-  try {
-    res.locals.org = settingsService.getOrgSettings();
-  } catch (e) {
-    res.locals.org = appConfig.org;
-  }
-  res.locals.currentPath = req.path;
-  res.locals.year = new Date().getFullYear();
-  next();
-});
-
 // Prevent well-known 404s
 app.get('/.well-known/*', (req, res) => res.status(204).end());
 
-// ----- Static Assets -----
+// ----- Static Assets (Served instantly with no DB dependency) -----
 const staticOptions = {
   maxAge: process.env.NODE_ENV === 'production' ? '1d' : 0,
   etag: true,
@@ -123,6 +80,89 @@ app.use('/cert', express.static(path.join(__dirname, 'erp', 'cert'), staticOptio
 app.use('/attendance', express.static(path.join(__dirname, 'erp', 'attendance'), staticOptions));
 app.use('/offerletter', express.static(path.join(__dirname, 'erp', 'offerletter'), staticOptions));
 app.use('/project', express.static(path.join(__dirname, 'erp', 'project'), staticOptions));
+
+// ==========================================
+// Marketing Website Public HTML Pages
+// ==========================================
+app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'index.html')));
+app.get(['/about', '/about.html'], (req, res) => res.sendFile(path.join(__dirname, 'about.html')));
+app.get(['/services', '/services.html'], (req, res) => res.sendFile(path.join(__dirname, 'services.html')));
+app.get(['/courses', '/courses.html', '/training', '/training.html'], (req, res) => res.sendFile(path.join(__dirname, 'training.html')));
+app.get(['/contact', '/contact.html'], (req, res) => res.sendFile(path.join(__dirname, 'contact.html')));
+app.get(['/apply', '/apply.html'], (req, res) => res.sendFile(path.join(__dirname, 'apply.html')));
+app.get('/course/:slug', (req, res) => res.sendFile(path.join(__dirname, 'detail.html')));
+app.get(['/internships', '/internships.html'], (req, res) => res.redirect('/training.html?tab=internship#hscrollSection'));
+app.get('/footer.html', (req, res) => res.sendFile(path.join(__dirname, 'footer.html')));
+
+// Auth & Navigation Pages
+app.get(['/login', '/login.html'], (req, res) => res.sendFile(path.join(__dirname, 'login.html')));
+app.get(['/signup', '/signup.html', '/register'], (req, res) => res.redirect('/login.html#register'));
+app.get('/portal', (req, res) => res.redirect('/login'));
+
+app.get('/logout', (req, res) => {
+  res.clearCookie('token', { path: '/' });
+  res.clearCookie('admin_token', { path: '/' });
+  res.clearCookie('employee_token', { path: '/' });
+  res.clearCookie('student_token', { path: '/' });
+  res.redirect('/login');
+});
+
+app.get('/verify-certificate', (req, res) => res.redirect('/cert/index.html'));
+
+// ==========================================
+// Database Initialization Guard for ERP & APIs
+// ==========================================
+let isDbReady = false;
+let dbInitPromise = null;
+
+async function ensureDatabase() {
+  if (isDbReady) return;
+  if (!dbInitPromise) {
+    dbInitPromise = (async () => {
+      try {
+        await initDb();
+        try {
+          const { migrate } = require('./erp/database/migrate');
+          migrate();
+        } catch (mErr) {
+          logger.warn('Migration notice:', mErr.message);
+        }
+        isDbReady = true;
+      } catch (dbErr) {
+        dbInitPromise = null;
+        logger.error('Database initialization failed:', dbErr);
+        throw dbErr;
+      }
+    })();
+  }
+  return dbInitPromise;
+}
+
+// Database middleware applied ONLY to ERP APIs and portal routes
+app.use(['/api', '/admin', '/employee', '/student'], async (req, res, next) => {
+  try {
+    await ensureDatabase();
+    next();
+  } catch (err) {
+    logger.error('Database connection error on ' + req.path + ':', err);
+    res.status(500).json({
+      error: 'Database service unavailable',
+      message: err.message || 'SQLite initialization failed'
+    });
+  }
+});
+
+// Organization settings & view locals for ERP Views
+app.use(['/admin', '/employee', '/student'], (req, res, next) => {
+  try {
+    res.locals.org = settingsService.getOrgSettings();
+  } catch (e) {
+    res.locals.org = appConfig.org;
+  }
+  res.locals.currentPath = req.path;
+  res.locals.year = new Date().getFullYear();
+  next();
+});
 
 // ==========================================
 // ERP API Routes
@@ -212,36 +252,6 @@ app.post('/api/certificates', (req, res) => {
 app.use('/admin', require('./erp/routes/web/admin'));
 app.use('/employee', require('./erp/routes/web/employee'));
 app.use('/student', require('./erp/routes/web/student'));
-
-// ==========================================
-// Auth & Navigation Routes
-// ==========================================
-app.get(['/login', '/login.html'], (req, res) => res.sendFile(path.join(__dirname, 'login.html')));
-app.get(['/signup', '/signup.html', '/register'], (req, res) => res.redirect('/login.html#register'));
-app.get('/portal', (req, res) => res.redirect('/login'));
-
-app.get('/logout', (req, res) => {
-  res.clearCookie('token', { path: '/' });
-  res.clearCookie('admin_token', { path: '/' });
-  res.clearCookie('employee_token', { path: '/' });
-  res.clearCookie('student_token', { path: '/' });
-  res.redirect('/login');
-});
-
-app.get('/verify-certificate', (req, res) => res.redirect('/cert/index.html'));
-
-// ==========================================
-// Marketing Website Public Pages
-// ==========================================
-app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'index.html')));
-app.get(['/about', '/about.html'], (req, res) => res.sendFile(path.join(__dirname, 'about.html')));
-app.get(['/services', '/services.html'], (req, res) => res.sendFile(path.join(__dirname, 'services.html')));
-app.get(['/courses', '/courses.html', '/training', '/training.html'], (req, res) => res.sendFile(path.join(__dirname, 'training.html')));
-app.get(['/contact', '/contact.html'], (req, res) => res.sendFile(path.join(__dirname, 'contact.html')));
-app.get(['/apply', '/apply.html'], (req, res) => res.sendFile(path.join(__dirname, 'apply.html')));
-app.get('/course/:slug', (req, res) => res.sendFile(path.join(__dirname, 'detail.html')));
-app.get(['/internships', '/internships.html'], (req, res) => res.redirect('/training.html?tab=internship#hscrollSection'));
-app.get('/footer.html', (req, res) => res.sendFile(path.join(__dirname, 'footer.html')));
 
 // 404 Handler
 app.use((req, res) => {
