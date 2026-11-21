@@ -1526,30 +1526,34 @@ html:not(.dark) .google-btn-back:hover {
         transition: none !important;
     }
 
-    /* 2. Hero Section Viewport Fit & Clean Spacing */
+    /* 2. Hero Section Viewport Fit & App Screen Flow (Zero Dead Whitespace) */
     .detail-hero {
-        min-height: 100dvh !important;
-        min-height: 100vh !important;
+        min-height: calc(100dvh - 56px) !important;
+        min-height: calc(100vh - 56px) !important;
         height: auto !important;
         display: flex !important;
         flex-direction: column !important;
-        justify-content: center !important;
-        padding-top: calc(64px + 10px) !important;
-        padding-bottom: 12px !important;
+        justify-content: space-between !important;
+        padding-top: calc(56px + 10px) !important;
+        padding-bottom: 20px !important;
         box-sizing: border-box !important;
         overflow: hidden !important;
+        position: relative !important;
     }
 
     .detail-hero .detail-container {
         display: flex !important;
         flex-direction: column !important;
-        justify-content: center !important;
+        justify-content: space-between !important;
+        flex: 1 !important;
         width: 100% !important;
+        max-width: 390px !important;
         padding: 0 16px !important;
-        margin: auto 0 !important;
+        margin: 0 auto !important;
+        box-sizing: border-box !important;
     }
 
-    /* 3. Back to Courses Button - Top Left & Compact Size */
+    /* 3. Back to Courses Button - Mobile App Pill (Matching User Screenshot) */
     .detail-breadcrumb-wrap {
         display: flex !important;
         justify-content: flex-start !important;
@@ -1564,63 +1568,86 @@ html:not(.dark) .google-btn-back:hover {
         align-items: center !important;
         justify-content: flex-start !important;
         align-self: flex-start !important;
-        font-size: 11px !important;
+        font-size: 11.5px !important;
         font-weight: 600 !important;
-        padding: 4px 10px !important;
-        gap: 5px !important;
+        padding: 5px 13px !important;
+        gap: 6px !important;
         border-radius: 9999px !important;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05) !important;
+        background: #FFFFFF !important;
+        color: #334155 !important;
+        border: 1px solid rgba(0, 0, 0, 0.08) !important;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
         margin: 0 !important;
         white-space: nowrap !important;
+        text-decoration: none !important;
+    }
+    .theme-dark #back-to-courses-btn,
+    .theme-dark .detail-back-btn {
+        background: rgba(255, 255, 255, 0.06) !important;
+        color: #E2E8F0 !important;
+        border-color: rgba(255, 255, 255, 0.12) !important;
     }
     #back-to-courses-btn i,
     .detail-back-btn i {
         font-size: 10px !important;
     }
 
-    /* 4. Hero Content - Top-to-Bottom Flow: Title -> Content -> Image -> Features -> Buttons */
+    /* 4. Hero Content - Mobile App Single Column Flow */
     .detail-hero .hero-grid {
         display: flex !important;
         flex-direction: column !important;
+        justify-content: space-between !important;
         align-items: center !important;
-        justify-content: center !important;
         text-align: center !important;
-        gap: 0 !important;
+        flex: 1 !important;
         width: 100% !important;
         max-width: 100% !important;
         margin: 0 auto !important;
+        gap: 0 !important;
     }
     .detail-hero .hero-grid > div:first-child {
         display: contents !important;
         opacity: 1 !important;
         transform: none !important;
     }
-    .detail-hero .hero-visual {
-        opacity: 1 !important;
-        transform: none !important;
-    }
+
+    /* 1. Title - Matching Screenshot: 2 Clean Lines */
     .detail-hero .hero-title {
         order: 1 !important;
-        font-size: clamp(19px, 5.2vw, 23px) !important;
-        line-height: 1.18 !important;
-        font-weight: 700 !important;
+        font-size: clamp(20px, 5.6vw, 24px) !important;
+        line-height: 1.22 !important;
+        font-weight: 800 !important;
         text-align: center !important;
-        margin: 0 auto 5px auto !important;
-        max-width: 330px !important;
+        margin: 6px auto 4px auto !important;
+        max-width: 340px !important;
         width: 100% !important;
+        letter-spacing: -0.02em !important;
+        color: var(--heading) !important;
     }
+    .detail-hero .hero-title br:first-of-type {
+        display: none !important;
+    }
+    .detail-hero .hero-title .accent {
+        color: #0066FF !important;
+    }
+
+    /* 2. Subtitle / Description */
     .detail-hero .hero-desc {
         order: 2 !important;
         font-size: 12px !important;
-        line-height: 1.4 !important;
+        line-height: 1.45 !important;
         text-align: center !important;
-        margin: 0 auto 8px auto !important;
-        max-width: 310px !important;
+        margin: 0 auto 6px auto !important;
+        max-width: 320px !important;
         width: 100% !important;
-        color: var(--muted) !important;
+        color: #64748B !important;
+    }
+    .theme-dark .detail-hero .hero-desc,
+    .dark .detail-hero .hero-desc {
+        color: #94A3B8 !important;
     }
 
-    /* 7. Hero Visual Image - Positioned 3rd (Between Description and Features) */
+    /* 3. Hero Visual Image - Beautifully Sized, Not Crushed */
     .detail-hero .hero-visual {
         order: 3 !important;
         display: flex !important;
@@ -1628,56 +1655,69 @@ html:not(.dark) .google-btn-back:hover {
         align-items: center !important;
         width: 100% !important;
         margin: 4px auto 10px auto !important;
+        opacity: 1 !important;
+        transform: none !important;
     }
     .detail-hero .hero-visual-inner {
         display: flex !important;
         justify-content: center !important;
         align-items: center !important;
-        max-width: 180px !important;
+        max-width: 220px !important;
         width: 100% !important;
         margin: 0 auto !important;
     }
     .detail-hero .hero-floating-img {
-        max-width: 160px !important;
-        max-height: clamp(85px, 15vh, 130px) !important;
+        max-width: 200px !important;
+        max-height: clamp(120px, 19vh, 160px) !important;
         width: auto !important;
         height: auto !important;
         object-fit: contain !important;
         margin: 0 auto !important;
-        filter: drop-shadow(0 6px 16px rgba(0, 102, 255, 0.22)) !important;
+        filter: drop-shadow(0 8px 20px rgba(0, 102, 255, 0.2)) !important;
     }
 
-    /* 5. Hero Features List - Positioned 4th Below Image */
+    /* 4. Hero Features List - 2 Columns with Vibrant Blue Checkmark Badges */
     .detail-hero .hero-features {
         order: 4 !important;
         display: grid !important;
         grid-template-columns: repeat(2, 1fr) !important;
-        gap: 4px 10px !important;
-        margin: 0 auto 10px auto !important;
-        max-width: 320px !important;
+        gap: 6px 12px !important;
+        margin: 0 auto 12px auto !important;
+        max-width: 330px !important;
         width: 100% !important;
         font-size: 11px !important;
-        color: var(--heading) !important;
         text-align: left !important;
     }
     .detail-hero .hero-features .feat {
         display: flex !important;
         align-items: center !important;
-        gap: 5px !important;
-        font-size: 10.5px !important;
+        gap: 6px !important;
+        font-size: 11px !important;
+        font-weight: 600 !important;
         line-height: 1.25 !important;
+        color: #1E293B !important;
         white-space: nowrap !important;
         overflow: hidden !important;
         text-overflow: ellipsis !important;
     }
+    .theme-dark .detail-hero .hero-features .feat,
+    .dark .detail-hero .hero-features .feat {
+        color: #E2E8F0 !important;
+    }
     .detail-hero .hero-features .feat-check {
-        width: 13px !important;
-        height: 13px !important;
-        font-size: 7px !important;
+        width: 15px !important;
+        height: 15px !important;
+        font-size: 8px !important;
+        border-radius: 50% !important;
+        background: #0066FF !important;
+        color: #FFFFFF !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
         flex-shrink: 0 !important;
     }
 
-    /* 6. Dual Action Buttons - Positioned 5th Below Features */
+    /* 5. Dual Action Buttons - Mobile App Style with Glow Pill */
     .detail-hero .hero-btns {
         order: 5 !important;
         display: flex !important;
@@ -1685,29 +1725,59 @@ html:not(.dark) .google-btn-back:hover {
         flex-wrap: nowrap !important;
         justify-content: center !important;
         align-items: center !important;
-        gap: 8px !important;
-        width: auto !important;
-        margin: 0 auto 6px auto !important;
+        gap: 10px !important;
+        width: 100% !important;
+        max-width: 330px !important;
+        margin: 2px auto 0 auto !important;
     }
-    .detail-hero .hero-btns .btn-primary,
+    .detail-hero .hero-btns .btn-primary {
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        flex: 1 !important;
+        min-height: 40px !important;
+        height: 40px !important;
+        padding: 0 16px !important;
+        font-size: 12.5px !important;
+        font-weight: 700 !important;
+        white-space: nowrap !important;
+        border-radius: 9999px !important;
+        background: #0066FF !important;
+        color: #FFFFFF !important;
+        border: none !important;
+        box-shadow: 0 8px 22px -4px rgba(0, 102, 255, 0.45) !important;
+        gap: 5px !important;
+        text-decoration: none !important;
+    }
     .detail-hero .hero-btns .btn-outline {
         display: inline-flex !important;
         align-items: center !important;
         justify-content: center !important;
-        width: auto !important;
-        min-height: 34px !important;
-        height: 34px !important;
-        padding: 0 14px !important;
-        font-size: 11.5px !important;
+        flex: 1 !important;
+        min-height: 40px !important;
+        height: 40px !important;
+        padding: 0 16px !important;
+        font-size: 12.5px !important;
         font-weight: 600 !important;
         white-space: nowrap !important;
         border-radius: 9999px !important;
+        background: #FFFFFF !important;
+        color: #0F172A !important;
+        border: 1.5px solid #E2E8F0 !important;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
         gap: 5px !important;
+        text-decoration: none !important;
+    }
+    .theme-dark .detail-hero .hero-btns .btn-outline,
+    .dark .detail-hero .hero-btns .btn-outline {
+        background: rgba(255, 255, 255, 0.05) !important;
+        color: #F8FAFC !important;
+        border: 1.5px solid rgba(255, 255, 255, 0.15) !important;
     }
     .detail-hero .hero-btns svg {
-        width: 12px !important;
-        height: 12px !important;
-        margin-left: 3px !important;
+        width: 13px !important;
+        height: 13px !important;
+        margin-left: 2px !important;
     }
 
     /* 6. What Our Students Say - Single Line Continuous Left Marquee */
@@ -2115,66 +2185,66 @@ html:not(.dark) .google-btn-back:hover {
 
 @media (max-width: 360px) {
     .detail-hero .hero-title {
-        font-size: 18px !important;
-        line-height: 1.15 !important;
+        font-size: 19px !important;
+        line-height: 1.2 !important;
     }
     .detail-hero .hero-desc {
-        font-size: 11px !important;
-        line-height: 1.35 !important;
+        font-size: 11.5px !important;
+        line-height: 1.38 !important;
     }
     .detail-hero .hero-features {
-        gap: 3px 6px !important;
-        margin-bottom: 8px !important;
+        gap: 5px 8px !important;
+        margin-bottom: 10px !important;
     }
     .detail-hero .hero-features .feat {
-        font-size: 9.5px !important;
+        font-size: 10.5px !important;
     }
     .detail-hero .hero-floating-img {
-        max-height: 95px !important;
-        max-width: 140px !important;
+        max-height: 120px !important;
+        max-width: 170px !important;
     }
     .detail-hero .hero-btns .btn-primary,
     .detail-hero .hero-btns .btn-outline {
-        padding: 0 11px !important;
-        font-size: 11px !important;
-        height: 32px !important;
-        min-height: 32px !important;
-        gap: 4px !important;
+        padding: 0 13px !important;
+        font-size: 12px !important;
+        height: 38px !important;
+        min-height: 38px !important;
     }
+}
 
 @media (max-width: 768px) and (max-height: 680px) {
     .detail-hero {
-        padding-top: calc(56px + 6px) !important;
-        padding-bottom: 6px !important;
+        padding-top: calc(56px + 8px) !important;
+        padding-bottom: 14px !important;
     }
     .detail-hero .hero-title {
-        font-size: 18px !important;
-        margin-bottom: 3px !important;
+        font-size: 19px !important;
+        margin-bottom: 4px !important;
     }
     .detail-hero .hero-desc {
-        font-size: 11px !important;
-        line-height: 1.3 !important;
+        font-size: 11.5px !important;
+        line-height: 1.35 !important;
         margin-bottom: 6px !important;
     }
     .detail-hero .hero-features {
-        gap: 2px 8px !important;
-        margin-bottom: 6px !important;
+        gap: 5px 8px !important;
+        margin-bottom: 10px !important;
     }
     .detail-hero .hero-features .feat {
-        font-size: 10px !important;
+        font-size: 10.5px !important;
     }
     .detail-hero .hero-btns {
-        margin-bottom: 4px !important;
+        margin-bottom: 0 !important;
     }
     .detail-hero .hero-btns .btn-primary,
     .detail-hero .hero-btns .btn-outline {
-        min-height: 30px !important;
-        height: 30px !important;
-        padding: 0 11px !important;
-        font-size: 11px !important;
+        min-height: 38px !important;
+        height: 38px !important;
+        padding: 0 14px !important;
+        font-size: 12px !important;
     }
     .detail-hero .hero-floating-img {
-        max-height: clamp(75px, 13vh, 100px) !important;
+        max-height: clamp(100px, 16vh, 135px) !important;
     }
 }
     .reviews-marquee-track .review-card {
