@@ -6444,9 +6444,6 @@
 
       <!-- STEPPER HEADER INDICATOR -->
       <div class="modal-stepper-header hidden" id="modal-stepper-header" style="margin-bottom: 0.75rem; padding-bottom: 0.75rem; padding-right: 44px; border-bottom: 1px solid var(--border);">
-        <div style="display: flex; justify-content: flex-end; margin-bottom: 8px;">
-          <a id="modal-prefer-full-apply" href="apply.html" style="font-size: 0.775rem; color: #0066ff; font-weight: 600; text-decoration: underline;">Prefer full-page form? Open application page &rarr;</a>
-        </div>
         <div style="display: flex; align-items: center; justify-content: space-between; position: relative;">
           <div class="modal-step-node active" id="mstep-node-1" style="display: flex; flex-direction: column; align-items: center; gap: 4px; z-index: 2;">
             <div class="mstep-circle" id="mstep-circle-1" style="width: 28px; height: 28px; border-radius: 50%; background: #0066ff; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; transition: all 0.3s ease;">1</div>
@@ -7019,7 +7016,7 @@
                   ${techIconsHTML}
                 </div>
                 <div style="margin-top: 14px;">
-                  <button class="card-action-btn" style="width: 100%; justify-content: center;" onclick="window.location.href='apply.html?course=${encodeURIComponent(course.title)}'; event.stopPropagation();">
+                  <button class="card-action-btn" style="width: 100%; justify-content: center;" onclick="if (typeof window.openCourseApplyModal === 'function') { window.openCourseApplyModal('${course.id || course.title}'); } else if (typeof openModal === 'function') { openModal('${course.id || course.title}', 1); } event.stopPropagation();">
                     Apply Now &rarr;
                   </button>
                 </div>
@@ -9687,9 +9684,7 @@
 
         card.addEventListener('click', (e) => {
           e.stopPropagation();
-          if (typeof openModal === 'function') {
-            openModal(item);
-          }
+          window.location.href = `detail.html?course=${encodeURIComponent(item.id)}&from=internship`;
         });
 
         return card;
@@ -9856,7 +9851,7 @@
         ctaBtn.innerHTML = '<span>Explore Track</span> <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>';
         ctaBtn.addEventListener('click', (e) => {
           e.stopPropagation();
-          openModal(item);
+          window.location.href = `detail.html?course=${encodeURIComponent(item.id)}&from=internship`;
         });
 
         contentCol.appendChild(eyebrowRow);
@@ -9885,13 +9880,13 @@
           activateInternshipCard(index);
         });
 
-        // Click interaction: expand card if inactive, or open modal if active
+        // Click interaction: expand card if inactive, or navigate to detail page if active
         card.addEventListener('click', (e) => {
           if (!card.classList.contains('active')) {
             e.stopPropagation();
             activateInternshipCard(index);
           } else {
-            openModal(item);
+            window.location.href = `detail.html?course=${encodeURIComponent(item.id)}&from=internship`;
           }
         });
 
@@ -9902,7 +9897,7 @@
             if (!card.classList.contains('active')) {
               activateInternshipCard(index);
             } else {
-              openModal(item);
+              window.location.href = `detail.html?course=${encodeURIComponent(item.id)}&from=internship`;
             }
           }
         });
@@ -10289,7 +10284,15 @@
         modalViewDetails.classList.add('active');
       } else if (stepNum >= 1 && stepNum <= 4) {
         modalStepperHeader.classList.remove('hidden');
-        if (stepNum === 1) modalViewStep1.classList.add('active');
+        if (stepNum === 1) {
+          modalViewStep1.classList.add('active');
+          const selCourseInput = document.getElementById('form-selected-course');
+          if (selCourseInput && currentInternship) {
+            selCourseInput.value = currentInternship.title;
+          }
+          const firstInput = document.getElementById('form-name');
+          if (firstInput) setTimeout(() => firstInput.focus(), 60);
+        }
         if (stepNum === 2) modalViewStep2.classList.add('active');
         if (stepNum === 3) {
           modalViewStep3.classList.add('active');
@@ -10376,7 +10379,10 @@
 
     window.openInternshipModal = openModal;
     window.setInternshipStep = setStep;
-    function openModal(item) {
+    window.openCourseApplyModal = function(courseOrId) {
+      openModal(courseOrId, 1);
+    };
+    function openModal(item, initialStep = 0) {
       if (typeof item === 'string') {
         let found = null;
         if (window.DOMAIN_COURSES) {
@@ -10385,7 +10391,14 @@
             if (found) break;
           }
         }
+        if (!found && window.TRAINING_COURSES) {
+          found = window.TRAINING_COURSES.find(c => c.id === item || c.title.toLowerCase() === item.toLowerCase());
+        }
+        if (!found && typeof getCourseBySlug === 'function') {
+          found = getCourseBySlug(item);
+        }
         if (found) item = found;
+        else item = { id: item, title: item, accentColor: '#0066ff', accentGlow: 'rgba(0,102,255,0.3)', desc: `Professional program for ${item}.`, learnPoints: ['Comprehensive technical curriculum', 'Industry mentor guidance', 'Live real-world capstone project', 'Placement assistance'], techStack: [item, 'Tools', 'Git', 'Cloud'] };
       }
       currentInternship = item;
       
@@ -10493,7 +10506,7 @@
       }
       validatedReferralCode = null;
       validatedDiscount = 0;
-      setStep(0);
+      setStep(initialStep || 0);
       modalBackdrop.classList.add('active');
       if (typeof window.lockModalBackgroundScroll === 'function') window.lockModalBackgroundScroll();
     }
@@ -11335,6 +11348,11 @@
               <div class="arox-mob-tech-icons">
                 ${techIconsHTML}
               </div>
+              <div style="margin-top: 14px; width: 100%;">
+                <button type="button" class="card-action-btn" style="width: 100%; justify-content: center;" onclick="if (typeof window.openCourseApplyModal === 'function') { window.openCourseApplyModal('${item.id || item.title}'); } else if (typeof openModal === 'function') { openModal('${item.id || item.title}', 1); } event.stopPropagation();">
+                  Apply Now &rarr;
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -11440,11 +11458,7 @@
       }
 
       card.addEventListener('click', () => {
-        if (typeof window.openInternshipModal === 'function') {
-          window.openInternshipModal(item);
-        } else if (typeof openModal === 'function') {
-          openModal(item);
-        }
+        window.location.href = `detail.html?course=${encodeURIComponent(item.id)}&from=internship`;
       });
 
       return card;

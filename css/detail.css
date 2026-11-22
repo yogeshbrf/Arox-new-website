@@ -2247,6 +2247,7 @@ html:not(.dark) .google-btn-back:hover {
         max-height: clamp(100px, 16vh, 135px) !important;
     }
 }
+@media (max-width: 480px) {
     .reviews-marquee-track .review-card {
         flex: 0 0 250px !important;
         width: 250px !important;

@@ -2863,6 +2863,2866 @@ const coursesData = [
             }
         ]
     }
+,
+
+{
+    "slug": "salesforce",
+    "id": "salesforce",
+    "title": "Salesforce CRM & Cloud Administration",
+    "category": "Enterprise Management Track",
+    "badge": "CRM & CLOUD CERTIFIED",
+    "heroAccent": "Salesforce Enterprise Specialist",
+    "desc": "Configure Salesforce CRM administration, Apex development, Lightning Web Components, and automated customer pipelines.",
+    "heroFeatures": [
+        "Salesforce Admin & Platform App Builder",
+        "Declarative Flow Builder Automation",
+        "Role Hierarchies & Data Security Model",
+        "Reports, Dashboards & KPI Analytics",
+        "Apex Basics & Lightning Components",
+        "Verified Enterprise Experience Certificate"
+    ],
+    "techStack": [
+        "Salesforce CRM",
+        "Flow Builder",
+        "Reports & Dashboards",
+        "Data Modeling",
+        "Apex Basics",
+        "User Management"
+    ],
+    "topics": [
+        {
+            "title": "Salesforce Data Architecture & Object Modeling",
+            "tool": "Salesforce CRM",
+            "desc": "Learn standard and custom objects, master-detail and lookup relationships, formula fields, and schema builder.",
+            "points": [
+                "Create and configure custom objects, custom fields, and picklists",
+                "Establish 1-to-many and junction many-to-many data relationships",
+                "Implement cross-object formula fields and roll-up summary calculations",
+                "Enforce data hygiene through regex-based field validation rules"
+            ],
+            "practicalLab": "Design and deploy a complete Custom Recruitment CRM data model with Applicants, Positions, and Reviews."
+        },
+        {
+            "title": "Business Process Automation with Flow Builder",
+            "tool": "Flow Builder",
+            "desc": "Master Record-Triggered Flows, Screen Flows, Scheduled Flows, and approval process automation.",
+            "points": [
+                "Build no-code Record-Triggered Flows for auto-assigning and updating records",
+                "Create interactive Screen Flows for guided customer onboarding wizards",
+                "Configure multi-stage approval processes with email alerts and field updates",
+                "Test and debug automation using Flow Builder debug tools and execution logs"
+            ],
+            "practicalLab": "Build an automated Lead Qualification and Opportunity Routing Flow with multi-tier managerial approval."
+        },
+        {
+            "title": "Enterprise Security, Profiles & Permission Sets",
+            "tool": "User Management",
+            "desc": "Implement Organization-Wide Defaults (OWD), Role Hierarchies, Sharing Rules, and granular permission sets.",
+            "points": [
+                "Configure baseline security with Profiles, Permission Sets, and Permission Set Groups",
+                "Define Organization-Wide Defaults (Private, Read-Only, Read/Write)",
+                "Implement Role Hierarchies and criteria-based Sharing Rules",
+                "Audit user logins, session settings, and two-factor authentication policies"
+            ],
+            "practicalLab": "Implement a multi-departmental security model for Sales, Support, and Finance teams with strict data separation."
+        },
+        {
+            "title": "Analytics, Dynamic Dashboards & Reporting",
+            "tool": "Reports & Dashboards",
+            "desc": "Build Tabular, Summary, and Matrix reports with custom summary formulas and dynamic executive dashboards.",
+            "points": [
+                "Create summary reports grouped by sales stage, region, and quarter",
+                "Build custom report types and calculate conversion rates with summary formulas",
+                "Design interactive executive dashboards with chart components and filters",
+                "Schedule automated report exports and set up threshold-based notification alerts"
+            ],
+            "practicalLab": "Develop an Executive Sales KPI Dashboard tracking Win Rates, Average Deal Size, and Sales Rep Quotas."
+        },
+        {
+            "title": "Apex Fundamentals & Lightning Experience",
+            "tool": "Apex Basics",
+            "desc": "Introduction to object-oriented Apex triggers, SOQL/SOSL queries, and Lightning Web Components (LWC).",
+            "points": [
+                "Write basic Apex triggers to enforce complex business logic",
+                "Query database records using SOQL and perform full-text search with SOSL",
+                "Structure Lightning Record Pages with standard and dynamic component visibility",
+                "Deploy configuration changes between Sandbox and Production using Change Sets"
+            ],
+            "practicalLab": "Implement an Apex trigger that automatically creates onboarding tasks whenever an Opportunity is Won."
+        }
+    ],
+    "projects": [
+        {
+            "title": "Lead-to-Opportunity Sales Pipeline Automation",
+            "subtitle": "Enterprise CRM Workflow",
+            "icon": "fa-solid fa-cloud",
+            "iconColor": "#00C8FF",
+            "desc": "End-to-end sales pipeline deployment with automated lead scoring, dynamic record routing, and validation enforcement.",
+            "tags": [
+                "Salesforce CRM",
+                "Flow Builder",
+                "Data Modeling"
+            ]
+        },
+        {
+            "title": "Service Cloud SLA & Escalation Engine",
+            "subtitle": "Customer Support Automation",
+            "icon": "fa-solid fa-headset",
+            "iconColor": "#10B981",
+            "desc": "Configured automated case queuing, omni-channel routing, SLA milestone tracking, and manager escalation alerts.",
+            "tags": [
+                "Flow Builder",
+                "User Management",
+                "Service Cloud"
+            ]
+        },
+        {
+            "title": "Executive Sales & Revenue KPI Dashboard",
+            "subtitle": "Business Intelligence & Reporting",
+            "icon": "fa-solid fa-chart-line",
+            "iconColor": "#8B5CF6",
+            "desc": "Multi-metric dashboard monitoring quarterly quotas, pipeline stage duration, churn risk, and rep leaderboards.",
+            "tags": [
+                "Reports & Dashboards",
+                "Sales Cloud",
+                "Analytics"
+            ]
+        },
+        {
+            "title": "Custom Partner Recruitment Portal",
+            "subtitle": "Experience Cloud & Security Architecture",
+            "icon": "fa-solid fa-shield-halved",
+            "iconColor": "#F59E0B",
+            "desc": "Secure portal with customized roles, permission set groups, criteria-based sharing rules, and validation workflows.",
+            "tags": [
+                "User Management",
+                "Apex Basics",
+                "Security"
+            ]
+        }
+    ],
+    "reviews": [
+        {
+            "name": "Rohan M.",
+            "role": "Salesforce Administrator Trainee",
+            "initials": "RM",
+            "quote": "The hands-on Flow Builder and custom object modeling gave me practical expertise that helped me crack my first Salesforce developer interview.",
+            "stars": 5
+        },
+        {
+            "name": "Ananya G.",
+            "role": "CRM Analyst",
+            "initials": "AG",
+            "quote": "Learning declarative automation and security controls on real sandboxes was the highlight of this internship. Very structured guidance!",
+            "stars": 5
+        },
+        {
+            "name": "Karthik R.",
+            "role": "Cloud Consultant",
+            "initials": "KR",
+            "quote": "The mentor guided us through real corporate workflows instead of basic slides. Built a stellar portfolio project that impressed interviewers.",
+            "stars": 5
+        }
+    ],
+    "faqs": [
+        {
+            "q": "Do I need prior coding experience to take this Salesforce course?",
+            "a": "No coding background is required to start. We begin with core Salesforce Administration, data modeling, security, and declarative Flow Builder automation before introducing Apex fundamentals."
+        },
+        {
+            "q": "Will this program prepare me for Salesforce Administrator (ADM-201) certification?",
+            "a": "Yes, the curriculum is mapped directly to Salesforce Certified Administrator (ADM-201) and Platform App Builder exam objectives with practice mock tests."
+        },
+        {
+            "q": "What real-world projects will I build during the program?",
+            "a": "You will configure an end-to-end CRM deployment for a mock fintech company including multi-tiered approval workflows, role hierarchies, and executive dashboards."
+        },
+        {
+            "q": "How does the internship certificate help in job placements?",
+            "a": "You receive an industry-verified internship experience certificate and portfolio verification link highlighting your hands-on CRM implementation."
+        }
+    ]
+},
+
+{
+    "slug": "power-bi",
+    "id": "power-bi",
+    "title": "Power BI Business Intelligence & Analytics",
+    "category": "Business Analytics Track",
+    "badge": "BI & ANALYTICS CERTIFIED",
+    "heroAccent": "Power BI Data Analytics Specialist",
+    "desc": "Extract, transform, model, and visualize data using Power BI, advanced DAX expressions, Power Query ETL, and executive dashboards.",
+    "heroFeatures": [
+        "Power Query ETL & Data Cleansing",
+        "Relational Star Schema Data Modeling",
+        "Advanced DAX (CALCULATE, Time Intelligence)",
+        "Interactive Visuals, Slicers & Tooltips",
+        "Power BI Service & Scheduled Gateway Refresh",
+        "Verified Data Analyst Experience Certificate"
+    ],
+    "techStack": [
+        "Power BI",
+        "DAX",
+        "Power Query",
+        "Data Modeling",
+        "Business Intelligence",
+        "SQL",
+        "Dashboard Design"
+    ],
+    "topics": [
+        {
+            "title": "Power Query ETL & Data Transformation",
+            "tool": "Power Query",
+            "desc": "Connect to diverse data sources, clean messy records, unpivot columns, and merge relational datasets.",
+            "points": [
+                "Import data from SQL databases, Excel workbooks, CSVs, and Web APIs",
+                "Perform data cleansing: replace nulls, split columns, and change data types",
+                "Execute relational Merge and Append queries for multi-table unification",
+                "Write custom M-Code functions for recurring ETL workflow automation"
+            ],
+            "practicalLab": "Build an end-to-end Power Query ETL pipeline processing 50,000+ raw e-commerce sales transactions."
+        },
+        {
+            "title": "Relational Data Modeling & Star Schema",
+            "tool": "Data Modeling",
+            "desc": "Architect normalized fact and dimension tables, manage relationship cardinalities, and optimize performance.",
+            "points": [
+                "Design optimal Star Schema and Snowflake Schema data architectures",
+                "Configure 1-to-Many and Many-to-Many relationship cardinalities",
+                "Manage cross-filter directions and prevent ambiguous relationship paths",
+                "Create dedicated Date Dimensions and role-playing dimension tables"
+            ],
+            "practicalLab": "Construct an enterprise retail data model connecting Sales Facts with Products, Stores, and Dates dimensions."
+        },
+        {
+            "title": "Advanced DAX Formulas & Calculation Measures",
+            "tool": "DAX",
+            "desc": "Master evaluation context, CALCULATE modifiers, Iterator functions (SUMX), and Time Intelligence calculations.",
+            "points": [
+                "Understand Row Context vs Filter Context and Context Transition",
+                "Write advanced measures using CALCULATE, FILTER, ALL, and ALLEXCEPT",
+                "Implement Time Intelligence: YTD, QTD, SamePeriodLastYear, and Growth %",
+                "Optimize formula computation speeds using DAX Studio and VertiPaq analyzer"
+            ],
+            "practicalLab": "Develop a suite of 25+ DAX business measures for Year-over-Year Growth, Churn Rate, and Rolling 12-Month Sales."
+        },
+        {
+            "title": "Interactive Executive Dashboard Design",
+            "tool": "Dashboard Design",
+            "desc": "Craft intuitive, user-friendly visual reports with drill-through pages, custom bookmarks, and dynamic slicers.",
+            "points": [
+                "Choose appropriate visual types: Waterfall, Treemap, Decomposition Tree, and Gauges",
+                "Implement Drill-Through navigation pages for granular record inspection",
+                "Build seamless tabbed views using Bookmarks and Selection Pane toggle actions",
+                "Design accessible high-contrast UI themes and mobile-optimized phone layouts"
+            ],
+            "practicalLab": "Publish an interactive C-Suite Financial & Operations Performance Dashboard with drill-down capabilities."
+        }
+    ],
+    "projects": [
+        {
+            "title": "Omnichannel Retail Sales & Margin Intelligence",
+            "subtitle": "Enterprise BI Reporting",
+            "icon": "fa-solid fa-chart-column",
+            "iconColor": "#F59E0B",
+            "desc": "Multi-page Power BI report tracking store sales, product category margins, customer cohorts, and quarterly growth.",
+            "tags": [
+                "Power BI",
+                "DAX",
+                "Power Query"
+            ]
+        },
+        {
+            "title": "HR Talent Attrition & Retention Analytics",
+            "subtitle": "Workforce Analytics Dashboard",
+            "icon": "fa-solid fa-users-gear",
+            "iconColor": "#3B82F6",
+            "desc": "Predictive attrition tracker identifying key retention factors, salary benchmark gaps, and department tenure.",
+            "tags": [
+                "Data Modeling",
+                "DAX",
+                "HR Analytics"
+            ]
+        },
+        {
+            "title": "SaaS Subscription MRR & Cohort Retention Board",
+            "subtitle": "Revenue Intelligence",
+            "icon": "fa-solid fa-arrow-trend-up",
+            "iconColor": "#10B981",
+            "desc": "Monthly Recurring Revenue model with cohort retention heatmaps, customer churn rates, and LTV forecasts.",
+            "tags": [
+                "Power BI",
+                "Time Intelligence",
+                "SQL"
+            ]
+        },
+        {
+            "title": "Supply Chain Fulfillment & Logistics Tracker",
+            "subtitle": "Operations Performance Analysis",
+            "icon": "fa-solid fa-truck-fast",
+            "iconColor": "#8B5CF6",
+            "desc": "Warehouse fulfillment dashboard monitoring delivery lead times, backorders, and regional courier SLAs.",
+            "tags": [
+                "Power BI",
+                "ETL",
+                "Dashboard Design"
+            ]
+        }
+    ],
+    "reviews": [
+        {
+            "name": "Divya M.",
+            "role": "Business Intelligence Analyst",
+            "initials": "DM",
+            "quote": "Mastering CALCULATE and Time Intelligence DAX through live hands-on projects gave me immense confidence during my analytics interviews.",
+            "stars": 5
+        },
+        {
+            "name": "Suresh B.",
+            "role": "Data Analyst Trainee",
+            "initials": "SB",
+            "quote": "The mentor helped us build real production dashboards with bookmarks, drill-throughs, and clean UI design. Highly valuable course!",
+            "stars": 5
+        },
+        {
+            "name": "Pradeep N.",
+            "role": "Operations Analyst",
+            "initials": "PN",
+            "quote": "Power Query ETL automation was explained thoroughly. Now I can automate hours of manual Excel reporting in minutes with Power BI.",
+            "stars": 5
+        }
+    ],
+    "faqs": [
+        {
+            "q": "Is Power BI suitable for candidates without a coding background?",
+            "a": "Yes! Power BI is designed for business analysts and problem solvers. Prior Excel familiarity is helpful, and all data modeling, Power Query, and DAX formulas are taught from the ground up."
+        },
+        {
+            "q": "Do we learn both Power BI Desktop and Power BI Service (Cloud)?",
+            "a": "Yes, you will create reports in Power BI Desktop and learn how to publish, schedule automated refreshes with On-Premise Gateways, and share workspaces via Power BI Service."
+        },
+        {
+            "q": "How advanced are the DAX concepts covered?",
+            "a": "We cover everything from basic aggregations up to advanced context transitions, iterator functions (SUMX, AVERAGEX), USERELATIONSHIP, and multi-year Time Intelligence."
+        },
+        {
+            "q": "What portfolio work will I walk away with?",
+            "a": "You will graduate with 4 full portfolio-ready dashboards published live with interactive web links to demonstrate your BI architecture skills to employers."
+        }
+    ]
+},
+
+{
+    "slug": "advanced-excel",
+    "id": "advanced-excel",
+    "title": "Advanced Excel & Financial Automation",
+    "category": "Business Analytics Track",
+    "badge": "EXCEL SPECIALIST CERTIFIED",
+    "heroAccent": "Advanced Excel & VBA Specialist",
+    "desc": "Master advanced Excel functions, dynamic arrays, interactive dashboard modeling, Pivot Tables, Power Pivot, and VBA macro automation.",
+    "heroFeatures": [
+        "Modern Dynamic Formulas (XLOOKUP, FILTER, LAMBDA)",
+        "Pivot Tables, Slicers & Calculated Fields",
+        "Financial Modeling & What-If Scenarios",
+        "Power Pivot Relational Data Modeling",
+        "VBA Macro Automation & Custom UserForms",
+        "Verified Advanced Excel Specialist Certificate"
+    ],
+    "techStack": [
+        "Advanced Excel",
+        "XLOOKUP",
+        "Pivot Tables",
+        "VBA & Macros",
+        "Financial Modeling",
+        "Data Analysis",
+        "Power Pivot"
+    ],
+    "topics": [
+        {
+            "title": "Modern Formula Mastery & Dynamic Arrays",
+            "tool": "XLOOKUP",
+            "desc": "Master next-generation formulas including XLOOKUP, INDEX-MATCH, FILTER, UNIQUE, SORT, and dynamic array handling.",
+            "points": [
+                "Replace legacy VLOOKUP with resilient 2-way XLOOKUP lookups",
+                "Build dynamic auto-expanding lists using FILTER, UNIQUE, and SORT",
+                "Handle complex multi-criteria conditional lookups with INDEX-MATCH",
+                "Create reusable custom formulas using LAMBDA and LET definitions"
+            ],
+            "practicalLab": "Construct an automated multi-currency sales conversion model utilizing nested dynamic array formulas."
+        },
+        {
+            "title": "Pivot Tables, Slicers & Summary Analytics",
+            "tool": "Pivot Tables",
+            "desc": "Analyze massive datasets using Pivot Tables, custom grouping, calculated items, and synchronized visual slicers.",
+            "points": [
+                "Summarize transactional records across multidimensional categorical hierarchies",
+                "Add custom Calculated Fields and Calculated Items to Pivot Tables",
+                "Format percentages of column totals, running totals, and difference from prior periods",
+                "Connect multiple Pivot Tables to synchronized timelines and visual slicers"
+            ],
+            "practicalLab": "Build a multi-dimensional regional sales summary matrix with drill-down slicers and conditional heatmaps."
+        },
+        {
+            "title": "What-If Scenarios & Financial Modeling",
+            "tool": "Financial Modeling",
+            "desc": "Perform sensitive financial decision-making using Goal Seek, Data Tables, and Scenario Manager.",
+            "points": [
+                "Calculate loan amortization, NPV, and IRR using built-in financial formulas",
+                "Model 1-variable and 2-variable sensitivity Data Tables",
+                "Evaluate best-case, base-case, and worst-case scenarios via Scenario Manager",
+                "Apply linear optimization to resource allocation problems using Excel Solver"
+            ],
+            "practicalLab": "Develop a 3-statement financial projection model with dynamic scenario toggles and sensitivity tables."
+        },
+        {
+            "title": "VBA Programming & Macro Automation",
+            "tool": "VBA & Macros",
+            "desc": "Automate repetitive workflows, generate bulk reports, and build custom user interfaces with VBA code.",
+            "points": [
+                "Record, inspect, and optimize Excel macros using the Visual Basic Editor (VBE)",
+                "Write custom subroutines and user-defined functions (UDF) with loops and conditionals",
+                "Manipulate workbooks, sheets, and cell ranges programmatically with error handling",
+                "Design interactive UserForms with input validation and automated database logging"
+            ],
+            "practicalLab": "Build a one-click automated invoice generation tool that exports PDF bills and emails clients via Outlook."
+        }
+    ],
+    "projects": [
+        {
+            "title": "Dynamic Financial Statement & Valuation Model",
+            "subtitle": "Corporate Finance Modeling",
+            "icon": "fa-solid fa-file-invoice-dollar",
+            "iconColor": "#10B981",
+            "desc": "Integrated 3-statement financial model with revenue forecasting, working capital schedules, and sensitivity tables.",
+            "tags": [
+                "Financial Modeling",
+                "XLOOKUP",
+                "Data Analysis"
+            ]
+        },
+        {
+            "title": "Automated Invoice & Inventory Tracker with VBA",
+            "subtitle": "Workflow Automation",
+            "icon": "fa-solid fa-gears",
+            "iconColor": "#3B82F6",
+            "desc": "VBA-powered inventory auditing workbook that auto-generates stock purchase orders when thresholds fall below minimums.",
+            "tags": [
+                "VBA & Macros",
+                "Advanced Excel",
+                "Automation"
+            ]
+        },
+        {
+            "title": "Executive Sales & Commission Compensation Board",
+            "subtitle": "Sales Performance Analytics",
+            "icon": "fa-solid fa-chart-pie",
+            "iconColor": "#F59E0B",
+            "desc": "Tiered commission calculator utilizing dynamic arrays, custom conditional formatting, and interactive KPI cards.",
+            "tags": [
+                "Pivot Tables",
+                "XLOOKUP",
+                "Data Analysis"
+            ]
+        },
+        {
+            "title": "HR Employee Payroll & Attendance Processing System",
+            "subtitle": "Operations Management",
+            "icon": "fa-solid fa-calendar-check",
+            "iconColor": "#8B5CF6",
+            "desc": "Automated payroll calculator computing overtime, tax deductions, shift allowances, and payslip generation.",
+            "tags": [
+                "Advanced Excel",
+                "Data Analysis",
+                "Formulas"
+            ]
+        }
+    ],
+    "reviews": [
+        {
+            "name": "Deepak V.",
+            "role": "Financial Analyst",
+            "initials": "DV",
+            "quote": "Learning dynamic arrays, XLOOKUP, and VBA macros cut down my weekly financial reporting time from 6 hours to 10 minutes.",
+            "stars": 5
+        },
+        {
+            "name": "Pooja K.",
+            "role": "Operations Coordinator",
+            "initials": "PK",
+            "quote": "The practical exercises on What-If analysis and Pivot Tables were exceptional. Everything was taught with real corporate data.",
+            "stars": 5
+        },
+        {
+            "name": "Harish M.",
+            "role": "Junior Auditor",
+            "initials": "HM",
+            "quote": "Super comprehensive! The VBA userform project gave me a huge advantage in my accounting and auditing interviews.",
+            "stars": 5
+        }
+    ],
+    "faqs": [
+        {
+            "q": "Which versions of Microsoft Excel are covered?",
+            "a": "We cover modern Microsoft 365 / Excel 2021+ functions (XLOOKUP, FILTER, UNIQUE, LAMBDA) while maintaining complete backward compatibility with Excel 2016 and 2019."
+        },
+        {
+            "q": "Do I need any programming experience to learn VBA macros?",
+            "a": "None! We introduce programming fundamentals from scratch: loops, if-else statements, range manipulation, and debugging within the Excel VBA editor."
+        },
+        {
+            "q": "Will this course help me crack Excel technical assessments for corporate jobs?",
+            "a": "Yes. Most finance, consulting, and analytics interviews involve a timed Excel modeling test. Our hands-on mock tests directly replicate corporate interview challenges."
+        },
+        {
+            "q": "Are Power Query and Power Pivot included?",
+            "a": "Yes, you will learn to connect multi-table data models inside Excel using Power Pivot and clean automated data feeds with Excel Power Query."
+        }
+    ]
+},
+
+{
+    "slug": "vlsi-design",
+    "id": "vlsi-design",
+    "title": "VLSI Design & Semiconductor Verification",
+    "category": "Electronics & Hardware Engineering",
+    "badge": "VLSI & SEMICONDUCTOR CERTIFIED",
+    "heroAccent": "VLSI & ASIC Design Specialist",
+    "desc": "Design and verify digital integrated circuits using Verilog/SystemVerilog, RTL synthesis, FPGA prototyping, and CMOS layout.",
+    "heroFeatures": [
+        "Verilog HDL Synthesizable RTL Architecture",
+        "SystemVerilog Testbench Verification",
+        "Xilinx Vivado Synthesis & Implementation",
+        "FPGA Hardware Prototyping on Artix/Spartan",
+        "Static Timing Analysis (STA) & Clock Domain Crossing",
+        "Verified VLSI Design Engineer Certificate"
+    ],
+    "techStack": [
+        "Verilog HDL",
+        "FPGA",
+        "Xilinx Vivado",
+        "RTL Design",
+        "Digital Electronics",
+        "STA",
+        "ModelSim"
+    ],
+    "topics": [
+        {
+            "title": "Digital Electronics & Combinational Logic Design",
+            "tool": "Digital Electronics",
+            "desc": "Review CMOS logic gates, Boolean minimization, arithmetic units, multiplexers, and decoders.",
+            "points": [
+                "Design optimal Boolean architectures with Karnaugh maps and Quine-McCluskey",
+                "Construct high-speed adders: Carry Lookahead (CLA) and Carry Select Adders",
+                "Implement combinational decoders, priority encoders, and barrel shifters",
+                "Analyze propagation delay, fan-out limitations, and static power dissipation"
+            ],
+            "practicalLab": "Design and simulate a 16-bit Arithmetic Logic Unit (ALU) supporting arithmetic, logical, and shift operations."
+        },
+        {
+            "title": "Verilog HDL Synthesizable RTL Architecture",
+            "tool": "Verilog HDL",
+            "desc": "Master behavioral, dataflow, and structural modeling using synthesizable Verilog HDL coding practices.",
+            "points": [
+                "Model synchronous sequential circuits: D-Flip-Flops, counters, and shift registers",
+                "Write synthesizable finite state machines (FSM) using Mealy and Moore models",
+                "Avoid synthesis pitfalls: unintended latches and incomplete sensitivity lists",
+                "Structure parameterized RTL modules for reusable IP core integration"
+            ],
+            "practicalLab": "Implement a synthesizable Traffic Light Controller FSM with pedestrian crosswalk overrides in Verilog."
+        },
+        {
+            "title": "SystemVerilog Testbenches & Simulation",
+            "tool": "ModelSim",
+            "desc": "Develop robust self-checking testbenches with constrained-random verification and functional coverage.",
+            "points": [
+                "Write automated testbenches with clock generators and reset sequences",
+                "Generate constrained-random stimuli to test corner cases and edge conditions",
+                "Implement assertions (SVA) to monitor protocol compliance during simulation",
+                "Measure code coverage (statement, branch, toggle) using ModelSim/QuestaSim"
+            ],
+            "practicalLab": "Build a self-checking testbench with automated scoreboard verification for a synchronous Dual-Port RAM."
+        },
+        {
+            "title": "FPGA Synthesis, Implementation & Timing (STA)",
+            "tool": "Xilinx Vivado",
+            "desc": "Perform logic synthesis, place-and-route, Static Timing Analysis (STA), and bitstream generation.",
+            "points": [
+                "Define timing constraints using Synopsys Design Constraints (SDC / XDC)",
+                "Analyze setup and hold slack times and resolve timing violations",
+                "Handle Clock Domain Crossing (CDC) using double-flop synchronizers and async FIFOs",
+                "Generate bitstream and program target Xilinx Artix-7 / Spartan FPGA hardware boards"
+            ],
+            "practicalLab": "Synthesize, map, place, and route a high-speed digital filter on an FPGA board meeting 100MHz timing closure."
+        }
+    ],
+    "projects": [
+        {
+            "title": "32-Bit Single-Cycle RISC-V Processor Core",
+            "subtitle": "Computer Architecture & RTL Design",
+            "icon": "fa-solid fa-microchip",
+            "iconColor": "#38BDF8",
+            "desc": "RTL implementation of the RISC-V RV32I instruction set including ALU, instruction decode, register file, and data memory.",
+            "tags": [
+                "Verilog HDL",
+                "RTL Design",
+                "ModelSim"
+            ]
+        },
+        {
+            "title": "Asynchronous FIFO with Gray-Code Pointers",
+            "subtitle": "Clock Domain Crossing (CDC) Design",
+            "icon": "fa-solid fa-memory",
+            "iconColor": "#8B5CF6",
+            "desc": "Dual-clock domain FIFO architecture with Gray code pointer conversion, synchronizers, and full/empty flag generation.",
+            "tags": [
+                "STA",
+                "Verilog HDL",
+                "RTL Design"
+            ]
+        },
+        {
+            "title": "Digital FIR Filter FPGA Hardware Accelerator",
+            "subtitle": "DSP & FPGA Implementation",
+            "icon": "fa-solid fa-wave-square",
+            "iconColor": "#10B981",
+            "desc": "Pipelined 8-tap Finite Impulse Response filter synthesized on Xilinx Vivado with DSP48 slices and timing closure.",
+            "tags": [
+                "FPGA",
+                "Xilinx Vivado",
+                "Digital Electronics"
+            ]
+        },
+        {
+            "title": "SPI & I2C Master-Slave Protocol Controller",
+            "subtitle": "Embedded Hardware Interface IP",
+            "icon": "fa-solid fa-network-wired",
+            "iconColor": "#F59E0B",
+            "desc": "Synthesizable serial peripheral interface controller featuring configurable baud rates, clock polarity, and shift buffers.",
+            "tags": [
+                "Verilog HDL",
+                "ModelSim",
+                "STA"
+            ]
+        }
+    ],
+    "reviews": [
+        {
+            "name": "Vignesh P.",
+            "role": "VLSI Verification Intern at Qualcomm",
+            "initials": "VP",
+            "quote": "Designing the 32-bit RISC-V core and resolving timing violations in Vivado gave me the exact skills needed for my ASIC interview.",
+            "stars": 5
+        },
+        {
+            "name": "Swetha N.",
+            "role": "RTL Design Associate",
+            "initials": "SN",
+            "quote": "Clock domain crossing and Static Timing Analysis were taught with industrial depth. The mentor cleared every doubt patiently.",
+            "stars": 5
+        },
+        {
+            "name": "Abhishek K.",
+            "role": "FPGA Engineer Trainee",
+            "initials": "AK",
+            "quote": "Top-tier VLSI curriculum! Working on synthesizable Verilog code and ModelSim testbenches prepared me thoroughly for core electronics jobs.",
+            "stars": 5
+        }
+    ],
+    "faqs": [
+        {
+            "q": "Which hardware description language is primarily taught?",
+            "a": "We teach Verilog HDL for synthesizable RTL design and introduce SystemVerilog for verification testbench architectures."
+        },
+        {
+            "q": "Do students work with official FPGA design suites?",
+            "a": "Yes, you will use Xilinx Vivado and ModelSim/QuestaSim to simulate, synthesize, constrain, and analyze timing closure for your designs."
+        },
+        {
+            "q": "What job profiles does this VLSI internship prepare me for?",
+            "a": "Graduates are qualified for roles such as RTL Design Engineer, ASIC Verification Engineer, FPGA Implementation Engineer, and Digital Hardware Engineer."
+        },
+        {
+            "q": "Is physical ASIC fabrication hardware required for the course?",
+            "a": "No, modern semiconductor design and verification happens through industry-standard EDA software simulation and FPGA hardware emulation."
+        }
+    ]
+},
+
+{
+    "slug": "catia-english",
+    "id": "catia-english",
+    "title": "CATIA V5/V6 Mechanical & Surface Design",
+    "category": "Mechanical CAD Engineering",
+    "badge": "AUTOMOTIVE CAD CERTIFIED",
+    "heroAccent": "CATIA 3D CAD Specialist",
+    "desc": "Master complex 3D part design, generative shape design, sheet metal, and multi-axis assembly modeling in CATIA.",
+    "heroFeatures": [
+        "Parametric 3D Solid Part Modeling",
+        "Generative Shape Design (GSD) & Class-A Surfaces",
+        "Complex Assembly Modeling & Kinematics",
+        "Generative Sheet Metal Engineering",
+        "Geometric Dimensioning & Tolerancing (GD&T)",
+        "Verified Mechanical Design Engineer Certificate"
+    ],
+    "techStack": [
+        "CATIA V5/V6",
+        "Parametric 3D CAD",
+        "Surface Modeling",
+        "Assembly Design",
+        "Drafting",
+        "GD&T",
+        "Mechanical CAD"
+    ],
+    "topics": [
+        {
+            "title": "Parametric Part Design & Solid Modeling",
+            "tool": "Parametric 3D CAD",
+            "desc": "Master sketcher constraints, pad, pocket, shaft, groove, multi-sections solids, and feature reordering.",
+            "points": [
+                "Create fully constrained, dimension-driven parametric 2D profiles",
+                "Generate complex 3D solids using ribs, slots, and multi-section solids",
+                "Apply dress-up features: variable radius fillets, chamfers, draft, and shell",
+                "Use Boolean operations (Union, Subtract, Intersect) for multi-body architecture"
+            ],
+            "practicalLab": "Model an industrial IC Engine Piston assembly with internal cooling galleries and pin bosses."
+        },
+        {
+            "title": "Generative Shape Design (GSD) & Surface Modeling",
+            "tool": "Surface Modeling",
+            "desc": "Construct organic aerodynamic curvatures, Class-A surfaces, blends, sweeps, and curvature analysis.",
+            "points": [
+                "Generate wireframe reference geometry: 3D points, splines, and projected curves",
+                "Create complex swept surfaces with guide curves and variable radius laws",
+                "Perform surface joins, trims, splits, and multi-surface boundary blends",
+                "Validate Class-A curvature continuity (G0, G1, G2) using zebra reflection mapping"
+            ],
+            "practicalLab": "Model an aerodynamic automotive exterior side mirror housing with curvature-continuous Class-A styling."
+        },
+        {
+            "title": "Assembly Design & Multi-Body Kinematics",
+            "tool": "Assembly Design",
+            "desc": "Assemble mechanical components, apply coincidence and contact constraints, and simulate movement.",
+            "points": [
+                "Structure top-down and bottom-up multi-component product trees",
+                "Apply assembly constraints: coincidence, contact, angle, and fix",
+                "Perform clash and clearance interference checks across moving parts",
+                "Simulate mechanism motion and degrees of freedom using DMU Kinematics"
+            ],
+            "practicalLab": "Assemble a complete 5-Speed Manual Automotive Transmission Gearbox with clash analysis."
+        },
+        {
+            "title": "Drafting, Production Drawings & GD&T",
+            "tool": "GD&T",
+            "desc": "Create standardized manufacturing blueprints with projection views, sections, bills of materials, and GD&T.",
+            "points": [
+                "Generate orthographic, auxiliary, isometric, and offset section drawing views",
+                "Apply ANSI/ISO dimensioning standards, surface finish symbols, and weld tags",
+                "Specify Geometric Dimensioning & Tolerancing (GD&T): flatness, parallelism, true position",
+                "Generate automated Bill of Materials (BOM) and balloons for production hand-off"
+            ],
+            "practicalLab": "Generate a production-ready fabrication drawing packet for a cast transmission housing with GD&T callouts."
+        }
+    ],
+    "projects": [
+        {
+            "title": "Automotive Hood & Fender Class-A Surface Modeling",
+            "subtitle": "Automotive Styling & Aerodynamics",
+            "icon": "fa-solid fa-car",
+            "iconColor": "#F59E0B",
+            "desc": "Designed aerodynamic exterior body panels using CATIA Generative Shape Design with strict G2 curvature continuity.",
+            "tags": [
+                "CATIA V5/V6",
+                "Surface Modeling",
+                "Mechanical CAD"
+            ]
+        },
+        {
+            "title": "5-Speed Manual Automotive Gearbox Assembly",
+            "subtitle": "Powertrain Mechanism Engineering",
+            "icon": "fa-solid fa-gears",
+            "iconColor": "#3B82F6",
+            "desc": "Multi-body powertrain assembly with synchronizer rings, shafts, and casing, verified with clash and interference analysis.",
+            "tags": [
+                "Assembly Design",
+                "Parametric 3D CAD",
+                "CATIA V5/V6"
+            ]
+        },
+        {
+            "title": "Sheet Metal Vehicle B-Pillar Stamping Die Model",
+            "subtitle": "Sheet Metal Tooling & Manufacturing",
+            "icon": "fa-solid fa-industry",
+            "iconColor": "#10B981",
+            "desc": "Structural vehicle chassis component designed using CATIA Generative Sheetmetal Design with bend radius allowances.",
+            "tags": [
+                "CATIA V5/V6",
+                "Mechanical CAD",
+                "GD&T"
+            ]
+        },
+        {
+            "title": "Complete Single-Cylinder Engine Crank-Connecting Rod Mechanism",
+            "subtitle": "Kinematic Mechanism Simulation",
+            "icon": "fa-solid fa-arrows-spin",
+            "iconColor": "#8B5CF6",
+            "desc": "Parametric assembly of crankshaft, connecting rod, and piston, simulated with DMU Kinematics to verify stroke clearances.",
+            "tags": [
+                "Assembly Design",
+                "Parametric 3D CAD",
+                "Drafting"
+            ]
+        }
+    ],
+    "reviews": [
+        {
+            "name": "Manoj T.",
+            "role": "Mechanical CAD Engineer at Tata Technologies",
+            "initials": "MT",
+            "quote": "The Class-A surfacing and Generative Shape Design modules in CATIA were phenomenal. The portfolio projects directly landed me my dream job.",
+            "stars": 5
+        },
+        {
+            "name": "Sneha R.",
+            "role": "Automotive Styling Trainee",
+            "initials": "SR",
+            "quote": "Building the complete 5-speed transmission assembly with DMU kinematics was an eye-opening experience. Highly recommend to all mechanical engineers.",
+            "stars": 5
+        },
+        {
+            "name": "Pravin S.",
+            "role": "Design Verification Associate",
+            "initials": "PS",
+            "quote": "The GD&T and production drafting standards taught in this course reflect true automotive industry practices. Best CAD course hands down!",
+            "stars": 5
+        }
+    ],
+    "faqs": [
+        {
+            "q": "Which CATIA workbenches are covered in this program?",
+            "a": "We cover Part Design, Generative Shape Design (GSD), Assembly Design, Generative Sheetmetal Design, and Interactive Drafting."
+        },
+        {
+            "q": "Is CATIA still widely used in the automotive and aerospace industries?",
+            "a": "Yes! OEMs such as Boeing, Airbus, Ford, BMW, and Tata Motors mandate CATIA as their primary design and styling environment for vehicle bodies and aircraft components."
+        },
+        {
+            "q": "Will I learn Class-A surfacing techniques?",
+            "a": "Yes, you will learn how to create aerodynamic Class-A surfaces, perform zebra reflection curvature checks, and ensure G0, G1, and G2 curvature continuity."
+        },
+        {
+            "q": "Do we receive CAD project evaluation and feedback from industry mentors?",
+            "a": "Yes, every project submission undergoes a detailed engineering design review covering model tree organization, parametric stability, and drafting standards."
+        }
+    ]
+},
+
+{
+    "slug": "autocad",
+    "id": "autocad",
+    "title": "AutoCAD 2D Drafting & 3D Modeling",
+    "category": "Engineering Design Track",
+    "badge": "AUTODESK DRAFTING CERTIFIED",
+    "heroAccent": "AutoCAD Engineering Design Specialist",
+    "desc": "Master architectural and mechanical 2D drafting, geometric dimensioning, layer management, isometric projections, and 3D modeling in AutoCAD.",
+    "heroFeatures": [
+        "Precision 2D Drafting & Geometric Construction",
+        "Layer Management, Linetypes & Standards",
+        "Dynamic Blocks & Parametric Constraints",
+        "Orthographic & Isometric Mechanical Projections",
+        "3D Solid Modeling, Boolean Editing & Rendering",
+        "Verified AutoCAD Design Drafter Certificate"
+    ],
+    "techStack": [
+        "AutoCAD 2D/3D",
+        "Engineering Drafting",
+        "GD&T",
+        "Isometric Views",
+        "Technical Schematics",
+        "Design Documentation"
+    ],
+    "topics": [
+        {
+            "title": "Precision 2D Drafting Tools & Coordinates",
+            "tool": "AutoCAD 2D/3D",
+            "desc": "Master object snaps, polar tracking, absolute and relative coordinate inputs, and fundamental drawing commands.",
+            "points": [
+                "Navigate cartesian coordinate systems and dynamic input precision tracking",
+                "Use core draw tools: Line, Polyline, Circle, Arc, Ellipse, Spline, and Hatch",
+                "Utilize modify tools: Offset, Trim, Extend, Fillet, Mirror, Array, and Scale",
+                "Implement construction geometry and centerlines according to ISO drawing conventions"
+            ],
+            "practicalLab": "Draft a precision mechanical flange bracket drawing with exact dimensional tolerances."
+        },
+        {
+            "title": "Layer Management, Annotation & GD&T",
+            "tool": "Engineering Drafting",
+            "desc": "Organize drawings with layers, line weights, dimension styles, multi-leader notes, and geometric tolerances.",
+            "points": [
+                "Create standardized layer matrices with distinct colors, linetypes, and lineweights",
+                "Configure annotative dimension styles, arrowheads, and precision tolerances",
+                "Apply Geometric Dimensioning & Tolerancing (GD&T) feature control frames",
+                "Design reusable title blocks with automated attributes and revisions tracking"
+            ],
+            "practicalLab": "Draft a complete multi-view mechanical component blueprint with GD&T control frames and standardized title block."
+        },
+        {
+            "title": "Dynamic Blocks, Attributes & Isometric Schematics",
+            "tool": "Isometric Views",
+            "desc": "Build intelligent dynamic blocks with stretch parameters, lookup tables, and 2.5D isometric projections.",
+            "points": [
+                "Construct Dynamic Blocks with visibility states, flip actions, and stretch parameters",
+                "Embed extractable attributes for automated bill of materials (BOM) reporting",
+                "Configure isometric snap grids and draw 2.5D piping and equipment isometrics",
+                "Generate cross-sectional hatch patterns indicating specific material types"
+            ],
+            "practicalLab": "Create an intelligent architectural/mechanical electrical piping isometric layout with dynamic block symbols."
+        },
+        {
+            "title": "3D Solid Modeling, Assembly & Sheet Layouts",
+            "tool": "Design Documentation",
+            "desc": "Transition from 2D sketches to 3D solid extrusions, revolves, sweeps, unions, and multi-sheet viewport plotting.",
+            "points": [
+                "Extrude, revolve, loft, and sweep 2D profiles into parametric 3D solids",
+                "Apply 3D editing operations: Boolean Union, Subtract, Intersect, and Fillet Edge",
+                "Generate 2D orthographic drawing views directly from 3D models using VIEWBASE",
+                "Configure paper space layouts, viewports, plot styles (CTB), and high-resolution PDF publishing"
+            ],
+            "practicalLab": "Model a 3D Industrial Valve Body, generate 2D multi-sheet layout viewports, and export print-ready PDF blueprints."
+        }
+    ],
+    "projects": [
+        {
+            "title": "Complete Commercial Floor Plan & Structural Layout",
+            "subtitle": "Architectural & MEP Blueprinting",
+            "icon": "fa-solid fa-building",
+            "iconColor": "#3B82F6",
+            "desc": "Comprehensive architectural drawing set with walls, doors, structural columns, electrical schematics, and dimensioning.",
+            "tags": [
+                "AutoCAD 2D/3D",
+                "Engineering Drafting",
+                "Design Documentation"
+            ]
+        },
+        {
+            "title": "Mechanical Centrifugal Pump Cross-Sectional Assembly",
+            "subtitle": "Mechanical Engineering Drafting",
+            "icon": "fa-solid fa-water",
+            "iconColor": "#10B981",
+            "desc": "Detailed assembly drawing of an industrial pump showing impeller, casing, shaft seal, and BOM parts schedule.",
+            "tags": [
+                "Engineering Drafting",
+                "GD&T",
+                "AutoCAD 2D/3D"
+            ]
+        },
+        {
+            "title": "Industrial Piping & Instrumentation Diagram (P&ID)",
+            "subtitle": "Plant & Process Schematics",
+            "icon": "fa-solid fa-diagram-project",
+            "iconColor": "#F59E0B",
+            "desc": "Standardized process flow schematic with valves, pumps, vessels, dynamic block tags, and line size annotations.",
+            "tags": [
+                "Technical Schematics",
+                "Isometric Views",
+                "AutoCAD 2D/3D"
+            ]
+        },
+        {
+            "title": "3D Mechanical Gearbox Housing Solid Model & Viewports",
+            "subtitle": "3D Modeling & Production Documentation",
+            "icon": "fa-solid fa-cube",
+            "iconColor": "#8B5CF6",
+            "desc": "Parametric 3D solid model of a split gearbox casing with section cut viewports and annotated manufacturing blueprints.",
+            "tags": [
+                "AutoCAD 2D/3D",
+                "Design Documentation",
+                "Isometric Views"
+            ]
+        }
+    ],
+    "reviews": [
+        {
+            "name": "Arun K.",
+            "role": "Mechanical Drafter",
+            "initials": "AK",
+            "quote": "The precision drafting techniques, dynamic blocks, and layer standards taught here completely elevated the quality of my engineering drawings.",
+            "stars": 5
+        },
+        {
+            "name": "Meera S.",
+            "role": "Civil CAD Drafter",
+            "initials": "MS",
+            "quote": "Learning viewport management, sheet sets, and GD&T annotations helped me land my drafting job right after college.",
+            "stars": 5
+        },
+        {
+            "name": "Ganesh L.",
+            "role": "Production Engineer",
+            "initials": "GL",
+            "quote": "Great curriculum! Moving from 2D drafting to 3D solid modeling and automatic drawing generation was seamless and highly practical.",
+            "stars": 5
+        }
+    ],
+    "faqs": [
+        {
+            "q": "Does this course cover both 2D drafting and 3D modeling?",
+            "a": "Yes, the curriculum begins with comprehensive 2D precision drawing, layer architecture, and annotations, then advances to 3D solid modeling and multi-view plotting."
+        },
+        {
+            "q": "Is this course suitable for Mechanical, Civil, and Electrical students?",
+            "a": "Yes, the foundational drafting standards, geometric construction, dynamic blocks, and dimensioning practices apply across all engineering branches."
+        },
+        {
+            "q": "Do we learn industry standards like ANSI and ISO drawing conventions?",
+            "a": "Yes, you will learn standard line weights, projection methods (First Angle & Third Angle), section conventions, and GD&T feature control frames."
+        },
+        {
+            "q": "Will I be able to produce print-ready PDF blueprints for fabrication?",
+            "a": "Yes, you will master paper space layouts, viewports, scale adjustments, title block attributes, and CTB plot style configurations."
+        }
+    ]
+},
+
+{
+    "slug": "stock-market",
+    "id": "stock-market",
+    "title": "Stock Market & Algorithmic Trading Development",
+    "category": "Financial Markets & Quant Analytics",
+    "badge": "FINANCIAL MARKETS CERTIFIED",
+    "heroAccent": "Quantitative Stock Market Specialist",
+    "desc": "Master fundamental stock valuation, technical chart analysis, risk management, derivatives strategies, and algorithmic trading with Python.",
+    "heroFeatures": [
+        "Fundamental Analysis & Financial Statement Reading",
+        "Technical Analysis, Candlestick & Chart Patterns",
+        "Futures, Options & Derivative Hedging Strategies",
+        "Portfolio Optimization & Risk Management",
+        "Python Algorithmic Backtesting & Live API Feeds",
+        "Verified Quantitative Market Specialist Certificate"
+    ],
+    "techStack": [
+        "Stock Market Analysis",
+        "Technical Analysis",
+        "Fundamental Analysis",
+        "Python Algorithmic Trading",
+        "Derivatives",
+        "Risk Management"
+    ],
+    "topics": [
+        {
+            "title": "Fundamental Analysis & Equity Valuation",
+            "tool": "Fundamental Analysis",
+            "desc": "Learn how to read corporate financial statements, calculate financial ratios, and estimate intrinsic stock values.",
+            "points": [
+                "Deconstruct Balance Sheets, Profit & Loss Statements, and Cash Flow Statements",
+                "Evaluate valuation metrics: P/E, P/B, EV/EBITDA, ROE, and Debt-to-Equity",
+                "Calculate intrinsic share value using Discounted Cash Flow (DCF) modeling",
+                "Analyze competitive economic moats and macroeconomic sector tailwinds"
+            ],
+            "practicalLab": "Perform a comprehensive fundamental equity valuation report for a publicly traded technology enterprise."
+        },
+        {
+            "title": "Technical Analysis, Price Action & Indicators",
+            "tool": "Technical Analysis",
+            "desc": "Master candlestick price action, support/resistance levels, trendlines, momentum indicators, and chart patterns.",
+            "points": [
+                "Read multi-timeframe candlestick patterns: Engulfing, Pinbars, and Dojis",
+                "Identify classical chart formations: Head & Shoulders, Double Bottoms, and Flags",
+                "Incorporate technical indicators: RSI, MACD, Bollinger Bands, and Moving Averages",
+                "Implement volume spread analysis (VSA) and liquidity order block identification"
+            ],
+            "practicalLab": "Develop a rule-based swing trading strategy with defined risk-to-reward ratios and stop-loss rules."
+        },
+        {
+            "title": "Derivatives, Options Strategies & Hedging",
+            "tool": "Derivatives",
+            "desc": "Understand futures contracts, call/put options mechanics, the Option Greeks, and multi-leg risk management.",
+            "points": [
+                "Understand Options payoffs: Long/Short Calls and Long/Short Puts",
+                "Analyze Option Greeks: Delta, Gamma, Theta, Vega, and Rho",
+                "Construct multi-leg options spreads: Bull Call Spreads, Iron Condors, and Straddles",
+                "Hedge equity portfolio drawdowns during market volatility using Index Puts"
+            ],
+            "practicalLab": "Simulate and backtest an Iron Condor options income strategy through quarterly earnings volatility."
+        },
+        {
+            "title": "Python Algorithmic Trading & Backtesting",
+            "tool": "Python Algorithmic Trading",
+            "desc": "Fetch market data with Python, backtest automated trading rules, and calculate Sharpe ratios and max drawdowns.",
+            "points": [
+                "Fetch real-time and historical OHLCV market feeds using Yahoo Finance and Broker APIs",
+                "Calculate algorithmic trading signals with Pandas, NumPy, and TA-Lib",
+                "Simulate order execution with slippage, brokerage costs, and position sizing",
+                "Evaluate algorithmic performance: Sharpe Ratio, Sortino Ratio, and Max Drawdown"
+            ],
+            "practicalLab": "Build and backtest an automated Dual Moving Average Crossover trading algorithm in Python."
+        }
+    ],
+    "projects": [
+        {
+            "title": "Algorithmic Momentum & Mean-Reversion Trading Bot",
+            "subtitle": "Automated Quantitative Trading",
+            "icon": "fa-solid fa-robot",
+            "iconColor": "#10B981",
+            "desc": "Python-based algorithmic trading engine backtested on 5 years of historical equity data with automated trade logging.",
+            "tags": [
+                "Python Algorithmic Trading",
+                "Technical Analysis",
+                "Risk Management"
+            ]
+        },
+        {
+            "title": "Discounted Cash Flow (DCF) Valuation Engine",
+            "subtitle": "Fundamental Equity Research",
+            "icon": "fa-solid fa-calculator",
+            "iconColor": "#3B82F6",
+            "desc": "Dynamic equity valuation spreadsheet forecasting free cash flows, weighted average cost of capital (WACC), and target prices.",
+            "tags": [
+                "Fundamental Analysis",
+                "Financial Modeling",
+                "Stock Market Analysis"
+            ]
+        },
+        {
+            "title": "Delta-Neutral Options Volatility Hedging Simulation",
+            "subtitle": "Derivatives Portfolio Management",
+            "icon": "fa-solid fa-chart-line",
+            "iconColor": "#F59E0B",
+            "desc": "Options portfolio model simulating Greek exposures, theta decay income, and dynamic delta-hedging adjustments.",
+            "tags": [
+                "Derivatives",
+                "Risk Management",
+                "Stock Market Analysis"
+            ]
+        },
+        {
+            "title": "Markowitz Modern Portfolio Optimization Model",
+            "subtitle": "Quantitative Asset Allocation",
+            "icon": "fa-solid fa-pie-chart",
+            "iconColor": "#8B5CF6",
+            "desc": "Mean-variance optimization tool identifying the efficient frontier and optimal risk-adjusted asset allocation weights.",
+            "tags": [
+                "Risk Management",
+                "Python Algorithmic Trading",
+                "Fundamental Analysis"
+            ]
+        }
+    ],
+    "reviews": [
+        {
+            "name": "Aditya S.",
+            "role": "Junior Equity Analyst",
+            "initials": "AS",
+            "quote": "The balance between fundamental valuation and Python algorithmic backtesting was brilliant. Gained practical quantitative skills.",
+            "stars": 5
+        },
+        {
+            "name": "Rohit K.",
+            "role": "Derivatives Trader",
+            "initials": "RK",
+            "quote": "Learning options Greeks and multi-leg spread strategies completely changed how I manage risk and volatility.",
+            "stars": 5
+        },
+        {
+            "name": "Sonal M.",
+            "role": "Financial Research Trainee",
+            "initials": "SM",
+            "quote": "The mentor walked us through real live market scenarios without any get-rich-quick hype. Professional and institutional training!",
+            "stars": 5
+        }
+    ],
+    "faqs": [
+        {
+            "q": "Do I need real money to trade during this internship?",
+            "a": "No. All practical labs use simulated paper trading and historical backtesting environments so you learn institutional strategies with zero financial risk."
+        },
+        {
+            "q": "Do I need prior coding knowledge to build the Python algorithms?",
+            "a": "Basic programming familiarity is helpful, but we teach the required Python, Pandas, and data visualization libraries from the ground up."
+        },
+        {
+            "q": "Does this course cover both Indian (NSE/BSE) and US (NASDAQ/NYSE) markets?",
+            "a": "Yes, the principles of technical analysis, fundamental valuation, and algorithmic trading apply universally across global financial exchanges."
+        },
+        {
+            "q": "What career paths does this program open up?",
+            "a": "Graduates can pursue roles as Equity Research Analysts, Financial Analysts, Quantitative Developers, Risk Managers, and Proprietary Traders."
+        }
+    ]
+},
+
+{
+    "slug": "business-analytics",
+    "id": "business-analytics",
+    "title": "Business Analytics & Data-Driven Decision Making",
+    "category": "Analytics & Management Track",
+    "badge": "BUSINESS ANALYST CERTIFIED",
+    "heroAccent": "Business Analytics Specialist",
+    "desc": "Harness SQL, Python, Tableau, predictive modeling, and executive KPI frameworks to solve complex business problems and drive growth.",
+    "heroFeatures": [
+        "Advanced SQL Queries, Window Functions & CTEs",
+        "Exploratory Data Analysis with Python (Pandas, Seaborn)",
+        "Executive Dashboards & Visualizations in Tableau",
+        "Cohort Analysis, Customer Churn & Lifetime Value",
+        "Predictive Regression & Business Scenario Modeling",
+        "Verified Business Analytics Specialist Certificate"
+    ],
+    "techStack": [
+        "Business Analytics",
+        "SQL",
+        "Python",
+        "Tableau",
+        "Cohort Analysis",
+        "Predictive Modeling",
+        "KPI Frameworks"
+    ],
+    "topics": [
+        {
+            "title": "Business Problem Structuring & KPI Frameworks",
+            "tool": "KPI Frameworks",
+            "desc": "Deconstruct complex business questions into measurable metrics: CAC, LTV, Net Churn, MRR, and conversion funnels.",
+            "points": [
+                "Formulate hypothesis trees to diagnose business underperformance",
+                "Define core SaaS, E-Commerce, and FinTech operational KPIs",
+                "Map multi-touch customer attribution journeys and conversion funnels",
+                "Present analytics insights to non-technical executive stakeholders"
+            ],
+            "practicalLab": "Construct an executive KPI pyramid decomposing customer acquisition cost and lifetime value drivers."
+        },
+        {
+            "title": "Advanced SQL for Data Analytics & Warehouses",
+            "tool": "SQL",
+            "desc": "Extract and analyze business data using joins, aggregations, Common Table Expressions (CTEs), and window functions.",
+            "points": [
+                "Write complex multi-table relational JOINs and subqueries",
+                "Use Window Functions: ROW_NUMBER, RANK, DENSE_RANK, and LAG/LEAD",
+                "Calculate rolling averages, running totals, and month-over-month growth rates",
+                "Build reusable Common Table Expressions (CTEs) for multi-step funnel analysis"
+            ],
+            "practicalLab": "Write SQL queries to analyze a 100,000-row customer transaction database and compute monthly retention cohorts."
+        },
+        {
+            "title": "Customer Segmentation, Churn & Cohort Analysis",
+            "tool": "Cohort Analysis",
+            "desc": "Analyze customer retention over time, perform RFM segmentation, and identify churn risk indicators.",
+            "points": [
+                "Construct triangular cohort retention matrices to evaluate product stickiness",
+                "Implement Recency, Frequency, Monetary (RFM) customer segmentation",
+                "Calculate customer lifetime value (CLV) and payback period dynamics",
+                "Identify statistical early-warning indicators for customer churn risk"
+            ],
+            "practicalLab": "Build an automated RFM customer segmentation engine grouping customers into High-Value, At-Risk, and Churned cohorts."
+        },
+        {
+            "title": "Data Visualization & Executive Dashboards with Tableau",
+            "tool": "Tableau",
+            "desc": "Create impactful interactive dashboards in Tableau with Level of Detail (LOD) calculations and dynamic parameters.",
+            "points": [
+                "Design intuitive business charts: bullet graphs, heatmaps, and geographic maps",
+                "Write Level of Detail (LOD) expressions: FIXED, INCLUDE, and EXCLUDE",
+                "Build dynamic dashboard parameters and action filters for drill-down views",
+                "Publish and manage interactive workbooks on Tableau Cloud / Server"
+            ],
+            "practicalLab": "Develop a C-level Business Performance Dashboard in Tableau displaying revenue pacing against quarterly targets."
+        }
+    ],
+    "projects": [
+        {
+            "title": "E-Commerce Funnel Optimization & Abandonment Audit",
+            "subtitle": "Customer Conversion Analytics",
+            "icon": "fa-solid fa-filter-circle-dollar",
+            "iconColor": "#3B82F6",
+            "desc": "Analyzed user clickstream data to isolate friction points causing 40% checkout drop-offs, recommending A/B test variations.",
+            "tags": [
+                "SQL",
+                "Business Analytics",
+                "Cohort Analysis"
+            ]
+        },
+        {
+            "title": "B2B SaaS Customer Churn & Retention Engine",
+            "subtitle": "Predictive Customer Intelligence",
+            "icon": "fa-solid fa-user-xmark",
+            "iconColor": "#EF4444",
+            "desc": "Predictive classification model identifying high-risk churn accounts 60 days before contract renewal deadlines.",
+            "tags": [
+                "Python",
+                "Predictive Modeling",
+                "Tableau"
+            ]
+        },
+        {
+            "title": "Executive Revenue, CAC & LTV Intelligence Dashboard",
+            "subtitle": "Executive Business Intelligence",
+            "icon": "fa-solid fa-chart-line",
+            "iconColor": "#10B981",
+            "desc": "Interactive Tableau dashboard monitoring marketing channel ROI, customer acquisition cost payback, and cohort retention.",
+            "tags": [
+                "Tableau",
+                "KPI Frameworks",
+                "SQL"
+            ]
+        },
+        {
+            "title": "Retail Store Demand Forecasting & Inventory Optimization",
+            "subtitle": "Operations Analytics",
+            "icon": "fa-solid fa-boxes-packing",
+            "iconColor": "#8B5CF6",
+            "desc": "Time-series forecasting model predicting SKU-level seasonal demand to reduce stockouts and excess holding costs.",
+            "tags": [
+                "Python",
+                "Predictive Modeling",
+                "Business Analytics"
+            ]
+        }
+    ],
+    "reviews": [
+        {
+            "name": "Nisha R.",
+            "role": "Business Analyst at Deloitte",
+            "initials": "NR",
+            "quote": "The focus on SQL window functions, cohort retention matrices, and executive presentation helped me stand out in my consulting interviews.",
+            "stars": 5
+        },
+        {
+            "name": "Gautam P.",
+            "role": "Product Analytics Associate",
+            "initials": "GP",
+            "quote": "Working on real SaaS churn and LTV case studies gave me practical knowledge that books simply could not provide. Outstanding mentor guidance!",
+            "stars": 5
+        },
+        {
+            "name": "Varun T.",
+            "role": "Data Analyst Trainee",
+            "initials": "VT",
+            "quote": "The combination of advanced SQL and Tableau dashboards was exactly what employers were asking for. Landed my first role within 2 months!",
+            "stars": 5
+        }
+    ],
+    "faqs": [
+        {
+            "q": "How does Business Analytics differ from Data Science?",
+            "a": "Business Analytics focuses on translating data insights into strategic business decisions, executive KPIs, and operational ROI, while Data Science focuses heavily on machine learning algorithms and advanced mathematics."
+        },
+        {
+            "q": "What technical tools are taught throughout the program?",
+            "a": "You will master SQL for relational database querying, Python for data manipulation (Pandas), Tableau for executive visual dashboards, and Excel for quantitative modeling."
+        },
+        {
+            "q": "Will I work with messy, real-world datasets?",
+            "a": "Yes, all case studies use real-world anonymized datasets from E-Commerce, SaaS, and retail sectors requiring data cleansing, outlier treatment, and metric design."
+        },
+        {
+            "q": "What types of roles will I be qualified to interview for?",
+            "a": "Graduates are well-prepared for roles including Business Analyst, Product Analyst, Revenue Operations Analyst, Marketing Analyst, and BI Associate."
+        }
+    ]
+},
+
+{
+    "slug": "hr-finance",
+    "id": "hr-finance",
+    "title": "HR Management & Corporate Financial Planning",
+    "category": "Management & Corporate Operations",
+    "badge": "HR & FINANCE CERTIFIED",
+    "heroAccent": "HR & Financial Operations Specialist",
+    "desc": "Integrate human resource talent strategy, payroll compliance, budgeting, financial statements, and corporate operations.",
+    "heroFeatures": [
+        "Strategic HR Planning & Talent Acquisition",
+        "Payroll Computation, Taxes & Labor Law Compliance",
+        "Corporate Financial Statement Analysis",
+        "Budgeting, Forecasting & Variance Analysis",
+        "HR Analytics & Employee Performance Metrics",
+        "Verified Corporate Operations Certificate"
+    ],
+    "techStack": [
+        "HR Management",
+        "Corporate Finance",
+        "Payroll Systems",
+        "KPI Frameworks",
+        "Labor Compliance",
+        "Budgeting & Forecasting"
+    ],
+    "topics": [
+        {
+            "title": "Strategic Talent Acquisition & HR Operations",
+            "tool": "HR Management",
+            "desc": "Master recruitment funnels, job descriptions, competency mapping, onboarding workflows, and employee engagement.",
+            "points": [
+                "Design recruitment strategies: sourcing channels, ATS platforms, and structured interviews",
+                "Develop competency frameworks and performance appraisal scorecards (OKRs & KPIs)",
+                "Structure seamless employee onboarding and lifecycle documentation workflows",
+                "Implement employee engagement initiatives and conflict resolution strategies"
+            ],
+            "practicalLab": "Design a complete corporate Talent Acquisition & Onboarding SOP with KPI evaluation rubrics."
+        },
+        {
+            "title": "Payroll Administration & Labor Law Compliance",
+            "tool": "Payroll Systems",
+            "desc": "Calculate salary structures, gross and net pay, deductions, statutory taxes, and compliance mandates.",
+            "points": [
+                "Structure employee compensation: Basic, HRA, Allowances, PF, ESI, and Gratuity",
+                "Calculate income tax TDS deductions, professional tax, and statutory filings",
+                "Ensure compliance with core Labor Laws: Factories Act, Minimum Wages, and POSH",
+                "Automate monthly payroll cycles, attendance reconciliation, and payslip distribution"
+            ],
+            "practicalLab": "Build an automated 100-employee payroll calculation matrix accounting for overtime, PF, and TDS deductions."
+        },
+        {
+            "title": "Corporate Financial Statements & Working Capital",
+            "tool": "Corporate Finance",
+            "desc": "Read and interpret corporate financial statements, assess liquidity, and manage operating cash flows.",
+            "points": [
+                "Analyze corporate balance sheets, income statements, and cash flow statements",
+                "Calculate liquidity, solvency, and operational efficiency ratios",
+                "Optimize the Cash Conversion Cycle (CCC), inventory days, and receivables",
+                "Evaluate capital expenditure (CapEx) vs operating expenditure (OpEx) trade-offs"
+            ],
+            "practicalLab": "Conduct an in-depth financial ratio health audit of a mid-sized enterprise and recommend working capital improvements."
+        },
+        {
+            "title": "Corporate Budgeting, Forecasting & HR Analytics",
+            "tool": "Budgeting & Forecasting",
+            "desc": "Develop annual corporate operating budgets, analyze budget variances, and track workforce analytics.",
+            "points": [
+                "Construct zero-based and incremental departmental operational budgets",
+                "Perform Monthly Variance Analysis comparing budgeted vs actual expenditures",
+                "Track key HR metrics: Cost-per-Hire, Time-to-Fill, Attrition Rate, and eNPS",
+                "Present consolidated financial and headcount forecasts to senior leadership"
+            ],
+            "practicalLab": "Build an Annual Operational Budget model with headcount cost projections and variance tracking dashboards."
+        }
+    ],
+    "projects": [
+        {
+            "title": "End-to-End Corporate Payroll & Tax Compliance Engine",
+            "subtitle": "Payroll & Statutory Operations",
+            "icon": "fa-solid fa-money-check-dollar",
+            "iconColor": "#10B981",
+            "desc": "Automated compensation model calculating basic pay, HRA, statutory PF/ESI, tax withholding, and generating formatted payslips.",
+            "tags": [
+                "Payroll Systems",
+                "Labor Compliance",
+                "HR Management"
+            ]
+        },
+        {
+            "title": "Workforce Attrition Risk & Compensation Benchmark Audit",
+            "subtitle": "HR Analytics & Talent Strategy",
+            "icon": "fa-solid fa-users",
+            "iconColor": "#3B82F6",
+            "desc": "Workforce intelligence model analyzing salary equity, tenure, and exit interview feedback to predict department turnover.",
+            "tags": [
+                "HR Management",
+                "KPI Frameworks",
+                "Corporate Finance"
+            ]
+        },
+        {
+            "title": "Annual Departmental Budget & Variance Tracker",
+            "subtitle": "Corporate Financial Planning",
+            "icon": "fa-solid fa-chart-simple",
+            "iconColor": "#F59E0B",
+            "desc": "Comprehensive budgeting model tracking quarterly actuals vs projections with automated alerts for departmental overspends.",
+            "tags": [
+                "Budgeting & Forecasting",
+                "Corporate Finance",
+                "KPI Frameworks"
+            ]
+        },
+        {
+            "title": "Strategic Talent Sourcing & Performance Scorecard System",
+            "subtitle": "People Operations & OKR Architecture",
+            "icon": "fa-solid fa-clipboard-check",
+            "iconColor": "#8B5CF6",
+            "desc": "Competency-based employee evaluation framework with quarterly OKR goal tracking and 360-degree review rubrics.",
+            "tags": [
+                "HR Management",
+                "KPI Frameworks",
+                "Labor Compliance"
+            ]
+        }
+    ],
+    "reviews": [
+        {
+            "name": "Priyanka D.",
+            "role": "HR & Operations Executive",
+            "initials": "PD",
+            "quote": "Understanding both the people side (recruitment & compliance) and financial numbers (payroll & budgeting) made me stand out immediately.",
+            "stars": 5
+        },
+        {
+            "name": "Siddharth N.",
+            "role": "Finance & Accounts Associate",
+            "initials": "SN",
+            "quote": "The practical exercises on payroll tax computation and variance analysis were directly applicable to my day-to-day corporate work.",
+            "stars": 5
+        },
+        {
+            "name": "Kavitha M.",
+            "role": "Talent Acquisition Specialist",
+            "initials": "KM",
+            "quote": "Excellent curriculum covering statutory compliance, POSH guidelines, and financial health audits. Highly recommended!",
+            "stars": 5
+        }
+    ],
+    "faqs": [
+        {
+            "q": "Is this course suitable for candidates with an MBA or BBA degree?",
+            "a": "Yes, this program bridges academic management theory with real-world corporate execution in payroll systems, financial modeling, and HR compliance."
+        },
+        {
+            "q": "Do we learn practical statutory tax calculations for payroll?",
+            "a": "Yes, you will learn the exact formulas and rules for calculating Provident Fund (PF), Employee State Insurance (ESI), Professional Tax, and Income Tax TDS."
+        },
+        {
+            "q": "What tools are utilized during the training?",
+            "a": "You will work with advanced Microsoft Excel for financial modeling, payroll software templates, and HR analytics dashboard tools."
+        },
+        {
+            "q": "What types of roles does this internship prepare me for?",
+            "a": "Graduates are qualified for roles such as HR Executive, Talent Acquisition Specialist, Payroll Administrator, Financial Analyst, and Operations Coordinator."
+        }
+    ]
+},
+
+{
+    "slug": "investment-banking",
+    "id": "investment-banking",
+    "title": "Investment Banking & Corporate Valuation",
+    "category": "Finance & Banking Track",
+    "badge": "INVESTMENT BANKING CERTIFIED",
+    "heroAccent": "Investment Banking & Valuation Specialist",
+    "desc": "Master Discounted Cash Flow (DCF) modeling, leveraged buyouts (LBO), comparable company analysis, M&A pitchbooks, and capital markets.",
+    "heroFeatures": [
+        "3-Statement Financial Modeling & Projections",
+        "Discounted Cash Flow (DCF) & WACC Valuation",
+        "Comparable Company & Precedent Transaction Analysis",
+        "Mergers & Acquisitions (M&A) Accretion/Dilution",
+        "Pitchbook Preparation & Capital Markets Advisory",
+        "Verified Investment Banking Associate Certificate"
+    ],
+    "techStack": [
+        "Financial Modeling",
+        "DCF Valuation",
+        "M&A Analysis",
+        "Excel Financials",
+        "Comparable Multiples",
+        "Capital Markets"
+    ],
+    "topics": [
+        {
+            "title": "3-Statement Financial Modeling Architecture",
+            "tool": "Financial Modeling",
+            "desc": "Build dynamic 3-statement models linking Income Statement, Balance Sheet, and Cash Flow Statement in Excel.",
+            "points": [
+                "Forecast revenue, cost of goods sold, operating expenses, and working capital schedules",
+                "Model depreciation schedules using straight-line and accelerated methods",
+                "Build debt and interest schedules with circular reference resolution toggles",
+                "Link net income, changes in working capital, and cash balances across all 3 statements"
+            ],
+            "practicalLab": "Construct an integrated 5-year historical and forecasted 3-statement financial model for a publicly listed firm."
+        },
+        {
+            "title": "Discounted Cash Flow (DCF) & Cost of Capital (WACC)",
+            "tool": "DCF Valuation",
+            "desc": "Calculate Unlevered Free Cash Flows, Weighted Average Cost of Capital (WACC), and enterprise valuation.",
+            "points": [
+                "Calculate Free Cash Flow to Firm (FCFF) and Free Cash Flow to Equity (FCFE)",
+                "Compute Cost of Equity via CAPM, Beta un-levering/re-levering, and market risk premiums",
+                "Calculate Weighted Average Cost of Capital (WACC) taking into account tax shields",
+                "Determine Terminal Value using Perpetual Growth and Exit Multiple methods"
+            ],
+            "practicalLab": "Perform a comprehensive DCF valuation model with dynamic sensitivity tables for WACC and terminal growth rates."
+        },
+        {
+            "title": "Comparable Company & Precedent Transaction Multiples",
+            "tool": "Comparable Multiples",
+            "desc": "Identify peer groups, normalize financial metrics, and evaluate valuation trading multiples.",
+            "points": [
+                "Screen and select relevant peer company universe based on geography, size, and sector",
+                "Calculate Enterprise Value (EV) from Market Cap, Net Debt, and Minority Interests",
+                "Benchmark operational and valuation multiples: EV/EBITDA, EV/Sales, P/E, and PEG",
+                "Analyze precedent M&A transaction multiples and acquisition control premiums"
+            ],
+            "practicalLab": "Build a Trading Comps and Precedent Transactions valuation football field chart for a target acquisition."
+        },
+        {
+            "title": "Mergers & Acquisitions (M&A) Modeling & Deal Structuring",
+            "tool": "M&A Analysis",
+            "desc": "Evaluate M&A transactions, model purchase price allocations, synergies, and EPS accretion/dilution.",
+            "points": [
+                "Model cash vs stock vs debt deal financing consideration mixes",
+                "Calculate purchase price allocation, goodwill creation, and transaction write-ups",
+                "Quantify revenue and cost synergies and incorporate integration schedules",
+                "Perform pro-forma EPS Accretion / Dilution analysis across various purchase prices"
+            ],
+            "practicalLab": "Model a complete cross-border corporate acquisition evaluating post-merger accretion/dilution and balance sheet impact."
+        }
+    ],
+    "projects": [
+        {
+            "title": "End-to-End DCF Valuation of a Global Tech Giant",
+            "subtitle": "Enterprise Valuation Model",
+            "icon": "fa-solid fa-building-columns",
+            "iconColor": "#0066FF",
+            "desc": "Comprehensive valuation model calculating WACC, unlevered free cash flows, and football field summary comparisons.",
+            "tags": [
+                "DCF Valuation",
+                "Financial Modeling",
+                "Excel Financials"
+            ]
+        },
+        {
+            "title": "Cross-Border M&A Accretion/Dilution Deal Model",
+            "subtitle": "Mergers & Acquisitions Advisory",
+            "icon": "fa-solid fa-handshake-simple",
+            "iconColor": "#10B981",
+            "desc": "Structured an M&A merger model analyzing cash/stock consideration, goodwill creation, and pro-forma EPS impact.",
+            "tags": [
+                "M&A Analysis",
+                "Comparable Multiples",
+                "Capital Markets"
+            ]
+        },
+        {
+            "title": "Comparable Company Trading Multiples Benchmark",
+            "subtitle": "Relative Valuation Analysis",
+            "icon": "fa-solid fa-chart-column",
+            "iconColor": "#F59E0B",
+            "desc": "Peer universe screening model normalizing EBITDA, adjusting non-recurring items, and generating median valuation multiples.",
+            "tags": [
+                "Comparable Multiples",
+                "Excel Financials",
+                "Capital Markets"
+            ]
+        },
+        {
+            "title": "Leveraged Buyout (LBO) Debt Returns Model",
+            "subtitle": "Private Equity Financial Model",
+            "icon": "fa-solid fa-vault",
+            "iconColor": "#8B5CF6",
+            "desc": "Private equity transaction model evaluating senior/mezzanine debt tranches, cash sweeps, and 5-year sponsor IRR.",
+            "tags": [
+                "Financial Modeling",
+                "DCF Valuation",
+                "Capital Markets"
+            ]
+        }
+    ],
+    "reviews": [
+        {
+            "name": "Aman V.",
+            "role": "Investment Banking Analyst",
+            "initials": "AV",
+            "quote": "Building the integrated 3-statement model and DCF from scratch gave me the exact skills tested in my bulge-bracket modeling exam.",
+            "stars": 5
+        },
+        {
+            "name": "Ishita P.",
+            "role": "Corporate Finance Associate",
+            "initials": "IP",
+            "quote": "The M&A accretion/dilution and football field chart exercises were taught at an elite institutional level. Phenomenal program!",
+            "stars": 5
+        },
+        {
+            "name": "Naveen K.",
+            "role": "Equity Research Trainee",
+            "initials": "NK",
+            "quote": "Detailed, rigorous, and completely hands-on. The mentor explained complex valuation concepts like beta un-levering with total clarity.",
+            "stars": 5
+        }
+    ],
+    "faqs": [
+        {
+            "q": "Do I need a finance or accounting degree to take this program?",
+            "a": "A background in finance, commerce, or economics is helpful, but we teach financial accounting concepts, statement linking, and modeling from the ground up."
+        },
+        {
+            "q": "Are financial models built in Excel from blank spreadsheets?",
+            "a": "Yes! We believe in building models from scratch without pre-baked formulas so you understand every single link between financial statements."
+        },
+        {
+            "q": "Will I learn both intrinsic (DCF) and relative (Comps) valuation?",
+            "a": "Yes, you will master Discounted Cash Flow (DCF), Comparable Company Analysis, Precedent Transactions, and Leveraged Buyout (LBO) modeling."
+        },
+        {
+            "q": "What roles does this internship prepare me for?",
+            "a": "Graduates are prepared for competitive roles including Investment Banking Analyst, Private Equity Analyst, Corporate Development Associate, and Equity Research Analyst."
+        }
+    ]
+},
+
+{
+    "slug": "supply-chain",
+    "id": "supply-chain",
+    "title": "Supply Chain Management & Global Logistics",
+    "category": "Operations & Logistics Track",
+    "badge": "SUPPLY CHAIN CERTIFIED",
+    "heroAccent": "Supply Chain & Logistics Specialist",
+    "desc": "Optimize global supply chain logistics, inventory modeling, demand forecasting, procurement, and enterprise ERP workflows.",
+    "heroFeatures": [
+        "Demand Forecasting & Time-Series Planning",
+        "Inventory Optimization (EOQ, Safety Stock, Reorder Points)",
+        "Global Freight Logistics & Route Optimization",
+        "Procurement, Vendor Sourcing & Contract Management",
+        "ERP Supply Chain Integration (SAP/Oracle Workflows)",
+        "Verified Supply Chain Specialist Certificate"
+    ],
+    "techStack": [
+        "Supply Chain Analytics",
+        "Logistics",
+        "Inventory Optimization",
+        "ERP Systems",
+        "Demand Forecasting",
+        "Procurement"
+    ],
+    "topics": [
+        {
+            "title": "Demand Forecasting & Sales & Operations Planning (S&OP)",
+            "tool": "Demand Forecasting",
+            "desc": "Master quantitative demand forecasting using moving averages, exponential smoothing, and seasonal decomposition.",
+            "points": [
+                "Calculate forecast accuracy metrics: MAD, MAPE, and Tracking Signal",
+                "Apply Holt-Winters exponential smoothing to seasonal demand data",
+                "Coordinate multi-departmental Sales and Operations Planning (S&OP) cycles",
+                "Mitigate the Bullwhip Effect through real-time demand transparency"
+            ],
+            "practicalLab": "Develop a seasonal demand forecasting model for a retail distributor with 12-month rolling projections."
+        },
+        {
+            "title": "Inventory Modeling & Safety Stock Optimization",
+            "tool": "Inventory Optimization",
+            "desc": "Calculate Economic Order Quantity (EOQ), reorder points, safety stock buffers, and service level targets.",
+            "points": [
+                "Formulate the Economic Order Quantity (EOQ) model balancing holding and ordering costs",
+                "Calculate statistical Safety Stock based on lead time variability and demand deviation",
+                "Implement multi-echelon inventory classification: ABC and FSN analysis",
+                "Optimize working capital tied up in slow-moving and obsolete stock"
+            ],
+            "practicalLab": "Design an inventory optimization matrix calculating dynamic reorder points and safety stock for 500+ SKUs."
+        },
+        {
+            "title": "Logistics, Warehousing & Fleet Route Optimization",
+            "tool": "Logistics",
+            "desc": "Manage warehouse layout design, cross-docking operations, transportation networks, and route optimization.",
+            "points": [
+                "Design efficient warehouse storage layouts, pick-pack-ship workflows, and slotting",
+                "Evaluate multimodal freight transport options: Ocean, Air, Rail, and Road",
+                "Solve the Vehicle Routing Problem (VRP) to minimize fuel, transit time, and fleet costs",
+                "Track key logistics KPIs: On-Time In-Full (OTIF), Order Lead Time, and Dwell Time"
+            ],
+            "practicalLab": "Solve a multi-node transportation linear programming model minimizing total freight distribution costs."
+        },
+        {
+            "title": "Procurement, Sourcing & Supplier Relationship Management",
+            "tool": "Procurement",
+            "desc": "Structure strategic sourcing events, evaluate total cost of ownership (TCO), and negotiate supplier contracts.",
+            "points": [
+                "Categorize procurement spend using the Kraljic Portfolio Matrix",
+                "Calculate Total Cost of Ownership (TCO) including import tariffs and duties",
+                "Conduct vendor evaluations and scorecards across quality, cost, and delivery",
+                "Manage supply chain resilience, geopolitical risk, and dual-sourcing strategies"
+            ],
+            "practicalLab": "Build a supplier evaluation scorecard and risk assessment matrix for critical tier-1 component suppliers."
+        }
+    ],
+    "projects": [
+        {
+            "title": "Multi-Echelon Inventory Optimization & Safety Stock Model",
+            "subtitle": "Inventory Operations Planning",
+            "icon": "fa-solid fa-boxes-stacked",
+            "iconColor": "#3B82F6",
+            "desc": "Dynamic inventory control model optimizing EOQ, safety stock buffers, and reorder levels across regional distribution hubs.",
+            "tags": [
+                "Inventory Optimization",
+                "Supply Chain Analytics",
+                "Logistics"
+            ]
+        },
+        {
+            "title": "Global Freight Route & Distribution Cost Optimizer",
+            "subtitle": "Logistics Network Engineering",
+            "icon": "fa-solid fa-truck-moving",
+            "iconColor": "#10B981",
+            "desc": "Linear programming model optimizing multi-hub shipping routes, freight consolidation, and delivery carrier selection.",
+            "tags": [
+                "Logistics",
+                "Supply Chain Analytics",
+                "Procurement"
+            ]
+        },
+        {
+            "title": "Automated Demand Forecasting & S&OP Planning Engine",
+            "subtitle": "Demand Planning & Analytics",
+            "icon": "fa-solid fa-chart-line",
+            "iconColor": "#F59E0B",
+            "desc": "Time-series forecasting model projecting SKU-level demand trends, promotional uplifts, and mitigating bullwhip effect swings.",
+            "tags": [
+                "Demand Forecasting",
+                "ERP Systems",
+                "Supply Chain Analytics"
+            ]
+        },
+        {
+            "title": "Strategic Vendor Scorecard & Total Cost of Ownership Audit",
+            "subtitle": "Strategic Sourcing & Procurement",
+            "icon": "fa-solid fa-clipboard-list",
+            "iconColor": "#8B5CF6",
+            "desc": "Kraljic matrix classification and supplier performance scorecard tracking lead times, quality defect rates, and pricing.",
+            "tags": [
+                "Procurement",
+                "ERP Systems",
+                "Inventory Optimization"
+            ]
+        }
+    ],
+    "reviews": [
+        {
+            "name": "Ramesh T.",
+            "role": "Supply Chain Analyst at Amazon",
+            "initials": "RT",
+            "quote": "The safety stock modeling and demand forecasting labs gave me the exact analytical rigor needed to pass my operations interview.",
+            "stars": 5
+        },
+        {
+            "name": "Bhavna K.",
+            "role": "Logistics Coordinator",
+            "initials": "BK",
+            "quote": "Learning transportation route optimization and warehouse pick-pack processes with real data was incredibly valuable.",
+            "stars": 5
+        },
+        {
+            "name": "Senthil M.",
+            "role": "Procurement Specialist",
+            "initials": "SM",
+            "quote": "The Kraljic matrix and Total Cost of Ownership case studies are directly applicable to enterprise sourcing decisions.",
+            "stars": 5
+        }
+    ],
+    "faqs": [
+        {
+            "q": "What analytical tools are taught in this supply chain program?",
+            "a": "We teach supply chain optimization using Microsoft Excel (Solver, dynamic modeling), demand forecasting algorithms, and ERP workflow concepts."
+        },
+        {
+            "q": "Will I learn both inbound procurement and outbound distribution logistics?",
+            "a": "Yes, the curriculum covers end-to-end supply chain: strategic sourcing, supplier management, inventory control, warehousing, and final customer delivery."
+        },
+        {
+            "q": "How relevant is this training for E-Commerce and FMCG sectors?",
+            "a": "Extremely relevant. Fast-moving consumer goods and e-commerce giants rely on the exact inventory, OTIF, and demand forecasting metrics taught in this program."
+        },
+        {
+            "q": "What certifications or roles can I pursue following completion?",
+            "a": "Graduates are well-prepared for roles such as Supply Chain Analyst, Logistics Coordinator, Demand Planner, Procurement Specialist, and Operations Associate."
+        }
+    ]
+},
+
+{
+    "slug": "sap-fico",
+    "id": "sap-fico",
+    "title": "SAP FICO Financial Accounting & Controlling",
+    "category": "Enterprise ERP Track",
+    "badge": "SAP ERP CERTIFIED",
+    "heroAccent": "SAP FICO Consultant Specialist",
+    "desc": "Configure enterprise SAP ERP Financial Accounting (FI) and Controlling (CO), general ledger, accounts payable/receivable, and cost center accounting.",
+    "heroFeatures": [
+        "SAP FI Enterprise Structure & Organizational Units",
+        "General Ledger (FI-GL) & Chart of Accounts Configuration",
+        "Accounts Payable (FI-AP) & Vendor Invoicing",
+        "Accounts Receivable (FI-AR) & Customer Dunning",
+        "Controlling (CO) & Cost Center Accounting (CO-CCA)",
+        "Verified SAP FICO Consultant Certificate"
+    ],
+    "techStack": [
+        "SAP FICO",
+        "General Ledger",
+        "Accounts Payable",
+        "Accounts Receivable",
+        "Cost Center Accounting",
+        "ERP Financials"
+    ],
+    "topics": [
+        {
+            "title": "SAP FI Enterprise Structure & Organization Architecture",
+            "tool": "SAP FICO",
+            "desc": "Configure Company Code, Fiscal Year Variant, Posting Period Variant, and Chart of Accounts.",
+            "points": [
+                "Define and assign Company, Company Code, and Credit Control Area",
+                "Configure Fiscal Year Variants (K4, V3) and Year-End Posting Periods",
+                "Set up Field Status Variants and assign them to Company Codes",
+                "Configure Chart of Accounts (COA) and assign Account Groups"
+            ],
+            "practicalLab": "Configure an end-to-end multi-currency Company Code enterprise structure in SAP ERP."
+        },
+        {
+            "title": "General Ledger Accounting (FI-GL)",
+            "tool": "General Ledger",
+            "desc": "Master GL master records, document types, number ranges, posting keys, and financial statement versions.",
+            "points": [
+                "Create Balance Sheet and P&L General Ledger Master Accounts",
+                "Configure Document Types (SA, KR, KG) and assign Number Ranges",
+                "Execute GL document postings, parked documents, and reversing entries",
+                "Build Financial Statement Versions (FSV) for automated Balance Sheet generation"
+            ],
+            "practicalLab": "Post multi-currency journal entries, execute parked approvals, and generate a dynamic trial balance in SAP."
+        },
+        {
+            "title": "Accounts Payable (FI-AP) & Accounts Receivable (FI-AR)",
+            "tool": "Accounts Payable",
+            "desc": "Configure vendor/customer account groups, reconciliation accounts, payment terms, and dunning programs.",
+            "points": [
+                "Create Vendor and Customer Master records with bank and payment details",
+                "Configure Terms of Payment with cash discount percentages",
+                "Execute the Automatic Payment Program (F110) for bulk vendor disbursements",
+                "Set up automated Customer Dunning procedures for overdue invoice collections"
+            ],
+            "practicalLab": "Execute an end-to-end Procure-to-Pay (P2P) invoice entry and run the F110 Automatic Payment Program."
+        },
+        {
+            "title": "Controlling (CO) & Cost Center Accounting (CO-CCA)",
+            "tool": "Cost Center Accounting",
+            "desc": "Configure Controlling Area, Primary and Secondary Cost Elements, Cost Centers, and internal activity allocations.",
+            "points": [
+                "Define Controlling Area and establish 1:1 and 1:N company code assignments",
+                "Create Primary and Secondary Cost Elements linked to FI general ledgers",
+                "Structure Cost Center Hierarchies and cost center master data",
+                "Execute internal cost allocations, distribution cycles, and assessment cycles"
+            ],
+            "practicalLab": "Configure Cost Center Accounting for multiple corporate departments and execute monthly cost distribution runs."
+        }
+    ],
+    "projects": [
+        {
+            "title": "Multi-Company Code Enterprise ERP Structure Configuration",
+            "subtitle": "Enterprise Structure Deployment",
+            "icon": "fa-solid fa-network-wired",
+            "iconColor": "#3B82F6",
+            "desc": "Configured global enterprise hierarchy with parent company, company codes, fiscal variants, and chart of accounts.",
+            "tags": [
+                "SAP FICO",
+                "ERP Financials",
+                "General Ledger"
+            ]
+        },
+        {
+            "title": "Procure-to-Pay (P2P) Accounts Payable Automation (F110)",
+            "subtitle": "Vendor Financial Accounting",
+            "icon": "fa-solid fa-file-invoice-dollar",
+            "iconColor": "#10B981",
+            "desc": "Configured vendor account groups, terms of payment, invoice verification, and the F110 automatic payment program.",
+            "tags": [
+                "Accounts Payable",
+                "SAP FICO",
+                "General Ledger"
+            ]
+        },
+        {
+            "title": "Order-to-Cash (O2C) Accounts Receivable & Dunning Engine",
+            "subtitle": "Customer Credit & Collections",
+            "icon": "fa-solid fa-hand-holding-dollar",
+            "iconColor": "#F59E0B",
+            "desc": "Implemented customer master data, payment receipt reconciliations, credit management limits, and automated dunning letters.",
+            "tags": [
+                "Accounts Receivable",
+                "SAP FICO",
+                "ERP Financials"
+            ]
+        },
+        {
+            "title": "Cost Center Accounting & Monthly Overhead Distribution",
+            "subtitle": "Managerial Controlling (CO)",
+            "icon": "fa-solid fa-calculator",
+            "iconColor": "#8B5CF6",
+            "desc": "Configured controlling area, cost center hierarchies, and assessment cycles distributing shared overhead across business units.",
+            "tags": [
+                "Cost Center Accounting",
+                "SAP FICO",
+                "General Ledger"
+            ]
+        }
+    ],
+    "reviews": [
+        {
+            "name": "Vikas G.",
+            "role": "SAP FICO Associate Consultant",
+            "initials": "VG",
+            "quote": "Configuring Company Codes, Field Status Variants, and the F110 payment run in hands-on labs gave me the exact experience required for my consulting role.",
+            "stars": 5
+        },
+        {
+            "name": "Manjula S.",
+            "role": "Financial Systems Analyst",
+            "initials": "MS",
+            "quote": "The integration between Financial Accounting (FI) and Controlling (CO) was explained with incredible practical clarity.",
+            "stars": 5
+        },
+        {
+            "name": "Rajesh K.",
+            "role": "ERP Implementation Specialist",
+            "initials": "RK",
+            "quote": "Step-by-step transaction code (T-code) practice and business scenario walk-throughs made learning SAP seamless and exciting.",
+            "stars": 5
+        }
+    ],
+    "faqs": [
+        {
+            "q": "Do I need prior accounting knowledge to learn SAP FICO?",
+            "a": "A basic understanding of debits, credits, and general ledgers is helpful, but we explain all financial accounting concepts alongside their SAP configuration steps."
+        },
+        {
+            "q": "Will I learn standard SAP Transaction Codes (T-codes)?",
+            "a": "Yes, you will master standard implementation T-codes (OX02, FS00, FB50, F-53, F110, KS01, etc.) in both the SAP Easy Access and SPRO configuration menus."
+        },
+        {
+            "q": "What is the difference between FI and CO in SAP?",
+            "a": "FI (Financial Accounting) handles external statutory reporting (Balance Sheet, P&L) for regulatory bodies, while CO (Controlling) provides internal cost accounting for managerial decisions."
+        },
+        {
+            "q": "What career opportunities exist for SAP FICO specialists?",
+            "a": "Graduates can work as SAP FICO Associate Consultants, ERP Systems Analysts, Financial Systems Accountants, and Functional Implementation Leads."
+        }
+    ]
+},
+
+{
+    "slug": "hybrid-ev",
+    "id": "hybrid-ev",
+    "title": "Hybrid & Electric Vehicle Powertrain Engineering",
+    "category": "Automotive & Electrical Engineering",
+    "badge": "EV POWERTRAIN CERTIFIED",
+    "heroAccent": "EV Powertrain & BMS Specialist",
+    "desc": "Design and simulate electric vehicle powertrains, Battery Management Systems (BMS), motor control, and power electronics in MATLAB/Simulink.",
+    "heroFeatures": [
+        "EV & HEV Architecture (Series, Parallel, Series-Parallel)",
+        "Lithium-Ion Battery Modeling & State of Charge (SOC)",
+        "Battery Management System (BMS) Firmware Logic",
+        "Permanent Magnet Synchronous Motor (PMSM) FOC Control",
+        "CAN Bus Telemetry & Vehicle Supervisory Control",
+        "Verified EV Systems Engineer Certificate"
+    ],
+    "techStack": [
+        "EV Powertrain",
+        "BMS",
+        "MATLAB / Simulink",
+        "CAN Bus",
+        "Power Electronics",
+        "Battery Technology",
+        "Motor Control"
+    ],
+    "topics": [
+        {
+            "title": "EV Architectures & Tractive Effort Sizing",
+            "tool": "EV Powertrain",
+            "desc": "Calculate vehicle dynamics: rolling resistance, aerodynamic drag, grade resistance, and motor sizing.",
+            "points": [
+                "Analyze Series, Parallel, and Power-Split Hybrid architectures",
+                "Calculate total tractive force and acceleration power demands",
+                "Size traction motors and transmission reduction gearboxes",
+                "Evaluate regenerative braking energy recovery efficiency"
+            ],
+            "practicalLab": "Model longitudinal vehicle dynamics and calculate motor torque requirements for an urban electric vehicle drive cycle."
+        },
+        {
+            "title": "Lithium-Ion Battery Modeling & BMS Architecture",
+            "tool": "BMS",
+            "desc": "Model equivalent circuit battery cells, thermal management, cell balancing, and State of Charge (SOC) algorithms.",
+            "points": [
+                "Model 1-RC and 2-RC equivalent circuit battery cell dynamics",
+                "Implement Coulomb Counting and Extended Kalman Filter (EKF) SOC estimation",
+                "Design active and passive cell balancing supervisory control algorithms",
+                "Configure over-voltage, under-voltage, and thermal runaway protection logic"
+            ],
+            "practicalLab": "Build a Battery Management System (BMS) in Simulink monitoring 16-series cell voltages with passive balancing."
+        },
+        {
+            "title": "Traction Motor Control & Power Electronics Inverters",
+            "tool": "Motor Control",
+            "desc": "Control Brushless DC (BLDC) and PMSM motors using Field-Oriented Control (FOC) and Space Vector PWM.",
+            "points": [
+                "Design 3-phase DC-AC inverter topologies using IGBT/SiC MOSFET switching",
+                "Implement Clarke and Park coordinate transformations (dq0 frame)",
+                "Tune PI current and speed controllers for Field-Oriented Control (FOC)",
+                "Simulate Space Vector Pulse Width Modulation (SVPWM) switching states"
+            ],
+            "practicalLab": "Simulate Field-Oriented Control (FOC) of a PMSM traction motor tracking dynamic speed and torque references."
+        },
+        {
+            "title": "Vehicle Supervisory Control & CAN Bus Telemetry",
+            "tool": "CAN Bus",
+            "desc": "Develop supervisory energy management strategies, drive mode transitions, and CAN bus communication frames.",
+            "points": [
+                "Design vehicle state machines: Drive, Neutral, Reverse, Charge, and Fault",
+                "Implement rule-based Energy Management Strategies (EMS) for HEV powertrains",
+                "Define CAN 2.0B database matrices (.DBC) for powertrain sensors and actuators",
+                "Analyze telemetry signals and fault diagnostic trouble codes (DTCs)"
+            ],
+            "practicalLab": "Develop a Supervisory Powertrain Controller coordinating accelerator pedal inputs, BMS limits, and inverter torque limits."
+        }
+    ],
+    "projects": [
+        {
+            "title": "Complete EV Powertrain Model with Drive Cycle Simulation",
+            "subtitle": "Vehicle Systems Modeling",
+            "icon": "fa-solid fa-car-battery",
+            "iconColor": "#10B981",
+            "desc": "Simulink model simulating WLTP/FTP75 drive cycles, estimating range, motor thermal rise, and battery energy depletion.",
+            "tags": [
+                "MATLAB / Simulink",
+                "EV Powertrain",
+                "Motor Control"
+            ]
+        },
+        {
+            "title": "Battery Management System (BMS) with EKF SOC Estimation",
+            "subtitle": "Battery Control Engineering",
+            "icon": "fa-solid fa-bolt",
+            "iconColor": "#F59E0B",
+            "desc": "BMS controller implementing Extended Kalman Filter for precise State of Charge tracking under variable temperature loads.",
+            "tags": [
+                "BMS",
+                "Battery Technology",
+                "MATLAB / Simulink"
+            ]
+        },
+        {
+            "title": "PMSM Motor Field-Oriented Control (FOC) Inverter",
+            "subtitle": "Power Electronics & Drives",
+            "icon": "fa-solid fa-arrows-spin",
+            "iconColor": "#3B82F6",
+            "desc": "Space vector PWM inverter driving a 60kW PMSM traction motor with field weakening for high-speed highway cruising.",
+            "tags": [
+                "Motor Control",
+                "Power Electronics",
+                "MATLAB / Simulink"
+            ]
+        },
+        {
+            "title": "Automotive CAN Bus Powertrain Telemetry Node",
+            "subtitle": "Embedded Automotive Networking",
+            "icon": "fa-solid fa-network-wired",
+            "iconColor": "#8B5CF6",
+            "desc": "CAN communication model transmitting battery pack voltages, inverter temperatures, and speed telemetry across vehicle ECUs.",
+            "tags": [
+                "CAN Bus",
+                "EV Powertrain",
+                "BMS"
+            ]
+        }
+    ],
+    "reviews": [
+        {
+            "name": "Karthik S.",
+            "role": "EV Powertrain Engineer at Ola Electric",
+            "initials": "KS",
+            "quote": "Building the BMS State of Charge estimation model and Field-Oriented Motor Control in Simulink gave me the exact skills needed for my EV job.",
+            "stars": 5
+        },
+        {
+            "name": "Pooja B.",
+            "role": "Battery Systems Trainee",
+            "initials": "PB",
+            "quote": "The thermal management and cell balancing logic labs were practical and thorough. Outstanding mentor support!",
+            "stars": 5
+        },
+        {
+            "name": "Naveen R.",
+            "role": "Automotive Systems Associate",
+            "initials": "NR",
+            "quote": "From vehicle dynamics equations to CAN bus protocol simulation, this course covers every aspect of modern electric mobility.",
+            "stars": 5
+        }
+    ],
+    "faqs": [
+        {
+            "q": "Which software tools are utilized for EV simulation?",
+            "a": "We use MATLAB, Simulink, and Simscape Electrical for powertrain modeling, battery equivalent circuits, and motor drive controllers."
+        },
+        {
+            "q": "Do we learn both Battery Management Systems (BMS) and Motor Control?",
+            "a": "Yes! The curriculum spans both battery technology (cell balancing, SOC estimation, thermal safety) and traction motor drives (FOC, SVPWM, inverters)."
+        },
+        {
+            "q": "Is this course suitable for Mechanical, Electrical, and Automobile students?",
+            "a": "Yes, electric vehicle engineering is multidisciplinary. Mechanical students gain power electronics insights, and electrical students master vehicle dynamics."
+        },
+        {
+            "q": "What career paths does this program prepare me for?",
+            "a": "Graduates can work as EV Powertrain Engineers, BMS Firmware Developers, Inverter Controls Engineers, and Vehicle Systems Testing Engineers."
+        }
+    ]
+},
+
+{
+    "slug": "nptel-aircraft",
+    "id": "nptel-aircraft",
+    "title": "Aircraft Design, Aerodynamics & Flight Mechanics",
+    "category": "Aerospace Engineering Track",
+    "badge": "AEROSPACE SYSTEMS CERTIFIED",
+    "heroAccent": "Aerospace & Flight Mechanics Specialist",
+    "desc": "Analyze airfoil aerodynamics, aircraft stability, propulsion systems, flight mechanics, and computational aerospace simulation.",
+    "heroFeatures": [
+        "Subsonic & Supersonic Airfoil Aerodynamics",
+        "Aircraft Performance & Flight Envelope Calculation",
+        "Static & Dynamic Aircraft Flight Stability",
+        "Gas Turbine & Jet Propulsion Thermodynamic Cycles",
+        "Computational Fluid Dynamics (CFD) Airflow Modeling",
+        "Verified Aerospace Systems Engineer Certificate"
+    ],
+    "techStack": [
+        "Aerodynamics",
+        "Flight Mechanics",
+        "Avionics",
+        "MATLAB",
+        "Aircraft Propulsion",
+        "Fluid Mechanics",
+        "Simulation"
+    ],
+    "topics": [
+        {
+            "title": "Subsonic Aerodynamics & Airfoil Lift/Drag Analysis",
+            "tool": "Aerodynamics",
+            "desc": "Analyze flow fields, boundary layers, circulation theory, lift generation, and induced drag on lifting surfaces.",
+            "points": [
+                "Calculate lift, drag, and moment coefficients for NACA 4-digit and 5-digit airfoils",
+                "Evaluate boundary layer separation, stall phenomena, and high-lift devices (flaps, slats)",
+                "Compute finite wing vortex drag and optimal elliptical lift distributions",
+                "Analyze compressibility effects, critical Mach numbers, and shock wave formations"
+            ],
+            "practicalLab": "Simulate flow over a cambered airfoil using panel methods and determine the stall angle of attack."
+        },
+        {
+            "title": "Aircraft Flight Performance & Mission Profiles",
+            "tool": "Flight Mechanics",
+            "desc": "Calculate takeoff distances, climb gradients, cruise ranges, endurance, and flight envelopes.",
+            "points": [
+                "Calculate thrust required vs thrust available across varying flight altitudes",
+                "Derive Breguet range and endurance equations for jet and propeller aircraft",
+                "Construct V-n flight operating envelopes accounting for structural G-load limits",
+                "Determine optimal glide ratios and landing approach glide slopes"
+            ],
+            "practicalLab": "Calculate the payload-range diagram and service ceiling for a twin-engine commercial transport jet."
+        },
+        {
+            "title": "Aircraft Stability & Control Derivatives",
+            "tool": "MATLAB",
+            "desc": "Evaluate longitudinal and lateral static stability, neutral point calculation, and dynamic flight modes.",
+            "points": [
+                "Calculate aircraft center of gravity (CG) limits and aerodynamic Neutral Point",
+                "Evaluate longitudinal static stability criteria and tailplane trim settings",
+                "Model dynamic flight modes: Phugoid, Short Period, Dutch Roll, and Spiral Mode",
+                "Simulate linearized state-space aircraft equations of motion in MATLAB"
+            ],
+            "practicalLab": "Develop a MATLAB simulation modeling dynamic longitudinal response following an elevator step input."
+        },
+        {
+            "title": "Gas Turbine Propulsion & Jet Engine Cycles",
+            "tool": "Aircraft Propulsion",
+            "desc": "Analyze turbojet, turbofan, and turboprop thermodynamic Brayton cycles, component efficiencies, and thrust.",
+            "points": [
+                "Calculate station-by-station temperature and pressure ratios through compressor and turbine",
+                "Analyze bypass ratio trade-offs for high-bypass commercial turbofans",
+                "Evaluate propulsive efficiency, thermal efficiency, and specific fuel consumption (SFC)",
+                "Design supersonic intake diffusers and convergent-divergent exhaust nozzles"
+            ],
+            "practicalLab": "Model the thermodynamic cycle of a high-bypass turbofan engine evaluating thrust output at Mach 0.85."
+        }
+    ],
+    "projects": [
+        {
+            "title": "Conceptual Design & Sizing of a Regional Commuter Jet",
+            "subtitle": "Aircraft Conceptual Engineering",
+            "icon": "fa-solid fa-plane-up",
+            "iconColor": "#38BDF8",
+            "desc": "Complete conceptual aircraft sizing: gross takeoff weight estimation, wing loading, thrust-to-weight, and cabin layout.",
+            "tags": [
+                "Aerodynamics",
+                "Flight Mechanics",
+                "MATLAB"
+            ]
+        },
+        {
+            "title": "Airfoil Lift-to-Drag Computational Fluid Analysis",
+            "subtitle": "Aerodynamic Flow Modeling",
+            "icon": "fa-solid fa-wind",
+            "iconColor": "#10B981",
+            "desc": "Pressure coefficient and boundary layer separation simulation over supercritical airfoils across transonic speeds.",
+            "tags": [
+                "Fluid Mechanics",
+                "Aerodynamics",
+                "Simulation"
+            ]
+        },
+        {
+            "title": "Aircraft Longitudinal State-Space Flight Dynamics Simulator",
+            "subtitle": "Flight Stability & Control",
+            "icon": "fa-solid fa-gamepad",
+            "iconColor": "#F59E0B",
+            "desc": "MATLAB state-space model simulating Phugoid and Short Period modes with stability augmentation feedback control.",
+            "tags": [
+                "MATLAB",
+                "Flight Mechanics",
+                "Avionics"
+            ]
+        },
+        {
+            "title": "High-Bypass Turbofan Engine Thermodynamic Cycle Simulation",
+            "subtitle": "Aerospace Propulsion Engineering",
+            "icon": "fa-solid fa-fire-flame-curved",
+            "iconColor": "#8B5CF6",
+            "desc": "Thermodynamic cycle model computing compressor stages, turbine inlet temperatures, bypass ratios, and thrust.",
+            "tags": [
+                "Aircraft Propulsion",
+                "Simulation",
+                "Fluid Mechanics"
+            ]
+        }
+    ],
+    "reviews": [
+        {
+            "name": "Arvind S.",
+            "role": "Aerospace Systems Trainee at HAL",
+            "initials": "AS",
+            "quote": "The conceptual aircraft sizing and stability state-space modeling in MATLAB matched university gate and industry expectations.",
+            "stars": 5
+        },
+        {
+            "name": "Meghna P.",
+            "role": "Aerodynamicist Intern",
+            "initials": "MP",
+            "quote": "Understanding airfoil circulation, induced drag, and transonic shock formations with practical labs was invaluable.",
+            "stars": 5
+        },
+        {
+            "name": "Deepak R.",
+            "role": "Flight Dynamics Engineer",
+            "initials": "DR",
+            "quote": "Detailed, mathematically sound, and practical. The mentor explained complex dynamic modes like Dutch Roll with great clarity.",
+            "stars": 5
+        }
+    ],
+    "faqs": [
+        {
+            "q": "Is this course mapped to standard aerospace university curricula and NPTEL syllabus?",
+            "a": "Yes, the curriculum covers classical aerodynamics, flight mechanics, aircraft stability, and propulsion aligned with GATE Aerospace and NPTEL benchmarks."
+        },
+        {
+            "q": "What computational software is used during the internship?",
+            "a": "We use MATLAB for mathematical modeling, flight mechanics simulation, and state-space dynamic mode responses."
+        },
+        {
+            "q": "Will I learn both subsonic and supersonic aerodynamics?",
+            "a": "Yes, you will cover subsonic boundary layers, induced drag, as well as compressibility, oblique shock waves, and expansion fans."
+        },
+        {
+            "q": "What career paths does this program prepare me for?",
+            "a": "Graduates can pursue opportunities as Aerodynamics Engineers, Flight Control Systems Engineers, Propulsion Analysts, and Aerospace Research Associates."
+        }
+    ]
+},
+
+{
+    "slug": "ic-engine-design",
+    "id": "ic-engine-design",
+    "title": "Internal Combustion Engine Design & Powertrain Simulation",
+    "category": "Mechanical & Automotive Track",
+    "badge": "POWERTRAIN CAD CERTIFIED",
+    "heroAccent": "IC Engine Design Specialist",
+    "desc": "Design and analyze internal combustion engine architectures, thermodynamics, combustion chambers, crankshafts, and FEA thermal stress.",
+    "heroFeatures": [
+        "Thermodynamic Air-Standard & Fuel-Air Cycle Analysis",
+        "Piston, Connecting Rod & Crankshaft Component Design",
+        "Valve Train Geometry & Cam Profile Timing",
+        "Combustion Dynamics & Emission Control Systems",
+        "Finite Element Analysis (FEA) Thermal Stress Auditing",
+        "Verified Engine Design Engineer Certificate"
+    ],
+    "techStack": [
+        "IC Engines",
+        "Thermodynamics",
+        "ANSYS FEA",
+        "SolidWorks",
+        "Combustion Analysis",
+        "Powertrain Design"
+    ],
+    "topics": [
+        {
+            "title": "Thermodynamic Engine Cycles & Combustion Chemistry",
+            "tool": "Thermodynamics",
+            "desc": "Analyze Otto, Diesel, and Dual cycles, air-fuel stoichiometry, combustion stages, and thermal efficiency.",
+            "points": [
+                "Calculate compression ratios, mean effective pressure (IMEP/BMEP), and thermal efficiency",
+                "Model 4-stroke spark ignition (SI) and compression ignition (CI) combustion phases",
+                "Analyze flame propagation, auto-ignition, knocking, and octane/cetane ratings",
+                "Evaluate emissions chemistry: NOx, CO, unburnt hydrocarbons (UHC), and particulate matter"
+            ],
+            "practicalLab": "Calculate the theoretical and indicated power outputs for a 2.0-liter turbocharged direct-injection gasoline engine."
+        },
+        {
+            "title": "Crank-Slider Kinematics & Structural Dynamics",
+            "tool": "Powertrain Design",
+            "desc": "Calculate reciprocating and rotating inertia forces, piston side thrust, and engine balancing.",
+            "points": [
+                "Derive mathematical equations for piston velocity, acceleration, and cylinder volume variation",
+                "Analyze primary and secondary reciprocating inertia forces",
+                "Calculate crankshaft torsional vibrations and counterweight balance masses",
+                "Determine connecting rod buckling loads under peak cylinder pressure"
+            ],
+            "practicalLab": "Compute and plot the turning moment diagram and flywheel sizing for a 4-cylinder in-line engine."
+        },
+        {
+            "title": "CAD Modeling of Piston, Rod & Cylinder Head",
+            "tool": "SolidWorks",
+            "desc": "Construct parametric 3D CAD models of core engine components with internal cooling galleries and oil rings.",
+            "points": [
+                "Model lightweight aluminum pistons with crown profiles, ring grooves, and pin bosses",
+                "Design forged H-beam and I-beam connecting rods with split big-end bearings",
+                "Design cylinder head water jackets, intake ports, and spark plug/injector bosses",
+                "Model valve guides, valve seats, and overhead camshaft (OHC) assemblies"
+            ],
+            "practicalLab": "Model a complete parametric Piston and Connecting Rod sub-assembly in 3D CAD ready for structural simulation."
+        },
+        {
+            "title": "Thermal & Structural FEA Simulation in ANSYS",
+            "tool": "ANSYS FEA",
+            "desc": "Simulate peak cylinder firing pressures, thermal heat flux, temperature gradients, and fatigue life.",
+            "points": [
+                "Apply cylinder pressure loads and thermal convection boundary conditions",
+                "Perform steady-state and transient thermal analysis on the piston crown",
+                "Conduct structural stress analysis to determine Von Mises stresses and safety factors",
+                "Identify high-stress concentration areas and optimize material thickness"
+            ],
+            "practicalLab": "Run a coupled thermal-structural FEA analysis in ANSYS verifying piston crown temperatures and factor of safety."
+        }
+    ],
+    "projects": [
+        {
+            "title": "Parametric Design & FEA Stress Analysis of an Engine Piston",
+            "subtitle": "Thermal & Structural Simulation",
+            "icon": "fa-solid fa-fire",
+            "iconColor": "#EF4444",
+            "desc": "Designed an aluminum piston in 3D CAD, applying 150 bar peak firing pressures in ANSYS FEA to verify fatigue life.",
+            "tags": [
+                "SolidWorks",
+                "ANSYS FEA",
+                "IC Engines"
+            ]
+        },
+        {
+            "title": "High-Performance Forged Connecting Rod Design",
+            "subtitle": "Dynamic Load Analysis",
+            "icon": "fa-solid fa-wrench",
+            "iconColor": "#3B82F6",
+            "desc": "Structural H-beam connecting rod engineered to withstand compressive gas loads and high-RPM tensile inertia stresses.",
+            "tags": [
+                "Powertrain Design",
+                "ANSYS FEA",
+                "SolidWorks"
+            ]
+        },
+        {
+            "title": "Engine Turning Moment & Crankshaft Flywheel Sizing",
+            "subtitle": "Kinematic & Dynamic Analysis",
+            "icon": "fa-solid fa-arrows-spin",
+            "iconColor": "#F59E0B",
+            "desc": "Mathematical simulation of cylinder gas pressure and inertia forces, calculating flywheel inertia for 1% speed fluctuation.",
+            "tags": [
+                "Thermodynamics",
+                "Powertrain Design",
+                "IC Engines"
+            ]
+        },
+        {
+            "title": "Intake Manifold & Cylinder Port CFD Flow Simulation",
+            "subtitle": "Combustion Gas Dynamics",
+            "icon": "fa-solid fa-wind",
+            "iconColor": "#8B5CF6",
+            "desc": "CFD flow analysis of intake runner geometries to optimize tumble and swirl ratios inside the combustion chamber.",
+            "tags": [
+                "Combustion Analysis",
+                "ANSYS FEA",
+                "Thermodynamics"
+            ]
+        }
+    ],
+    "reviews": [
+        {
+            "name": "Kishore B.",
+            "role": "Powertrain Design Engineer",
+            "initials": "KB",
+            "quote": "Designing the piston and running coupled thermal-structural FEA in ANSYS gave me practical skills that hiring managers loved.",
+            "stars": 5
+        },
+        {
+            "name": "Vikas M.",
+            "role": "Automotive Simulation Trainee",
+            "initials": "VM",
+            "quote": "The balance between thermodynamic combustion calculations and practical CAD modeling made complex concepts easy to master.",
+            "stars": 5
+        },
+        {
+            "name": "Ajay S.",
+            "role": "Engine Development Associate",
+            "initials": "AS",
+            "quote": "Super comprehensive! The turning moment diagrams and balancing calculations reflect true OEM powertrain design workflows.",
+            "stars": 5
+        }
+    ],
+    "faqs": [
+        {
+            "q": "What software tools are utilized during this internship?",
+            "a": "We use SolidWorks/CATIA for 3D parametric CAD modeling and ANSYS Mechanical for structural and thermal Finite Element Analysis (FEA)."
+        },
+        {
+            "q": "Do we learn both spark-ignition (gasoline) and compression-ignition (diesel) engines?",
+            "a": "Yes, the curriculum covers both SI and CI engines, fuel injection methods, combustion chamber geometries, and emissions control."
+        },
+        {
+            "q": "Will I perform finite element stress simulation on real components?",
+            "a": "Yes, you will subject pistons, connecting rods, and crankshafts to peak firing pressures and thermal heat flux loads in ANSYS."
+        },
+        {
+            "q": "What industry jobs does this program prepare me for?",
+            "a": "Graduates are qualified for roles such as Powertrain Design Engineer, FEA Simulation Engineer, Engine CAD Modeler, and Automotive Testing Trainee."
+        }
+    ]
+},
+
+{
+    "slug": "car-design",
+    "id": "car-design",
+    "title": "Automotive Styling, Car Design & Digital Surface Modeling",
+    "category": "Automotive Styling & Design",
+    "badge": "CAR STYLING CERTIFIED",
+    "heroAccent": "Automotive Styling & Concept Specialist",
+    "desc": "Master automotive vehicle packaging, concept sketching, Class-A digital surface modeling in Alias/Blender, aerodynamics, and BIW body engineering.",
+    "heroFeatures": [
+        "Vehicle Proportions, Packaging & Ergonomics (H-Point)",
+        "Digital Concept Sketching & Ideation Rendering",
+        "Class-A Digital Surface Modeling (G0, G1, G2, G3)",
+        "Vehicle Aerodynamics & Computational Drag Reduction",
+        "Body-in-White (BIW) Structural Engineering Standards",
+        "Verified Automotive Styling Specialist Certificate"
+    ],
+    "techStack": [
+        "Automotive Styling",
+        "Alias / Blender",
+        "Surface CAD",
+        "Vehicle Packaging",
+        "CFD Aerodynamics",
+        "BIW Design"
+    ],
+    "topics": [
+        {
+            "title": "Vehicle Proportions, Packaging & Ergonomics (H-Point)",
+            "tool": "Vehicle Packaging",
+            "desc": "Understand occupant packaging, wheelbases, track widths, dash-to-axle ratios, ground clearance, and pedestrian safety.",
+            "points": [
+                "Position driver H-Point, pedal box, steering wheel, and eye ellipse according to SAE standards",
+                "Define vehicle silhouette packaging: sedans, SUVs, sports cars, and EV skateboard skateboards",
+                "Incorporate pedestrian head impact zones and bumper crash safety regulations",
+                "Calculate approach, departure, and breakover angles for crossover architectures"
+            ],
+            "practicalLab": "Establish the base architectural packaging package and ergonomic seating layout for an electric crossover SUV."
+        },
+        {
+            "title": "Digital Surface Modeling & Class-A Continuity",
+            "tool": "Alias / Blender",
+            "desc": "Construct clean digital surfaces with strict control point placement, curvature evaluation, and reflection lines.",
+            "points": [
+                "Build primary, secondary, and tertiary character surfaces using curve networks",
+                "Enforce positional (G0), tangent (G1), curvature (G2), and torsion (G3) continuity",
+                "Evaluate highlight flow and surface reflections using zebra striping and horizon lines",
+                "Perform diagnostic curve comb analysis to eliminate unwanted surface inflections"
+            ],
+            "practicalLab": "Model the exterior front fascia, hood, and character crease lines of a modern concept sports car."
+        },
+        {
+            "title": "Aerodynamics & Digital Wind Tunnel Optimization",
+            "tool": "CFD Aerodynamics",
+            "desc": "Minimize drag coefficients (Cd), manage airflow separation, ground effect diffusers, and cooling intakes.",
+            "points": [
+                "Design drag-reducing front air curtains, active grille shutters, and front splitters",
+                "Shape A-pillars and side mirrors to eliminate vortex noise and buffeting",
+                "Design rear spoilers, roofline tear-off edges, and functional rear diffusers",
+                "Evaluate downforce vs drag trade-offs using digital wind tunnel airflow analysis"
+            ],
+            "practicalLab": "Perform CFD airflow simulations on a concept vehicle body to reduce coefficient of drag (Cd) below 0.24."
+        },
+        {
+            "title": "Body-in-White (BIW) Manufacturing & Structural Feasibility",
+            "tool": "BIW Design",
+            "desc": "Translate aesthetic exterior surfaces into manufacturable sheet metal stampings, flanges, and split lines.",
+            "points": [
+                "Determine component split lines, shut lines, and panel gap tolerances (3.5mm standard)",
+                "Add draft angles, draw depths, and die extraction clearances for stamped panels",
+                "Design hemmed door edges, spot-weld flanges, and structural reinforcement pillars",
+                "Collaborate across styling studios and production engineering teams"
+            ],
+            "practicalLab": "Engineer manufacturable shut lines, spot weld flanges, and stamping die draft angles for an exterior door assembly."
+        }
+    ],
+    "projects": [
+        {
+            "title": "Electric Crossover SUV Exterior Concept Surface Model",
+            "subtitle": "Automotive Digital Styling",
+            "icon": "fa-solid fa-car-side",
+            "iconColor": "#38BDF8",
+            "desc": "Complete exterior styling model crafted with Class-A surface continuity, integrated lighting signatures, and aerodynamic silhouette.",
+            "tags": [
+                "Automotive Styling",
+                "Alias / Blender",
+                "Surface CAD"
+            ]
+        },
+        {
+            "title": "Low-Drag Vehicle Aerodynamics & Rear Diffuser Optimization",
+            "subtitle": "Aerodynamic Drag Reduction",
+            "icon": "fa-solid fa-wind",
+            "iconColor": "#10B981",
+            "desc": "Digital wind tunnel analysis refining front air curtains, rear roofline separation, and underbody diffusers to lower Cd to 0.22.",
+            "tags": [
+                "CFD Aerodynamics",
+                "Vehicle Packaging",
+                "Automotive Styling"
+            ]
+        },
+        {
+            "title": "Automotive Door Outer Panel & BIW Stamping Engineering",
+            "subtitle": "Manufacturing Feasibility & BIW",
+            "icon": "fa-solid fa-industry",
+            "iconColor": "#F59E0B",
+            "desc": "Engineered stamped sheet metal door panel with 3.5mm gap tolerances, hemmed window frames, and spot-weld flanges.",
+            "tags": [
+                "BIW Design",
+                "Surface CAD",
+                "Vehicle Packaging"
+            ]
+        },
+        {
+            "title": "Electric Vehicle Skateboard Platform & Occupant Ergonomics",
+            "subtitle": "Automotive Packaging Architecture",
+            "icon": "fa-solid fa-ruler-combined",
+            "iconColor": "#8B5CF6",
+            "desc": "SAE H-Point packaging architecture accommodating underfloor battery packs, cargo capacity, and occupant sightlines.",
+            "tags": [
+                "Vehicle Packaging",
+                "Automotive Styling",
+                "BIW Design"
+            ]
+        }
+    ],
+    "reviews": [
+        {
+            "name": "Karan M.",
+            "role": "Automotive Digital Sculptor at Mahindra Design",
+            "initials": "KM",
+            "quote": "Learning Class-A surface continuity (G2/G3) and zebra reflection mapping gave me the exact skills expected in top automotive design studios.",
+            "stars": 5
+        },
+        {
+            "name": "Tanya S.",
+            "role": "Vehicle Styling Intern",
+            "initials": "TS",
+            "quote": "The balance between creative styling and real-world BIW stamping constraints was eye-opening. Best car design course available!",
+            "stars": 5
+        },
+        {
+            "name": "Rahul D.",
+            "role": "Body Engineering Associate",
+            "initials": "RD",
+            "quote": "Detailed, inspiring, and hands-on. The mentor provided direct critiques on highlight flow and vehicle proportions.",
+            "stars": 5
+        }
+    ],
+    "faqs": [
+        {
+            "q": "Do I need traditional sketching skills to succeed in this course?",
+            "a": "No prior fine-arts background is required. We focus on digital vehicle packaging, computer-aided surface modeling, and aerodynamic principles."
+        },
+        {
+            "q": "What is Class-A surfacing and why is it important?",
+            "a": "Class-A surfaces are the visible exterior and interior surfaces of an automobile that meet strict optical curvature continuity (G2/G3) with flawless light reflections."
+        },
+        {
+            "q": "Which software tools are taught during the program?",
+            "a": "We teach digital surface sculpting and modeling using Autodesk Alias / Blender alongside CAD engineering verification tools."
+        },
+        {
+            "q": "What career opportunities exist in automotive design?",
+            "a": "Graduates can work as Automotive Digital Sculptors, Alias Modelers, BIW Engineers, Vehicle Packaging Engineers, and Exterior Styling Associates."
+        }
+    ]
+},
+
+{
+    "slug": "industrial-robotics",
+    "id": "industrial-robotics",
+    "title": "Industrial Robotics, PLC & Factory Automation",
+    "category": "Automation & Mechatronics Track",
+    "badge": "ROBOTICS & PLC CERTIFIED",
+    "heroAccent": "Industrial Robotics & Automation Specialist",
+    "desc": "Program industrial articulated robot arms, Programmable Logic Controllers (PLC), ladder logic, SCADA HMI interfaces, and pneumatic actuators.",
+    "heroFeatures": [
+        "Industrial Robot Kinematics & Workcell Coordinate Systems",
+        "PLC Programming in Ladder Logic, FBD & Structured Text",
+        "SCADA & HMI Supervisory Control System Design",
+        "Sensors, Actuators & Electro-Pneumatics Integration",
+        "Factory Safety Interlocks & Emergency Stop Architecture",
+        "Verified Automation & Robotics Engineer Certificate"
+    ],
+    "techStack": [
+        "PLC Programming",
+        "Industrial Robots",
+        "SCADA",
+        "Automation",
+        "Pneumatics",
+        "Sensors & Actuators",
+        "Mechatronics"
+    ],
+    "topics": [
+        {
+            "title": "Industrial Robot Kinematics & Coordinate Systems",
+            "tool": "Industrial Robots",
+            "desc": "Understand 6-axis articulated robot kinematics, Tool Center Point (TCP), Joint/World/User frames, and motion types.",
+            "points": [
+                "Calculate forward and inverse kinematics using Denavit-Hartenberg (DH) parameters",
+                "Configure Tool Center Point (TCP) and User Coordinate Systems for robot end-effectors",
+                "Program linear, circular, and joint motion paths avoiding kinematic singularities",
+                "Simulate robotic pick-and-place, welding, and palletizing workcells"
+            ],
+            "practicalLab": "Program a 6-axis articulated robotic arm workcell to execute high-speed palletizing with custom TCP offsets."
+        },
+        {
+            "title": "PLC Architecture, Hardware & Ladder Logic Programming",
+            "tool": "PLC Programming",
+            "desc": "Program Programmable Logic Controllers (Siemens / Allen-Bradley) using IEC 61131-3 standard languages.",
+            "points": [
+                "Wire digital/analog inputs, outputs, relays, optical sensors, and solenoid valves",
+                "Write Ladder Logic (LD) programs using timers (TON, TOF), counters, and latching circuits",
+                "Implement Function Block Diagrams (FBD) and Structured Text (ST) for complex logic",
+                "Configure fault diagnosis, hardware watchdog timers, and fail-safe interlocking"
+            ],
+            "practicalLab": "Program an automated bottle-filling and capping conveyor assembly line using PLC Ladder Logic."
+        },
+        {
+            "title": "Electro-Pneumatics, Actuators & Industrial Sensors",
+            "tool": "Pneumatics",
+            "desc": "Design pneumatic control circuits, directional control valves, proximity sensors, and pneumatic grippers.",
+            "points": [
+                "Read and design pneumatic schematics using double-acting cylinders and 5/2-way valves",
+                "Select and integrate industrial sensors: inductive, capacitive, photoelectric, and ultrasonic",
+                "Implement sequential cylinder actuation using cascade and shift-register methods",
+                "Design robotic vacuum suction and pneumatic mechanical gripper end-effectors"
+            ],
+            "practicalLab": "Construct an electro-pneumatic automated sorting station segregating metal vs plastic parts."
+        },
+        {
+            "title": "SCADA Systems, HMI Design & Factory Networking",
+            "tool": "SCADA",
+            "desc": "Design Human-Machine Interface (HMI) touchscreens, SCADA supervisory screens, alarm logging, and industrial fieldbus.",
+            "points": [
+                "Design dynamic HMI visual screens with start/stop pushbuttons, gauges, and tank levels",
+                "Configure real-time alarms, priority thresholds, and historical trend logging",
+                "Implement industrial communication networks: Modbus TCP/IP, Profinet, and Ethernet/IP",
+                "Integrate safety interlocks, light curtains, and Category-4 Emergency Stop circuits"
+            ],
+            "practicalLab": "Design a centralized SCADA supervision dashboard monitoring motor RPM, tank pressures, and alarm logs."
+        }
+    ],
+    "projects": [
+        {
+            "title": "Automated 6-Axis Robotic Pick-and-Place Palletizing Workcell",
+            "subtitle": "Industrial Robotic Automation",
+            "icon": "fa-solid fa-robot",
+            "iconColor": "#38BDF8",
+            "desc": "Simulated 6-axis robot arm operating with vacuum grippers, conveyor tracking, and collision-free path trajectories.",
+            "tags": [
+                "Industrial Robots",
+                "Automation",
+                "Mechatronics"
+            ]
+        },
+        {
+            "title": "Multi-Stage Manufacturing Conveyor PLC Controller",
+            "subtitle": "Industrial PLC Automation",
+            "icon": "fa-solid fa-microchip",
+            "iconColor": "#10B981",
+            "desc": "Ladder logic program coordinating conveyor speed, proximity sorting, fill levels, and automated reject pushers.",
+            "tags": [
+                "PLC Programming",
+                "Automation",
+                "Sensors & Actuators"
+            ]
+        },
+        {
+            "title": "Centralized SCADA Supervisory & Alarm Logging System",
+            "subtitle": "Factory Supervisory Control",
+            "icon": "fa-solid fa-display",
+            "iconColor": "#F59E0B",
+            "desc": "Real-time HMI/SCADA dashboard tracking operational throughput, machine health metrics, and emergency trip events.",
+            "tags": [
+                "SCADA",
+                "PLC Programming",
+                "Automation"
+            ]
+        },
+        {
+            "title": "Electro-Pneumatic Part Stamping & Feeder Mechanism",
+            "subtitle": "Mechatronics & Actuation",
+            "icon": "fa-solid fa-gears",
+            "iconColor": "#8B5CF6",
+            "desc": "Sequential electro-pneumatic circuit utilizing 5/2-way solenoid valves and sensors to automate raw material feeding.",
+            "tags": [
+                "Pneumatics",
+                "Sensors & Actuators",
+                "Mechatronics"
+            ]
+        }
+    ],
+    "reviews": [
+        {
+            "name": "Dinesh K.",
+            "role": "Automation Engineer at ABB",
+            "initials": "DK",
+            "quote": "Learning PLC Ladder Logic, robot kinematics, and SCADA alarm design on practical workcells prepared me directly for factory floor commissioning.",
+            "stars": 5
+        },
+        {
+            "name": "Pavithra N.",
+            "role": "Robotics Commissioning Trainee",
+            "initials": "PN",
+            "quote": "The simulation of 6-axis robot arms and electro-pneumatic circuits made me understand how automated assembly lines actually operate.",
+            "stars": 5
+        },
+        {
+            "name": "Girish M.",
+            "role": "Mechatronics Specialist",
+            "initials": "GM",
+            "quote": "Exceptional hands-on training! Connecting industrial sensors with PLC rungs and testing fail-safe logic was a game-changer.",
+            "stars": 5
+        }
+    ],
+    "faqs": [
+        {
+            "q": "Which PLC brands and programming standards are covered?",
+            "a": "We teach programming based on the international IEC 61131-3 standard (Ladder Logic, FBD, Structured Text) applicable to Siemens, Allen-Bradley, and Schneider PLCs."
+        },
+        {
+            "q": "Do I get hands-on experience with industrial robot simulation?",
+            "a": "Yes, you will learn 6-axis articulated robot kinematics, Tool Center Point (TCP) calibration, and workcell trajectory simulation."
+        },
+        {
+            "q": "Will I learn how to build Human-Machine Interface (HMI) screens?",
+            "a": "Yes, you will create interactive HMI touchscreens and SCADA supervisory dashboards with live machine animation, alarms, and trend graphs."
+        },
+        {
+            "q": "What types of roles will I be qualified for?",
+            "a": "Graduates are qualified for roles such as Industrial Automation Engineer, PLC Programmer, Robotics Commissioning Specialist, and SCADA Systems Engineer."
+        }
+    ]
+}
 ];
 
 // ══════════════════════════════════════════════════════════════════

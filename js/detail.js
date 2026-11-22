@@ -119,8 +119,10 @@
                              (Boolean(INTERNSHIP_CARD_IMAGES[querySlug]) && fromParam !== 'training') ||
                              (Boolean(INTERNSHIP_CARD_IMAGES[slug]) && fromParam !== 'training');
 
-        // Exact match with outside internship card
-        if (isInternship) {
+        const isMobileScreen = typeof window !== 'undefined' && window.innerWidth <= 768;
+
+        // Outside 2D internship card is ONLY used on MOBILE screens (<= 768px)
+        if (isMobileScreen && isInternship) {
             if (querySlug && INTERNSHIP_CARD_IMAGES[querySlug]) {
                 return INTERNSHIP_CARD_IMAGES[querySlug];
             }
@@ -135,6 +137,7 @@
             }
         }
 
+        // On DESKTOP view (> 768px), reverse/restore to rich 3D Neon illustrations for both training & internship cards
         if (DETAIL_HERO_IMAGES[slug]) {
             return DETAIL_HERO_IMAGES[slug];
         }
@@ -144,28 +147,31 @@
         const title = (course.title || '').toLowerCase();
 
         if (slug.includes('cyber') || title.includes('cyber') || title.includes('security')) {
-            return isInternship ? 'assets/internships/cards/cyber-security.png' : 'assets/detail page images/Glowing 3D Cybersecurity Shield Network.png';
+            return 'assets/detail page images/Glowing 3D Cybersecurity Shield Network.png';
         }
         if (slug.includes('ui-ux') || title.includes('ui') || title.includes('ux') || title.includes('design')) {
-            return isInternship ? 'assets/internships/cards/ui-ux-design.png' : 'assets/detail page images/Neon UI_UX Design Workspace.png';
+            return 'assets/detail page images/Neon UI_UX Design Workspace.png';
         }
-        if (slug.includes('python') || slug.includes('data') || slug.includes('ai') || title.includes('python') || title.includes('data') || title.includes('ai') || title.includes('analytics')) {
-            return isInternship ? 'assets/internships/cards/python-full-stack.png' : 'assets/detail page images/Neon Python Analytics Laptop Ecosystem.png';
+        if (slug.includes('python') || slug.includes('data') || slug.includes('ai') || title.includes('python') || title.includes('data') || title.includes('ai') || title.includes('analytics') || slug.includes('excel') || slug.includes('power-bi')) {
+            return 'assets/detail page images/Neon Python Analytics Laptop Ecosystem.png';
         }
         if (slug.includes('devops') || slug.includes('cloud') || slug.includes('aws') || title.includes('devops') || title.includes('cloud') || title.includes('aws')) {
-            return isInternship ? 'assets/internships/cards/devops.png' : 'assets/detail page images/Neon DevOps Engineering Infinity Loop.png';
+            return 'assets/detail page images/Neon DevOps Engineering Infinity Loop.png';
         }
         if (slug.includes('mobile') || slug.includes('app') || title.includes('mobile') || title.includes('app') || title.includes('android') || title.includes('flutter')) {
             return 'assets/detail page images/Neon Mobile App Development Ecosystem.png';
         }
-        if (slug.includes('iot') || slug.includes('embedded') || title.includes('iot') || title.includes('embedded') || title.includes('rover')) {
-            return isInternship ? 'assets/internships/cards/embedded-system.png' : 'assets/detail page images/Neon IoT Rover Technology Hub.png';
+        if (slug.includes('iot') || slug.includes('embedded') || title.includes('iot') || title.includes('embedded') || title.includes('rover') || slug.includes('vlsi') || slug.includes('robotics')) {
+            return 'assets/detail page images/Neon IoT Rover Technology Hub.png';
         }
-        if (slug.includes('market') || title.includes('marketing') || title.includes('digital market')) {
-            return isInternship ? 'assets/internships/cards/digital-marketing.png' : 'assets/detail page images/Neon Digital Marketing Megaphone Icons.png';
+        if (slug.includes('market') || title.includes('marketing') || title.includes('digital market') || slug.includes('salesforce') || slug.includes('finance') || slug.includes('banking') || slug.includes('stock') || slug.includes('sap')) {
+            return 'assets/detail page images/Neon Digital Marketing Megaphone Icons.png';
+        }
+        if (slug.includes('cad') || slug.includes('catia') || slug.includes('engine') || slug.includes('mech') || slug.includes('hybrid') || slug.includes('aircraft')) {
+            return 'assets/detail page images/Neon 3D Software Development Hub.png';
         }
         if (slug.includes('software') || slug.includes('java') || title.includes('software') || title.includes('java')) {
-            return isInternship ? 'assets/internships/cards/java-full-stack.png' : 'assets/detail page images/Neon 3D Software Development Hub.png';
+            return 'assets/detail page images/Neon 3D Software Development Hub.png';
         }
         return 'assets/detail page images/Neon Full-Stack Developer Workspace.png';
     }
@@ -223,6 +229,64 @@
             });
         }
 
+        const downloadBtn = document.getElementById('download-syllabus-btn');
+        if (downloadBtn) {
+            const SYLLABUS_PDF_SLUGS = {
+                'python-full-stack': 'python-full-stack-development',
+                'java-full-stack': 'java-full-stack-development',
+                'aws-cloud-computing': 'aws-cloud-computing',
+                'devops': 'devops',
+                'data-analytics-data-science': 'data-analytics-data-science',
+                'generative-ai': 'generative-ai',
+                'ai-ml': 'artificial-intelligence-machine-learning',
+                'cyber-security': 'cyber-security',
+                'selenium-testing': 'selenium-testing-java',
+                'ui-ux-design': 'ui-ux-design',
+                'vlsi-design': 'vlsi-design',
+                'embedded-system': 'embedded-system',
+                'iot': 'internet-of-things',
+                'iot-robotics': 'iot-robotics',
+                'hybrid-ev': 'hybrid-electric-vehicle',
+                'nptel-aircraft': 'nptel-aircraft',
+                'catia-english': 'catia-english',
+                'ic-engine-design': 'ic-engine-design',
+                'autocad': 'autocad',
+                'car-design': 'car-design',
+                'industrial-robotics': 'industrial-robotics-automation',
+                'salesforce': 'salesforce',
+                'investment-banking': 'investment-banking',
+                'supply-chain': 'supply-chain-management',
+                'sap-fico': 'sap-fico',
+                'digital-marketing': 'digital-marketing',
+                'power-bi': 'power-bi',
+                'advanced-excel': 'advanced-excel',
+                'stock-market': 'stock-market-full-stack-development',
+                'business-analytics': 'business-analytics',
+                'hr-finance': 'hr-finance',
+                'python-dev': 'python-full-stack-development',
+                'java-fsd': 'java-full-stack-development',
+                'cloud-aws': 'aws-cloud-computing',
+                'devops-engineering': 'devops',
+                'data-science-and-ai': 'data-analytics-data-science',
+                'data-science-ai-systems': 'data-analytics-data-science',
+                'cyber-security-specialist': 'cyber-security',
+                'ui-ux-designing': 'ui-ux-design',
+                'qa-automation-testing': 'selenium-testing-java',
+                'embedded-systems-and-iot': 'embedded-system',
+                'software-development': 'selenium-testing-java',
+                'app-development': 'internet-of-things',
+                'full-stack-web-development': 'python-full-stack-development',
+                'mern-stack': 'python-full-stack-development'
+            };
+            const rawSlug = (course.slug || course.id || '').toLowerCase();
+            const urlCourseParam = (new URLSearchParams(window.location.search).get('course') || '').toLowerCase();
+            const pdfSlug = SYLLABUS_PDF_SLUGS[rawSlug] || SYLLABUS_PDF_SLUGS[urlCourseParam] || rawSlug;
+            const pdfHref = `public/syllabus/${pdfSlug}.pdf`;
+            downloadBtn.href = pdfHref;
+            downloadBtn.setAttribute('download', `${pdfSlug}.pdf`);
+            downloadBtn.setAttribute('title', `Download ${course.title} Syllabus PDF`);
+        }
+
         const ctaApplyLink = document.getElementById('cta-apply-link');
         if (ctaApplyLink) {
             ctaApplyLink.href = applyUrl;
@@ -244,6 +308,17 @@
                 this.onerror = null;
                 this.src = 'assets/internships/3d_laptop_dark.png';
             };
+            if (!window._detailResizeBound) {
+                window._detailResizeBound = true;
+                let wasMobile = window.innerWidth <= 768;
+                window.addEventListener('resize', () => {
+                    const isMob = window.innerWidth <= 768;
+                    if (wasMobile !== isMob) {
+                        wasMobile = isMob;
+                        heroCourseImg.src = getDetailHeroImage(course);
+                    }
+                });
+            }
         }
 
         // Back to Courses Link
@@ -275,20 +350,24 @@
         if (!curriculumContainer || !topicDetailPanel) return;
 
         // Structured topic objects from course.topics or generated fallback
-        const topics = course.topics || (course.learnItems || []).map((item, idx) => {
-            const associatedTool = (course.techStack && course.techStack[idx % course.techStack.length]) || 'Technology';
-            return {
-                title: item,
-                tool: associatedTool,
-                desc: `Master ${item} through practical labs, real-world case studies, and industry-aligned training modules. Build key skills required by top engineering teams.`,
-                points: [
-                    `Comprehensive coverage of ${item} concepts`,
-                    `Hands-on practical exercises & live demonstrations`,
-                    `Industry standard design patterns & best practices`,
-                    `Real-world troubleshooting & workflow integration`
-                ],
-                practicalLab: `Build and complete a hands-on project assignment focusing on ${item}.`
-            };
+        const rawTopics = (course.topics && course.topics.length > 0) ? course.topics : (course.learnItems || []).map((item, idx) => ({
+            title: item,
+            tool: (course.techStack && course.techStack[idx % course.techStack.length]) || 'Technology',
+            desc: `Master ${item} through practical labs, real-world case studies, and industry-aligned training modules.`
+        }));
+
+        const topics = rawTopics.map((topic, idx) => {
+            const title = topic.title || `Module ${idx + 1}`;
+            const tool = topic.tool || (course.techStack && course.techStack[idx % course.techStack.length]) || 'Technology';
+            const desc = topic.desc || `Master ${title} through practical labs, real-world case studies, and industry-aligned training modules. Build key skills required by top engineering teams.`;
+            const points = (Array.isArray(topic.points) && topic.points.length > 0) ? topic.points : [
+                `Comprehensive coverage of ${title} core principles and concepts`,
+                `Hands-on practical exercises and live interactive demonstrations`,
+                `Industry standard design patterns and production best practices`,
+                `Real-world troubleshooting, debugging and workflow integration`
+            ];
+            const practicalLab = topic.practicalLab || `Build and complete a hands-on project assignment focusing on ${title} implementation.`;
+            return { title, tool, desc, points, practicalLab };
         });
 
         // 1. Render Tools in Column 1 (Static / Sticky)
