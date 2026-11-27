@@ -1298,7 +1298,7 @@
       x: n > 1 ? (index / (n - 1)) * xOffset : 0,
       y: -(index * yOffset),
       rotate: n > 1 ? (index / (n - 1)) * rotOffset : 0,
-      opacity: 1 - index * 0.15
+      opacity: 1
     };
   }
 
@@ -1365,11 +1365,11 @@
     const topCard = cardStack.querySelector('.is-top');
     if (!topCard || isDragging) return;
     gsap.to(topCard, {
-      x: -150, 
-      y: 50, 
-      rotate: -15, 
-      opacity: 0,
-      duration: 0.4, 
+      x: -180,
+      y: 28,
+      rotate: -14,
+      duration: 0.34,
+      ease: 'power2.in',
       onComplete: () => {
         pushToBack();
       }
