@@ -160,9 +160,14 @@ function runTriangularSyncMigrations(db) {
   addColumnIfNotExists('courses', 'trainer_status_note TEXT', 'trainer_status_note');
   addColumnIfNotExists('courses', 'classroom_location TEXT', 'classroom_location');
 
-  // Multi-employee task batch grouping & proof link
+  // Multi-employee task batch grouping, assigner name & attached task document (.xlsx, .docx, .pdf, .pptx)
   addColumnIfNotExists('employee_tasks', 'batch_group_id TEXT', 'batch_group_id');
   addColumnIfNotExists('employee_tasks', 'assigned_by_name TEXT', 'assigned_by_name');
+  addColumnIfNotExists('employee_tasks', 'attachment_name TEXT', 'attachment_name');
+  addColumnIfNotExists('employee_tasks', 'attachment_original_name TEXT', 'attachment_original_name');
+  addColumnIfNotExists('employee_tasks', 'attachment_path TEXT', 'attachment_path');
+  addColumnIfNotExists('employee_tasks', 'attachment_ext TEXT', 'attachment_ext');
+  addColumnIfNotExists('employee_tasks', 'attachment_size INTEGER DEFAULT 0', 'attachment_size');
 
   // Attendance admin override flag + updated timestamp
   addColumnIfNotExists('attendance', 'updated_by_admin INTEGER DEFAULT 0', 'updated_by_admin');

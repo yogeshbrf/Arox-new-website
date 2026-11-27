@@ -4,7 +4,7 @@ const logger = require('../../utils/logger');
 exports.index = (req, res) => {
   try {
     const db = getDb();
-    const student = db.prepare('SELECT id FROM students WHERE user_id = ?').get(req.user.id);
+    const student = db.prepare('SELECT id, first_name, last_name, email, phone, referral_code, referred_by FROM students WHERE user_id = ?').get(req.user.id);
     
     if (!student) {
       return res.render('student/courses/index', {
@@ -49,7 +49,7 @@ exports.index = (req, res) => {
 exports.show = (req, res) => {
   try {
     const db = getDb();
-    const student = db.prepare('SELECT id FROM students WHERE user_id = ?').get(req.user.id);
+    const student = db.prepare('SELECT id, first_name, last_name, email, phone, referral_code, referred_by FROM students WHERE user_id = ?').get(req.user.id);
     
     if (!student) {
       return res.redirect('/student/dashboard');

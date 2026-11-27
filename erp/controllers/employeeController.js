@@ -728,6 +728,9 @@ const employeeController = {
 
       if (!isAdmin) {
         if (assigneeIds.length > 1 || assigneeIds[0] !== req.user.id) {
+          if (req.file && req.file.path) {
+            try { require('fs').unlinkSync(req.file.path); } catch (e) {}
+          }
           return res.status(403).json({
             success: false,
             message: 'Only Admins can assign tasks to other or multiple employees.'
@@ -735,11 +738,20 @@ const employeeController = {
         }
       }
 
+      const path = require('path');
       const taskPayload = {
         ...req.body,
         assigned_by: req.user.id,
         assigned_by_name: assignerName
       };
+      if (req.file) {
+        const ext = path.extname(req.file.originalname || req.file.filename).toLowerCase().replace('.', '');
+        taskPayload.attachment_name = req.file.filename;
+        taskPayload.attachment_original_name = req.file.originalname;
+        taskPayload.attachment_path = `/uploads/tasks/${req.file.filename}`;
+        taskPayload.attachment_ext = ext;
+        taskPayload.attachment_size = req.file.size || 0;
+      }
 
       const createdTasks = assigneeIds.length > 1
         ? EmployeeTask.createMany(assigneeIds, taskPayload)
@@ -855,6 +867,9 @@ const employeeController = {
         }
         // Admin-assigned tasks are Show-Only for employees except status updates
         if (oldTask.assigned_by && oldTask.assigned_by !== req.user.id) {
+          if (req.file && req.file.path) {
+            try { require('fs').unlinkSync(req.file.path); } catch (e) {}
+          }
           return res.status(403).json({
             success: false,
             message: 'Admin-assigned tasks cannot be edited by employees. Use status update or upload work proof instead.'
@@ -862,7 +877,18 @@ const employeeController = {
         }
       }
 
-      const task = EmployeeTask.update(req.params.id, req.body);
+      const path = require('path');
+      const updateData = { ...req.body };
+      if (req.file) {
+        const ext = path.extname(req.file.originalname || req.file.filename).toLowerCase().replace('.', '');
+        updateData.attachment_name = req.file.filename;
+        updateData.attachment_original_name = req.file.originalname;
+        updateData.attachment_path = `/uploads/tasks/${req.file.filename}`;
+        updateData.attachment_ext = ext;
+        updateData.attachment_size = req.file.size || 0;
+      }
+
+      const task = EmployeeTask.update(req.params.id, updateData);
 
       try {
         logAudit(req, {
@@ -939,6 +965,101 @@ const employeeController = {
     } catch (e) {
       logger.error('deleteTask error:', e);
       res.status(500).json({ success: false, message: e.message });
+    }
+  },
+
+  /**
+   * GET /api/employee/tasks/:id/attachment
+   * Serves attached task document (.xlsx, .docx, .pdf, .pptx) inline or as download (?download=1)
+   */
+  async downloadTaskAttachment(req, res) {
+    try {
+      const path = require('path');
+      const fs = require('fs');
+      const os = require('os');
+      const task = EmployeeTask.findById(req.params.id);
+      if (!task) {
+        return res.status(404).json({ success: false, message: 'Task not found.' });
+      }
+      const roleLower = String((req.user && req.user.role) || '').toLowerCase();
+      const isAdmin = ['admin', 'super_admin'].includes(roleLower);
+      if (!isAdmin && task.assigned_to !== req.user.id && task.assigned_by !== req.user.id) {
+        return res.status(403).json({ success: false, message: 'Access denied for this task attachment.' });
+      }
+      if (!task.attachment_name && !task.attachment_path) {
+        return res.status(404).json({ success: false, message: 'No attachment found for this task.' });
+      }
+
+      const fileName = task.attachment_name || path.basename(task.attachment_path);
+      const candidates = [
+        path.join(__dirname, '..', 'public', 'uploads', 'tasks', fileName),
+        path.join(os.tmpdir(), 'uploads', 'tasks', fileName)
+      ];
+      const filePath = candidates.find(p => fs.existsSync(p));
+      if (!filePath) {
+        return res.status(404).json({ success: false, message: 'Attachment file could not be located on disk.' });
+      }
+
+      const mimeMap = {
+        pdf: 'application/pdf',
+        xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        pptx: 'application/vnd.openxmlformats-officedocument.presentationml.presentation'
+      };
+      const ext = String(task.attachment_ext || path.extname(fileName).slice(1)).toLowerCase();
+      const downloadName = String(task.attachment_original_name || fileName).replace(/["\r\n]/g, '_');
+      const disposition = req.query.download === '1' ? 'attachment' : 'inline';
+
+      res.setHeader('Content-Type', mimeMap[ext] || 'application/octet-stream');
+      res.setHeader('Content-Disposition', `${disposition}; filename="${downloadName}"`);
+      return res.sendFile(path.resolve(filePath));
+    } catch (e) {
+      logger.error('downloadTaskAttachment error:', e);
+      return res.status(500).json({ success: false, message: e.message });
+    }
+  },
+
+  /**
+   * GET /api/employee/tasks/:id/attachment/preview
+   * Returns structured preview data for .xlsx, .docx, .pptx or inline URL for .pdf
+   */
+  async previewTaskAttachment(req, res) {
+    try {
+      const path = require('path');
+      const fs = require('fs');
+      const os = require('os');
+      const { buildDocumentPreview } = require('../utils/docPreview');
+      const task = EmployeeTask.findById(req.params.id);
+      if (!task) {
+        return res.status(404).json({ success: false, message: 'Task not found.' });
+      }
+      const roleLower = String((req.user && req.user.role) || '').toLowerCase();
+      const isAdmin = ['admin', 'super_admin'].includes(roleLower);
+      if (!isAdmin && task.assigned_to !== req.user.id && task.assigned_by !== req.user.id) {
+        return res.status(403).json({ success: false, message: 'Access denied for this task attachment.' });
+      }
+      if (!task.attachment_name && !task.attachment_path) {
+        return res.status(404).json({ success: false, message: 'No attachment found for this task.' });
+      }
+
+      const fileName = task.attachment_name || path.basename(task.attachment_path);
+      const candidates = [
+        path.join(__dirname, '..', 'public', 'uploads', 'tasks', fileName),
+        path.join(os.tmpdir(), 'uploads', 'tasks', fileName)
+      ];
+      const filePath = candidates.find(p => fs.existsSync(p));
+      if (!filePath) {
+        return res.status(404).json({ success: false, message: 'Attachment file could not be located on disk.' });
+      }
+
+      const ext = String(task.attachment_ext || path.extname(fileName).slice(1)).toLowerCase();
+      const rawUrl = `/api/employee/tasks/${task.id}/attachment`;
+      const buffer = ext === 'pdf' ? null : fs.readFileSync(filePath);
+      const preview = buildDocumentPreview(buffer, ext, task.attachment_original_name || fileName, rawUrl);
+      return res.json({ success: true, preview });
+    } catch (e) {
+      logger.error('previewTaskAttachment error:', e);
+      return res.status(500).json({ success: false, message: e.message || 'Could not generate preview.' });
     }
   },
 

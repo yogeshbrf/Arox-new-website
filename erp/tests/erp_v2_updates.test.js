@@ -69,6 +69,65 @@ function buildMultipart(fields, fileField) {
   };
 }
 
+function buildStoredZip(filesMap) {
+  // Pure-Node uncompressed ZIP builder for synthetic .xlsx / .docx / .pptx integration tests
+  const crcTable = new Uint32Array(256);
+  for (let n = 0; n < 256; n++) {
+    let c = n;
+    for (let k = 0; k < 8; k++) c = (c & 1) ? (0xedb88320 ^ (c >>> 1)) : (c >>> 1);
+    crcTable[n] = c >>> 0;
+  }
+  const crc32 = (buf) => {
+    let c = 0xffffffff;
+    for (let i = 0; i < buf.length; i++) c = crcTable[(c ^ buf[i]) & 0xff] ^ (c >>> 8);
+    return (c ^ 0xffffffff) >>> 0;
+  };
+
+  const localParts = [];
+  const cdParts = [];
+  let offset = 0;
+  for (const [name, content] of Object.entries(filesMap)) {
+    const nameBuf = Buffer.from(name, 'utf8');
+    const dataBuf = Buffer.isBuffer(content) ? content : Buffer.from(String(content), 'utf8');
+    const crc = crc32(dataBuf);
+
+    const lfh = Buffer.alloc(30);
+    lfh.writeUInt32LE(0x04034b50, 0);
+    lfh.writeUInt16LE(20, 4);
+    lfh.writeUInt16LE(0, 6);
+    lfh.writeUInt16LE(0, 8); // store
+    lfh.writeUInt32LE(crc, 14);
+    lfh.writeUInt32LE(dataBuf.length, 18);
+    lfh.writeUInt32LE(dataBuf.length, 22);
+    lfh.writeUInt16LE(nameBuf.length, 26);
+
+    const cdh = Buffer.alloc(46);
+    cdh.writeUInt32LE(0x02014b50, 0);
+    cdh.writeUInt16LE(20, 4);
+    cdh.writeUInt16LE(20, 6);
+    cdh.writeUInt16LE(0, 8);
+    cdh.writeUInt16LE(0, 10);
+    cdh.writeUInt32LE(crc, 16);
+    cdh.writeUInt32LE(dataBuf.length, 20);
+    cdh.writeUInt32LE(dataBuf.length, 24);
+    cdh.writeUInt16LE(nameBuf.length, 28);
+    cdh.writeUInt32LE(offset, 42);
+
+    localParts.push(lfh, nameBuf, dataBuf);
+    cdParts.push(cdh, nameBuf);
+    offset += 30 + nameBuf.length + dataBuf.length;
+  }
+  const cdBuf = Buffer.concat(cdParts);
+  const entryCount = Object.keys(filesMap).length;
+  const eocd = Buffer.alloc(22);
+  eocd.writeUInt32LE(0x06054b50, 0);
+  eocd.writeUInt16LE(entryCount, 8);
+  eocd.writeUInt16LE(entryCount, 10);
+  eocd.writeUInt32LE(cdBuf.length, 12);
+  eocd.writeUInt32LE(offset, 16);
+  return Buffer.concat([...localParts, cdBuf, eocd]);
+}
+
 async function runSuite() {
   console.log('\n============================================================');
   console.log('🧪 AROX ERP V2 REQUIREMENTS & RBAC VERIFICATION SUITE');
@@ -86,6 +145,7 @@ async function runSuite() {
 
   const createdUserIds = [];
   const createdStudentIds = [];
+  const createdRegIds = [];
   const createdTaskIds = [];
   const createdProofIds = [];
   const createdAttIds = [];
@@ -469,9 +529,197 @@ async function runSuite() {
     assert.strictEqual(stuEmpApi.status, 403, 'Student blocked from Employee proof API (403)');
     console.log('✅ CHECK 9 PASS: Complete RBAC & ownership boundary matrix verified');
 
-    console.log('\n🎉 ALL 9 REQUIREMENTS & RBAC CHECKS PASSED SUCCESSFULLY!\n');
+    // ---------------------------------------------------------
+    // CHECK 10: Direct-Registered Referred Student -> Register Internship + Auto-Fill & Credential Reuse
+    // ---------------------------------------------------------
+    const customStuEmail = `direct.ref.${ts}@example.com`;
+    const customStuPass = 'KeepMySecret#2026';
+    const directRegRes = await request(server, { method: 'POST', path: '/api/auth/register' }, {
+      name: 'Direct RefStudent',
+      email: customStuEmail,
+      phone: '9876500111',
+      password: customStuPass,
+      role: 'student',
+      referral_code: empACode
+    });
+    assert.strictEqual(directRegRes.status, 201, 'Direct student registration succeeds');
+    const directUserId = directRegRes.json.data.user.id;
+    const directStuToken = directRegRes.json.data.token;
+    createdUserIds.push(directUserId);
+    const directStudentRow = db.prepare('SELECT * FROM students WHERE user_id = ?').get(directUserId);
+    if (directStudentRow) createdStudentIds.push(directStudentRow.id);
+
+    const [directDash, directCourses] = await Promise.all([
+      request(server, { path: '/student/dashboard', headers: { Authorization: `Bearer ${directStuToken}`, 'X-Role': 'student' } }),
+      request(server, { path: '/student/courses', headers: { Authorization: `Bearer ${directStuToken}`, 'X-Role': 'student' } })
+    ]);
+    assert.strictEqual(directDash.status, 200);
+    assert.strictEqual(directCourses.status, 200);
+    const expectedRedirect = `/apply.html?tab=internship&ref=${encodeURIComponent(empACode)}`;
+    const expectedRedirectEsc = expectedRedirect.replace(/&/g, '&amp;');
+    assert(directDash.text.includes('Register Internship') && (directDash.text.includes(expectedRedirect) || directDash.text.includes(expectedRedirectEsc)),
+      'Unenrolled referred student sees Register Internship CTA with auto-filled ?ref= link on dashboard');
+    assert(directCourses.text.includes('Register Internship') && (directCourses.text.includes(expectedRedirect) || directCourses.text.includes(expectedRedirectEsc)),
+      'Unenrolled referred student sees Register Internship CTA with auto-filled ?ref= link on courses page');
+
+    // Apply via /api/registrations/apply authenticated WITHOUT passing referral_code explicitly -> inherits & preserves credentials
+    const applyMp = buildMultipart({
+      first_name: 'Direct',
+      last_name: 'RefStudent',
+      email: customStuEmail,
+      phone: '9876500111',
+      gender: 'male',
+      college: 'PSG Tech',
+      university: 'Anna University',
+      degree: 'B.E. / B.Tech',
+      department: 'CSE',
+      graduation_year: '2026',
+      course: 'Full Stack Web Development',
+      learning_mode: 'Online Live Mentored',
+      course_duration: '3 Months',
+      course_start_date: '2026-12-01'
+    });
+    const applyRes = await request(server, {
+      method: 'POST',
+      path: '/api/registrations/apply',
+      headers: { Authorization: `Bearer ${directStuToken}`, 'Content-Type': applyMp.contentType }
+    }, applyMp.body);
+    assert.strictEqual(applyRes.status, 201, 'Already-registered student submits internship application cleanly');
+    assert.strictEqual(applyRes.json.data.alreadyRegisteredUser, true, 'API flags alreadyRegisteredUser: true');
+    assert.strictEqual(applyRes.json.data.credentials, null, 'API does NOT recreate/return bogus default credentials');
+    assert.strictEqual(applyRes.json.data.referralCode, empACode, 'API inherits existing student referral_code automatically');
+    createdRegIds.push(applyRes.json.data.registrationId);
+
+    const reloginCheck = await request(server, { method: 'POST', path: '/api/auth/login' }, {
+      email: customStuEmail, password: customStuPass, role: 'student'
+    });
+    assert.strictEqual(reloginCheck.status, 200, 'Existing student password remains completely intact after internship apply');
+    console.log('✅ CHECK 10 PASS: Register Internship CTA, referral auto-inherit & credential reuse verified');
+
+    // ---------------------------------------------------------
+    // CHECK 11: Admin Employee-Wise Referred Students Section
+    // ---------------------------------------------------------
+    const adminRefPage = await request(server, {
+      path: '/admin/referrals',
+      headers: { Authorization: `Bearer ${adminToken}`, 'X-Role': 'admin' }
+    });
+    assert.strictEqual(adminRefPage.status, 200, 'Admin referrals page loads');
+    assert(adminRefPage.text.includes('Employee-Wise Referred Students'), 'Employee-Wise Referred Students section rendered');
+    const empASectStart = adminRefPage.text.indexOf(`id="emp-${empAId}"`);
+    const empBSectStart = adminRefPage.text.indexOf(`id="emp-${empBId}"`);
+    assert(empASectStart !== -1 && empBSectStart !== -1, 'Both employees render as separate referral sections');
+    const empASectionHtml = adminRefPage.text.slice(empASectStart, adminRefPage.text.indexOf('</section>', empASectStart));
+    const empBSectionHtml = adminRefPage.text.slice(empBSectStart, adminRefPage.text.indexOf('</section>', empBSectStart));
+    assert(empASectionHtml.includes(empACode) && empASectionHtml.includes(customStuEmail) && empASectionHtml.includes(`ref.stu.${ts}@example.com`),
+      'Employee A section lists Emp A referral code and both enrolled and direct referred students');
+    assert(empBSectionHtml.includes(empBCode) && !empBSectionHtml.includes(customStuEmail),
+      'Employee B section displays Emp B code cleanly isolated from Emp A students');
+    console.log('✅ CHECK 11 PASS: Admin employee-wise referred students grouping & isolation verified');
+
+    // ---------------------------------------------------------
+    // CHECK 12: Admin Task Attachment (.xlsx/.docx/.pptx/.pdf <=10MB) + Employee Download & Preview
+    // ---------------------------------------------------------
+    const xlsxBuf = buildStoredZip({
+      '[Content_Types].xml': '<?xml version="1.0" encoding="UTF-8"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"></Types>',
+      'xl/sharedStrings.xml': '<sst><si><t>Student</t></si><si><t>Status</t></si><si><t>Completed</t></si></sst>',
+      'xl/workbook.xml': '<workbook xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="Lead Tracker" sheetId="1" r:id="rId1"/></sheets></workbook>',
+      'xl/_rels/workbook.xml.rels': '<Relationships><Relationship Id="rId1" Target="worksheets/sheet1.xml"/></Relationships>',
+      'xl/worksheets/sheet1.xml': '<worksheet><sheetData><row r="1"><c r="A1" t="s"><v>0</v></c><c r="B1" t="s"><v>1</v></c></row><row r="2"><c r="A2" t="inlineStr"><is><t>Kavin</t></is></c><c r="B2" t="s"><v>2</v></c></row></sheetData></worksheet>'
+    });
+    const docxBuf = buildStoredZip({
+      'word/document.xml': '<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body><w:p><w:pPr><w:pStyle w:val="Heading1"/></w:pPr><w:r><w:t>AROX SOP Brief</w:t></w:r></w:p><w:p><w:r><w:t>Call shortlisted leads before 4 PM.</w:t></w:r></w:p><w:tbl><w:tr><w:tc><w:p><w:r><w:t>Batch</w:t></w:r></w:p></w:tc><w:tc><w:p><w:r><w:t>Target</w:t></w:r></w:p></w:tc></w:tr></w:tbl></w:body></w:document>'
+    });
+    const pptxBuf = buildStoredZip({
+      'ppt/slides/slide1.xml': '<p:sld xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main"><p:cSld><p:spTree><p:sp><p:txBody><a:p><a:r><a:t>Q4 Internship Deck</a:t></a:r></a:p><a:p><a:r><a:t>Target 100 Colleges</a:t></a:r></a:p></p:txBody></p:sp></p:spTree></p:cSld></p:sld>'
+    });
+
+    const badTaskMp = buildMultipart(
+      { title: 'Invalid Attachment Task', assigned_to_ids: String(empAId) },
+      { name: 'attachment', filename: 'script.exe', contentType: 'application/octet-stream', content: Buffer.from('MZ90') }
+    );
+    const badTaskRes = await request(server, {
+      method: 'POST',
+      path: '/api/employee/tasks',
+      headers: { Authorization: `Bearer ${adminToken}`, 'X-Role': 'admin', 'Content-Type': badTaskMp.contentType }
+    }, badTaskMp.body);
+    assert.strictEqual(badTaskRes.status, 400, 'Disallowed .exe task attachment rejected with 400');
+
+    const xlsxMp = buildMultipart(
+      { title: `Excel Report Task ${ts}`, description: 'Review sheet', priority: 'high', assigned_to_ids: String(empAId) },
+      { name: 'attachment', filename: 'leads_tracker.xlsx', contentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', content: xlsxBuf }
+    );
+    const xlsxRes = await request(server, {
+      method: 'POST',
+      path: '/api/employee/tasks',
+      headers: { Authorization: `Bearer ${adminToken}`, 'X-Role': 'admin', 'Content-Type': xlsxMp.contentType }
+    }, xlsxMp.body);
+    assert.strictEqual(xlsxRes.status, 200, 'Admin creates task with .xlsx attachment');
+    const xlsxTaskId = xlsxRes.json.task.id;
+    createdTaskIds.push(xlsxTaskId);
+    assert.strictEqual(xlsxRes.json.task.attachment_ext, 'xlsx');
+
+    const docxMp = buildMultipart(
+      { title: `Docx SOP Task ${ts}`, assigned_to_ids: `${empAId},${empBId}` },
+      { name: 'attachment', filename: 'sop_guide.docx', contentType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', content: docxBuf }
+    );
+    const docxRes = await request(server, {
+      method: 'POST',
+      path: '/api/employee/tasks',
+      headers: { Authorization: `Bearer ${adminToken}`, 'X-Role': 'admin', 'Content-Type': docxMp.contentType }
+    }, docxMp.body);
+    assert.strictEqual(docxRes.status, 200, 'Admin assigns multi-employee task with .docx attachment');
+    docxRes.json.tasks.forEach(t => createdTaskIds.push(t.id));
+    const docxTaskId = docxRes.json.tasks[0].id;
+
+    const pptxMp = buildMultipart(
+      { title: `Deck Brief Task ${ts}`, assigned_to_ids: String(empAId) },
+      { name: 'attachment', filename: 'campus_deck.pptx', contentType: 'application/vnd.openxmlformats-officedocument.presentationml.presentation', content: pptxBuf }
+    );
+    const pptxRes = await request(server, {
+      method: 'POST',
+      path: '/api/employee/tasks',
+      headers: { Authorization: `Bearer ${adminToken}`, 'X-Role': 'admin', 'Content-Type': pptxMp.contentType }
+    }, pptxMp.body);
+    assert.strictEqual(pptxRes.status, 200, 'Admin creates task with .pptx attachment');
+    const pptxTaskId = pptxRes.json.task.id;
+    createdTaskIds.push(pptxTaskId);
+
+    const empTasksHtml = await request(server, {
+      path: '/employee/tasks',
+      headers: { Authorization: `Bearer ${empAToken}`, 'X-Role': 'employee' }
+    });
+    assert.strictEqual(empTasksHtml.status, 200);
+    assert(empTasksHtml.text.includes('leads_tracker.xlsx') && empTasksHtml.text.includes('openTaskAttachmentPreview'),
+      'Employee Tasks view displays uploaded task document with View & Download controls');
+
+    const [dlXlsx, pvXlsx, pvDocx, pvPptx, empBForbidden] = await Promise.all([
+      request(server, { path: `/api/employee/tasks/${xlsxTaskId}/attachment?download=1`, headers: { Authorization: `Bearer ${empAToken}`, 'X-Role': 'employee' } }),
+      request(server, { path: `/api/employee/tasks/${xlsxTaskId}/attachment/preview`, headers: { Authorization: `Bearer ${empAToken}`, 'X-Role': 'employee' } }),
+      request(server, { path: `/api/employee/tasks/${docxTaskId}/attachment/preview`, headers: { Authorization: `Bearer ${empAToken}`, 'X-Role': 'employee' } }),
+      request(server, { path: `/api/employee/tasks/${pptxTaskId}/attachment/preview`, headers: { Authorization: `Bearer ${empAToken}`, 'X-Role': 'employee' } }),
+      request(server, { path: `/api/employee/tasks/${xlsxTaskId}/attachment/preview`, headers: { Authorization: `Bearer ${empBToken}`, 'X-Role': 'employee' } })
+    ]);
+
+    assert.strictEqual(dlXlsx.status, 200, 'Assigned employee downloads task attachment');
+    assert.strictEqual(pvXlsx.status, 200, 'XLSX preview API succeeds');
+    assert.strictEqual(pvXlsx.json.preview.type, 'xlsx');
+    assert.strictEqual(pvXlsx.json.preview.sheets[0].name, 'Lead Tracker');
+    assert.deepStrictEqual(pvXlsx.json.preview.sheets[0].rows[1], ['Kavin', 'Completed']);
+
+    assert.strictEqual(pvDocx.status, 200, 'DOCX preview API succeeds');
+    assert.strictEqual(pvDocx.json.preview.type, 'docx');
+    assert(JSON.stringify(pvDocx.json.preview.blocks).includes('AROX SOP Brief'), 'DOCX preview parses heading & body');
+
+    assert.strictEqual(pvPptx.status, 200, 'PPTX preview API succeeds');
+    assert.strictEqual(pvPptx.json.preview.type, 'pptx');
+    assert.strictEqual(pvPptx.json.preview.slides[0].title, 'Q4 Internship Deck');
+
+    assert.strictEqual(empBForbidden.status, 403, 'Unassigned employee blocked from accessing another employee task document (403)');
+    console.log('✅ CHECK 12 PASS: Task document upload (.xlsx/.docx/.pptx), download & in-browser preview verified');
+
+    console.log('\n🎉 ALL 12 REQUIREMENTS & RBAC CHECKS PASSED SUCCESSFULLY!\n');
   } finally {
-    // Cleanup synthetic test records and uploaded test proof file so DB stays pristine
+    // Cleanup synthetic test records and uploaded test files so DB stays pristine
     for (const pid of createdProofIds) {
       const pf = db.prepare('SELECT file_name FROM employee_proofs WHERE id = ?').get(pid);
       if (pf && pf.file_name) {
@@ -481,7 +729,15 @@ async function runSuite() {
       try { db.prepare('DELETE FROM employee_proofs WHERE id = ?').run(pid); } catch (e) {}
     }
     for (const tid of createdTaskIds) {
+      const tf = db.prepare('SELECT attachment_name FROM employee_tasks WHERE id = ?').get(tid);
+      if (tf && tf.attachment_name) {
+        const fp = path.join(__dirname, '..', 'public', 'uploads', 'tasks', tf.attachment_name);
+        try { if (fs.existsSync(fp)) fs.unlinkSync(fp); } catch (e) {}
+      }
       try { db.prepare('DELETE FROM employee_tasks WHERE id = ?').run(tid); } catch (e) {}
+    }
+    for (const rid of createdRegIds) {
+      try { db.prepare('DELETE FROM registrations WHERE registration_id = ?').run(rid); } catch (e) {}
     }
     for (const sid of createdStudentIds) {
       try { db.prepare('DELETE FROM students WHERE id = ?').run(sid); } catch (e) {}

@@ -31,36 +31,48 @@ class Referral {
     if (!codeOrId) return [];
     const db = getDb();
     let codeStr = String(codeOrId).trim();
+    let employeeId = null;
     
-    // If integer ID was provided, look up the referral code first
+    // If integer ID was provided, look up the referral code & employee owner first
     if (/^\d+$/.test(codeStr)) {
-      const ref = db.prepare('SELECT code FROM referrals WHERE id = ?').get(codeOrId);
-      if (ref) codeStr = ref.code;
+      const ref = db.prepare('SELECT code, employee_id FROM referrals WHERE id = ?').get(codeOrId);
+      if (ref) {
+        codeStr = ref.code;
+        employeeId = ref.employee_id || null;
+      }
     }
 
     return db.prepare(`
       SELECT 
         r.id as registration_id,
         r.registration_id as reg_display_id,
-        r.created_at as registered_at,
-        r.status as reg_status,
+        COALESCE(r.created_at, s.created_at) as registered_at,
+        COALESCE(r.status, 'account_only') as reg_status,
+        s.student_id,
         s.first_name,
         s.last_name,
         s.email,
         s.phone,
         s.college,
         s.department,
-        c.title as course_title,
-        c.price,
-        r.total_amount,
-        r.paid_amount,
-        r.balance_amount
-      FROM registrations r
-      JOIN students s ON r.student_id = s.id
-      JOIN courses c ON r.course_id = c.id
-      WHERE LOWER(r.referral_code) = LOWER(?)
-      ORDER BY r.created_at DESC
-    `).all(codeStr);
+        COALESCE(c.title, 'Account Registered (Not Enrolled Yet)') as course_title,
+        COALESCE(c.price, 0) as price,
+        COALESCE(r.total_amount, 0) as total_amount,
+        COALESCE(r.paid_amount, 0) as paid_amount,
+        COALESCE(r.balance_amount, 0) as balance_amount
+      FROM students s
+      LEFT JOIN registrations r ON r.id = (
+        SELECT r2.id FROM registrations r2
+        WHERE r2.student_id = s.id AND r2.status != 'cancelled'
+        ORDER BY r2.created_at DESC, r2.id DESC
+        LIMIT 1
+      )
+      LEFT JOIN courses c ON r.course_id = c.id
+      WHERE LOWER(COALESCE(r.referral_code, '')) = LOWER(?)
+         OR LOWER(COALESCE(s.referral_code, '')) = LOWER(?)
+         ${employeeId ? 'OR s.referred_by = ?' : ''}
+      ORDER BY COALESCE(r.created_at, s.created_at) DESC
+    `).all(...(employeeId ? [codeStr, codeStr, employeeId] : [codeStr, codeStr]));
   }
 
   static create(data) {

@@ -25,9 +25,11 @@ router.put('/follow-ups/:id/complete', employeeController.completeFollowUp);
 router.delete('/follow-ups/:id', employeeController.deleteFollowUp);
 
 // Tasks
-router.post('/tasks', employeeController.createTask);
+router.post('/tasks', upload.uploadTaskDocOptional, employeeController.createTask);
 router.put('/tasks/:id/status', employeeController.updateTaskStatus);
-router.put('/tasks/:id', employeeController.updateTask);
+router.get('/tasks/:id/attachment/preview', employeeController.previewTaskAttachment);
+router.get('/tasks/:id/attachment', employeeController.downloadTaskAttachment);
+router.put('/tasks/:id', upload.uploadTaskDocOptional, employeeController.updateTask);
 router.delete('/tasks/:id', employeeController.deleteTask);
 
 // Work Deliverable Proofs (.pdf, .pptx, .xlsx, .docx up to 10MB)

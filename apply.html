@@ -1066,6 +1066,15 @@ select:-webkit-autofill {
       </div>
     </div>
 
+    <!-- Existing Logged-In Account Banner (hidden unless authenticated) -->
+    <div id="existingAccountBanner" style="display:none;background:#eff6ff;border:1px solid #bfdbfe;border-radius:12px;padding:12px 16px;margin-bottom:16px;font-size:13px;color:#1e3a8a;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <i data-lucide="user-check" style="width:18px;height:18px;color:#1d4ed8;flex-shrink:0;"></i>
+        <span id="existingAccountBannerText">Your existing AROX account is active — your details and referral code have been pre-filled automatically.</span>
+      </div>
+      <a href="/student/dashboard" style="font-size:12px;font-weight:600;color:#1d4ed8;text-decoration:underline;white-space:nowrap;">Back to Dashboard</a>
+    </div>
+
     <!-- FORM CARD -->
     <div class="form-card">
 
@@ -2165,49 +2174,55 @@ select:-webkit-autofill {
       document.getElementById('successDetails').innerHTML = `
         <div class="success-detail-row"><span class="sd-label">Course</span><span class="sd-value">${formData.course}</span></div>
         <div class="success-detail-row"><span class="sd-label">Application Date</span><span class="sd-value">${today}</span></div>
+        ${data.referralCode ? `<div class="success-detail-row"><span class="sd-label">Referral Code</span><span class="sd-value" style="color:var(--success);">${data.referralCode}</span></div>` : ''}
         <div class="success-detail-row"><span class="sd-label">Application Status</span><span class="sd-value" style="color:var(--success);">Submitted</span></div>
       `;
 
-      // Show credentials
+      // Show existing-account confirmation OR newly generated credentials
+      const existingCreds = document.getElementById('applySuccessCredsBox');
+      if (existingCreds) existingCreds.remove();
+
       const credsDiv = document.createElement('div');
+      credsDiv.id = 'applySuccessCredsBox';
       credsDiv.className = 'payment-details';
-      const emailPrefix = formData.email ? formData.email.split('@')[0] : 'user';
-      credsDiv.innerHTML = `
-        <div style="font-weight:700;color:var(--text-primary);margin-bottom:6px;">🎓 Student Portal Access:</div>
-        <div style="font-size:13px;color:var(--text-secondary);line-height:1.6;">
-          Portal: <a href="login.html?role=student" style="color:var(--primary);text-decoration:underline;">login.html</a><br>
-          Username: <strong>${formData.email}</strong><br>
-          Default Password: <strong>${emailPrefix}</strong>
-        </div>
-        <div style="margin-top:10px;">
-          <a href="login.html?role=student" class="btn btn-primary" style="display:inline-flex;padding:8px 18px;font-size:13px;text-decoration:none;">Go to Student Login &rarr;</a>
-        </div>
-      `;
-      successDetails.appendChild(credsDiv);
       credsDiv.style.marginTop = '24px';
       credsDiv.style.marginBottom = '24px';
       credsDiv.style.textAlign = 'left';
-      credsDiv.innerHTML = `
-        <h4 style="font-size:16px; font-weight:700; margin-bottom:12px;">Your Login Credentials</h4>
-        <div class="success-detail-row"><span class="sd-label">Portal URL</span><span class="sd-value"><a href="/login" style="color:var(--text-primary);">arox.com/login</a></span></div>
-        <div class="success-detail-row"><span class="sd-label">Username</span><span class="sd-value">${data.credentials.email}</span></div>
-        <div class="success-detail-row"><span class="sd-label">Password</span><span class="sd-value">${data.credentials.password}</span></div>
-        <p style="font-size:12px; color:var(--text-secondary); margin-top:12px;">Please save these credentials to access your student dashboard and offer letter.</p>
-      `;
+
+      if (data.alreadyRegisteredUser || !data.credentials) {
+        credsDiv.innerHTML = `
+          <h4 style="font-size:16px; font-weight:700; margin-bottom:10px; color:#0f172a;">Linked to Your Existing Account</h4>
+          <div class="success-detail-row"><span class="sd-label">Registered Email</span><span class="sd-value">${formData.email}</span></div>
+          <div class="success-detail-row"><span class="sd-label">Student ID</span><span class="sd-value">${data.studentId}</span></div>
+          <p style="font-size:12.5px; color:var(--text-secondary); margin-top:12px;">No new credentials were created — continue using your existing AROX Student Portal login password.</p>
+        `;
+      } else {
+        credsDiv.innerHTML = `
+          <h4 style="font-size:16px; font-weight:700; margin-bottom:12px;">Your Login Credentials</h4>
+          <div class="success-detail-row"><span class="sd-label">Portal URL</span><span class="sd-value"><a href="/login" style="color:var(--text-primary);">arox.com/login</a></span></div>
+          <div class="success-detail-row"><span class="sd-label">Username</span><span class="sd-value">${data.credentials.email}</span></div>
+          <div class="success-detail-row"><span class="sd-label">Password</span><span class="sd-value">${data.credentials.password}</span></div>
+          <p style="font-size:12px; color:var(--text-secondary); margin-top:12px;">Please save these credentials to access your student dashboard and offer letter.</p>
+        `;
+      }
       document.getElementById('successDetails').after(credsDiv);
 
       currentApplicationPdfUrl = data.applicationPdfUrl;
 
-      // Update button text
-      const buttonsDiv = document.querySelector('.success-page .form-nav');
-      buttonsDiv.innerHTML = `
-        <button class="btn" style="background:var(--bg-white);border:1px solid var(--border);color:var(--text-primary);" onclick="downloadApplication()">
-          <i data-lucide="download" style="width:16px;height:16px;"></i> Download PDF
-        </button>
-        <a href="/login" class="btn" style="background:var(--text-primary);color:var(--bg-white);text-decoration:none;">
-          Login to Portal <i data-lucide="arrow-right" style="width:16px;height:16px;"></i>
-        </a>
-      `;
+      // Update action buttons
+      const buttonsDiv = document.querySelector('#successPage > div > div[style*="justify-content:center"]') || document.querySelector('.success-page .form-nav');
+      if (buttonsDiv) {
+        const portalHref = (data.alreadyRegisteredUser || !data.credentials) ? '/student/dashboard' : '/login?role=student';
+        const portalLabel = (data.alreadyRegisteredUser || !data.credentials) ? 'Go to Student Dashboard' : 'Login to Portal';
+        buttonsDiv.innerHTML = `
+          <button class="btn" style="background:var(--bg-white);border:1px solid var(--border);color:var(--text-primary);" onclick="downloadApplication()">
+            <i data-lucide="download" style="width:16px;height:16px;"></i> Download PDF
+          </button>
+          <a href="${portalHref}" class="btn" style="background:var(--text-primary);color:var(--bg-white);text-decoration:none;">
+            ${portalLabel} <i data-lucide="arrow-right" style="width:16px;height:16px;"></i>
+          </a>
+        `;
+      }
 
       // Hide stepper
       document.getElementById('desktopStepper').style.display = 'none';
@@ -2244,19 +2259,92 @@ select:-webkit-autofill {
     // Initialize Lucide icons
     lucide.createIcons();
 
-    // Auto-apply referral code from ?ref= query parameter & load active UPI config
+    // Auto-apply referral code (?ref= or logged-in student's stored referral), prefill registered student profile & load active UPI config
     document.addEventListener('DOMContentLoaded', async () => {
+      let resolvedRefCode = '';
       try {
         const params = new URLSearchParams(window.location.search);
-        const refParam = (params.get('ref') || params.get('referral') || '').trim().toUpperCase();
-        if (refParam) {
-          const refInput = document.getElementById('apply-referral-code');
-          if (refInput) {
-            refInput.value = refParam;
-            validateApplyReferral();
+        resolvedRefCode = (params.get('ref') || params.get('referral') || '').trim().toUpperCase();
+        if (params.get('tab') === 'internship' && !params.get('course')) {
+          const breadcrumbEl = document.getElementById('breadcrumbCourse');
+          if (breadcrumbEl && breadcrumbEl.textContent === 'Application') {
+            breadcrumbEl.textContent = 'Internship Application';
           }
         }
       } catch (e) {}
+
+      // If logged in (direct-registered student or returning student), auto-fill profile & referral_code without requiring credential recreation
+      try {
+        const meRes = await fetch('/api/auth/me', { credentials: 'same-origin' });
+        if (meRes.ok) {
+          const meJson = await meRes.json();
+          if (meJson && meJson.success && meJson.data) {
+            const u = meJson.data;
+            const st = u.student || {};
+            window.aroxExistingAccount = u;
+
+            const setFieldIfEmpty = (id, val, prop) => {
+              if (!val) return;
+              const el = document.getElementById(id);
+              if (el && !el.value.trim()) el.value = val;
+              if (prop && !formData[prop]) formData[prop] = val;
+            };
+            const setSelectIfEmpty = (key, val) => {
+              if (!val || formData[key]) return;
+              const sel = searchableSelects && searchableSelects[key];
+              if (sel && typeof sel.setValue === 'function') sel.setValue(val);
+            };
+
+            const combinedName = ((st.first_name || u.first_name || '') + ' ' + (st.last_name || u.last_name || '')).trim() || u.name || '';
+            setFieldIfEmpty('fullName', combinedName, 'fullName');
+            if (u.email || st.email) {
+              const emailEl = document.getElementById('email');
+              const accountEmail = (st.email || u.email || '').trim();
+              if (emailEl && accountEmail) {
+                emailEl.value = accountEmail;
+                formData.email = accountEmail;
+                emailEl.readOnly = true;
+                emailEl.title = 'Linked to your existing AROX account';
+              }
+            }
+            const cleanPhone = String(st.phone || u.phone || '').replace(/^\+91\s*/, '').trim();
+            setFieldIfEmpty('phone', cleanPhone, 'phone');
+            if (st.gender && !formData.gender) {
+              const gRadio = document.querySelector(`input[name="gender"][value="${String(st.gender).toLowerCase()}"]`);
+              if (gRadio) { gRadio.checked = true; formData.gender = gRadio.value; }
+            }
+            setFieldIfEmpty('collegeName', st.college, 'collegeName');
+            setSelectIfEmpty('university', st.university);
+            setSelectIfEmpty('degree', st.degree);
+            setSelectIfEmpty('specialization', st.department);
+            setSelectIfEmpty('gradYear', st.graduation_year ? String(st.graduation_year) : '');
+
+            const studentRef = (st.referral_code || '').trim().toUpperCase();
+            if (!resolvedRefCode && studentRef) {
+              resolvedRefCode = studentRef;
+            }
+
+            const banner = document.getElementById('existingAccountBanner');
+            const bannerText = document.getElementById('existingAccountBannerText');
+            if (banner) {
+              banner.style.display = 'flex';
+              if (bannerText) {
+                bannerText.innerHTML = `Signed in as <strong>${st.email || u.email}</strong> — no need to create new credentials.${resolvedRefCode ? ` Referral code <strong>${resolvedRefCode}</strong> is linked automatically.` : ''}`;
+              }
+            }
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+            saveState();
+          }
+        }
+      } catch (e) {}
+
+      if (resolvedRefCode) {
+        const refInput = document.getElementById('apply-referral-code');
+        if (refInput) {
+          refInput.value = resolvedRefCode;
+          validateApplyReferral();
+        }
+      }
 
       try {
         const cfgRes = await fetch('/api/payments/config');

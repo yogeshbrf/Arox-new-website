@@ -12,7 +12,7 @@ const baseUploadDir = isServerless
   : path.join(__dirname, '..', 'public', 'uploads');
 
 // Ensure upload directories exist safely
-const dirs = ['photos', 'documents', 'submissions', 'certificates', 'qr', 'receipts', 'proofs'];
+const dirs = ['photos', 'documents', 'submissions', 'certificates', 'qr', 'receipts', 'proofs', 'tasks'];
 dirs.forEach(dir => {
   try {
     const dirPath = path.join(baseUploadDir, dir);
@@ -91,21 +91,23 @@ const upload = multer({
   }
 });
 
-const proofStorage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const dest = path.join(__dirname, '..', 'public', 'uploads', 'proofs');
-    try { require('fs').mkdirSync(dest, { recursive: true }); } catch (e) {}
-    cb(null, dest);
-  },
-  filename: (req, file, cb) => {
-    const ext = path.extname(file.originalname).toLowerCase();
-    const base = path.basename(file.originalname, ext).replace(/[^a-zA-Z0-9_-]/g, '_').slice(0, 40);
-    const uid = req.user ? req.user.id : 'emp';
-    cb(null, `proof_${uid}_${Date.now()}_${base}${ext}`);
-  }
-});
+function createDocDiskStorage(subDir, filePrefix) {
+  return multer.diskStorage({
+    destination: (req, file, cb) => {
+      const dest = path.join(baseUploadDir, subDir);
+      try { fs.mkdirSync(dest, { recursive: true }); } catch (e) {}
+      cb(null, dest);
+    },
+    filename: (req, file, cb) => {
+      const ext = path.extname(file.originalname).toLowerCase();
+      const base = path.basename(file.originalname, ext).replace(/[^a-zA-Z0-9_-]/g, '_').slice(0, 40);
+      const uid = req.user ? req.user.id : 'emp';
+      cb(null, `${filePrefix}_${uid}_${Date.now()}_${base}${ext}`);
+    }
+  });
+}
 
-const proofFilter = (req, file, cb) => {
+function createOfficeDocFilter(subjectLabel) {
   const allowedExts = /\.(pdf|pptx|xlsx|docx)$/i;
   const allowedMimes = [
     'application/pdf',
@@ -114,24 +116,51 @@ const proofFilter = (req, file, cb) => {
     'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
     'application/octet-stream'
   ];
-  const ext = path.extname(file.originalname || '').toLowerCase();
-  if (allowedExts.test(ext) && (allowedMimes.includes(file.mimetype) || !file.mimetype || file.mimetype.includes('officedocument') || file.mimetype === 'application/pdf')) {
-    cb(null, true);
-  } else {
-    const err = new Error('Only .pdf, .pptx, .xlsx, and .docx files are allowed for work proof upload.');
-    err.statusCode = 400;
-    cb(err, false);
-  }
-};
+  return (req, file, cb) => {
+    const ext = path.extname(file.originalname || '').toLowerCase();
+    if (allowedExts.test(ext) && (allowedMimes.includes(file.mimetype) || !file.mimetype || file.mimetype.includes('officedocument') || file.mimetype === 'application/pdf')) {
+      cb(null, true);
+    } else {
+      const err = new Error(`Only .pdf, .pptx, .xlsx, and .docx files are allowed for ${subjectLabel}.`);
+      err.statusCode = 400;
+      cb(err, false);
+    }
+  };
+}
 
 const uploadProof = multer({
-  storage: proofStorage,
-  fileFilter: proofFilter,
-  limits: {
-    fileSize: 10 * 1024 * 1024
-  }
+  storage: createDocDiskStorage('proofs', 'proof'),
+  fileFilter: createOfficeDocFilter('work proof upload'),
+  limits: { fileSize: 10 * 1024 * 1024 }
 });
 
+const uploadTaskDoc = multer({
+  storage: createDocDiskStorage('tasks', 'task'),
+  fileFilter: createOfficeDocFilter('task attachment upload'),
+  limits: { fileSize: 10 * 1024 * 1024 }
+});
+
+// Allows either JSON payloads OR multipart/form-data with optional "attachment" file (<= 10MB)
+function uploadTaskDocOptional(req, res, next) {
+  const contentType = String(req.headers['content-type'] || '');
+  if (!contentType.includes('multipart/form-data')) {
+    return next();
+  }
+  uploadTaskDoc.single('attachment')(req, res, (err) => {
+    if (err) {
+      return res.status(err.statusCode || 400).json({
+        success: false,
+        message: err.code === 'LIMIT_FILE_SIZE'
+          ? 'Task attachment exceeds the 10 MB limit.'
+          : (err.message || 'Invalid task attachment.')
+      });
+    }
+    next();
+  });
+}
+
 upload.uploadProof = uploadProof;
+upload.uploadTaskDoc = uploadTaskDoc;
+upload.uploadTaskDocOptional = uploadTaskDocOptional;
 
 module.exports = upload;

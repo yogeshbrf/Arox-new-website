@@ -171,7 +171,9 @@
                       <%= emp.referral_code %>
                     </span>
                     <div style="font-size: 11px; color: #64748B; margin-top: 2px;">
-                      <%= Number(emp.referred_students_count || 0) %> referred
+                      <a href="/admin/referrals#emp-<%= emp.id %>" style="color: #155EEF; font-weight: 600; text-decoration: none;">
+                        <%= Number(emp.referred_students_count || 0) %> referred &rarr;
+                      </a>
                     </div>
                   <% } else { %>
                     <span style="font-size: 11px; color: #94A3B8;">Admin / N/A</span>

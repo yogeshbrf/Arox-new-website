@@ -59,6 +59,138 @@
   </div>
 </div>
 
+<!-- Employee-Wise Referred Students Section -->
+<div id="employee-referrals" style="margin-bottom: 32px;">
+  <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 14px;">
+    <div>
+      <h2 style="margin: 0; font-size: 18px; font-weight: 800; color: #0F172A; display: flex; align-items: center; gap: 8px;">
+        <i data-lucide="users-round" style="width: 19px; height: 19px; color: #155EEF;"></i>
+        Employee-Wise Referred Students
+      </h2>
+      <p style="margin: 3px 0 0; font-size: 12.5px; color: #64748B;">Each employee with their unique referral code and the students taken under their referral.</p>
+    </div>
+    <div style="position: relative; min-width: 240px;">
+      <i data-lucide="search" style="width: 14px; height: 14px; position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: #94A3B8;"></i>
+      <input type="text" id="empRefFilterInput" oninput="filterEmployeeReferralSections(this.value)" placeholder="Filter by employee, code, or student..."
+             style="width: 100%; padding: 7px 12px 7px 32px; border: 1px solid #CBD5E1; border-radius: 8px; font-size: 12.5px; background: #fff;">
+    </div>
+  </div>
+
+  <% if (typeof employeeReferrals !== 'undefined' && employeeReferrals && employeeReferrals.length > 0) { %>
+    <div style="display: flex; flex-direction: column; gap: 16px;">
+      <% employeeReferrals.forEach(group => {
+           const emp = group.employee;
+           const studentsList = group.students || [];
+           const searchHaystack = (
+             (emp.first_name || '') + ' ' + (emp.last_name || '') + ' ' +
+             (emp.email || '') + ' ' + (group.referral_code || '') + ' ' +
+             studentsList.map(st => `${st.first_name} ${st.last_name} ${st.email} ${st.student_id || ''} ${st.course_title || ''}`).join(' ')
+           ).toLowerCase();
+      %>
+        <section id="emp-<%= emp.id %>" class="erp-card emp-referral-section" data-emp-search="<%= searchHaystack %>"
+                 style="padding: 0; background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 12px; overflow: hidden;">
+          <div style="padding: 16px 20px; background: #F8FAFC; border-bottom: 1px solid #E2E8F0; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <div style="width: 40px; height: 40px; border-radius: 10px; background: #0F172A; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 15px; flex-shrink: 0;">
+                <%= ((emp.first_name || 'E').charAt(0)).toUpperCase() %>
+              </div>
+              <div>
+                <div style="font-size: 15px; font-weight: 800; color: #0F172A;">
+                  <%= emp.first_name %> <%= emp.last_name || '' %>
+                </div>
+                <div style="font-size: 12px; color: #64748B;">
+                  <%= emp.designation || 'Staff Member' %> &bull; <%= emp.email %>
+                </div>
+              </div>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+              <div style="display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 8px; background: #EFF6FF; border: 1px solid #BFDBFE; color: #1E40AF;">
+                <span style="font-size: 11px; font-weight: 700; text-transform: uppercase;">Refer Code:</span>
+                <span style="font-family: monospace; font-size: 13px; font-weight: 800; letter-spacing: 0.04em;"><%= group.referral_code || 'N/A' %></span>
+              </div>
+              <span style="padding: 5px 11px; border-radius: 99px; font-size: 12px; font-weight: 700; background: <%= studentsList.length > 0 ? '#DCFCE7' : '#F1F5F9' %>; color: <%= studentsList.length > 0 ? '#166534' : '#64748B' %>;">
+                <%= studentsList.length %> Referred Student<%= studentsList.length === 1 ? '' : 's' %>
+              </span>
+            </div>
+          </div>
+
+          <% if (studentsList.length > 0) { %>
+            <div class="erp-table-container" style="border: none; border-radius: 0; margin-bottom: 0;">
+              <table class="erp-table" style="margin-bottom: 0;">
+                <thead>
+                  <tr>
+                    <th style="color: #000;">Student ID</th>
+                    <th style="color: #000;">Student Name</th>
+                    <th style="color: #000;">Contact</th>
+                    <th style="color: #000;">College / Dept</th>
+                    <th style="color: #000;">Enrolled Course</th>
+                    <th style="color: #000;">Refer Code Used</th>
+                    <th style="color: #000;">Status</th>
+                    <th style="color: #000;">Joined</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% studentsList.forEach(st => { %>
+                    <tr>
+                      <td style="font-family: monospace; font-weight: 700; font-size: 12px; color: #0F172A;"><%= st.student_id || ('STU-' + st.id) %></td>
+                      <td style="font-weight: 700; color: #0F172A;"><%= st.first_name %> <%= st.last_name || '' %></td>
+                      <td style="font-size: 12px; color: #475569;">
+                        <div><%= st.email %></div>
+                        <% if (st.phone) { %><div style="color: #64748B;"><%= st.phone %></div><% } %>
+                      </td>
+                      <td style="font-size: 12px; color: #334155;">
+                        <%= st.college || '—' %>
+                        <% if (st.department) { %><div style="font-size: 11px; color: #64748B;"><%= st.department %></div><% } %>
+                      </td>
+                      <td style="font-size: 12.5px; font-weight: 600; color: #0F172A;">
+                        <%= st.course_title || 'Registered Account Only' %>
+                      </td>
+                      <td>
+                        <span style="font-family: monospace; font-size: 11.5px; font-weight: 700; padding: 2px 7px; border-radius: 6px; background: #F1F5F9; border: 1px solid #CBD5E1; color: #0F172A;">
+                          <%= st.applied_referral_code || group.referral_code %>
+                        </span>
+                      </td>
+                      <td>
+                        <% if (st.registration_id) { %>
+                          <span style="display: inline-block; padding: 2px 8px; border-radius: 99px; font-size: 11px; font-weight: 700; background: #DCFCE7; color: #166534; text-transform: capitalize;"><%= st.reg_status || 'Enrolled' %></span>
+                        <% } else { %>
+                          <span style="display: inline-block; padding: 2px 8px; border-radius: 99px; font-size: 11px; font-weight: 700; background: #FEF3C7; color: #92400E;">Account Only</span>
+                        <% } %>
+                      </td>
+                      <td style="font-size: 12px; color: #64748B; white-space: nowrap;">
+                        <%= new Date(st.registered_at || st.account_created_at).toLocaleDateString('en-IN') %>
+                      </td>
+                    </tr>
+                  <% }) %>
+                </tbody>
+              </table>
+            </div>
+          <% } else { %>
+            <div style="padding: 18px 20px; font-size: 12.5px; color: #64748B; text-align: center;">
+              No students have registered with <%= emp.first_name %>'s referral code (<strong><%= group.referral_code || 'N/A' %></strong>) yet.
+            </div>
+          <% } %>
+        </section>
+      <% }) %>
+    </div>
+  <% } else { %>
+    <div class="erp-card" style="padding: 24px; text-align: center; color: #64748B; background: #fff; border: 1px solid #E2E8F0;">
+      No active employees found to display referral groups.
+    </div>
+  <% } %>
+</div>
+
+<script>
+  function filterEmployeeReferralSections(query) {
+    const q = (query || '').trim().toLowerCase();
+    document.querySelectorAll('.emp-referral-section').forEach(sec => {
+      const text = sec.getAttribute('data-emp-search') || '';
+      sec.style.display = (!q || text.includes(q)) ? 'block' : 'none';
+    });
+  }
+</script>
+
 <!-- Unified Catalogue Toolbar with View Switcher & Multi-Filters -->
 <div class="catalogue-toolbar" data-catalogue="admin_referrals">
   <div class="catalogue-search-wrap">

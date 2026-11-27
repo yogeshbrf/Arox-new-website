@@ -67,8 +67,9 @@ class EmployeeTask {
     const assignedTo = parseInt(data.assigned_to || data.employee_id || 1, 10);
     const res = db.prepare(`
       INSERT INTO employee_tasks (
-        title, description, assigned_to, assigned_by, batch_group_id, assigned_by_name, lead_id, priority, status, category, due_date
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        title, description, assigned_to, assigned_by, batch_group_id, assigned_by_name, lead_id, priority, status, category, due_date,
+        attachment_name, attachment_original_name, attachment_path, attachment_ext, attachment_size
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `).run(
       data.title || 'Untitled Task',
       data.description || '',
@@ -80,7 +81,12 @@ class EmployeeTask {
       data.priority || 'medium',
       data.status || 'todo',
       data.category || 'client_outreach',
-      data.due_date || null
+      data.due_date || null,
+      data.attachment_name || null,
+      data.attachment_original_name || null,
+      data.attachment_path || null,
+      data.attachment_ext || null,
+      Number(data.attachment_size || 0)
     );
 
     return { id: res.lastInsertRowid, ...data, assigned_to: assignedTo };
@@ -93,8 +99,9 @@ class EmployeeTask {
     const batchGroupId = ids.length > 1 ? `GRP-${Date.now()}-${Math.random().toString(36).slice(2, 6).toUpperCase()}` : null;
     const stmt = db.prepare(`
       INSERT INTO employee_tasks (
-        title, description, assigned_to, assigned_by, batch_group_id, assigned_by_name, lead_id, priority, status, category, due_date
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        title, description, assigned_to, assigned_by, batch_group_id, assigned_by_name, lead_id, priority, status, category, due_date,
+        attachment_name, attachment_original_name, attachment_path, attachment_ext, attachment_size
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
     const created = [];
     const tx = db.transaction(() => {
@@ -110,7 +117,12 @@ class EmployeeTask {
           data.priority || 'medium',
           data.status || 'todo',
           data.category || 'client_outreach',
-          data.due_date || null
+          data.due_date || null,
+          data.attachment_name || null,
+          data.attachment_original_name || null,
+          data.attachment_path || null,
+          data.attachment_ext || null,
+          Number(data.attachment_size || 0)
         );
         created.push({ id: res.lastInsertRowid, ...data, assigned_to: empId, batch_group_id: batchGroupId });
       }
@@ -146,6 +158,11 @@ class EmployeeTask {
         category = ?,
         due_date = ?,
         assigned_to = ?,
+        attachment_name = ?,
+        attachment_original_name = ?,
+        attachment_path = ?,
+        attachment_ext = ?,
+        attachment_size = ?,
         updated_at = CURRENT_TIMESTAMP
       WHERE id = ?
     `).run(
@@ -156,6 +173,11 @@ class EmployeeTask {
       data.category !== undefined && data.category !== null ? data.category : existing.category,
       data.due_date !== undefined ? (data.due_date || null) : (existing.due_date || null),
       data.assigned_to !== undefined ? (data.assigned_to || existing.assigned_to) : existing.assigned_to,
+      data.attachment_name !== undefined ? data.attachment_name : existing.attachment_name,
+      data.attachment_original_name !== undefined ? data.attachment_original_name : existing.attachment_original_name,
+      data.attachment_path !== undefined ? data.attachment_path : existing.attachment_path,
+      data.attachment_ext !== undefined ? data.attachment_ext : existing.attachment_ext,
+      data.attachment_size !== undefined ? Number(data.attachment_size || 0) : (existing.attachment_size || 0),
       id
     );
 

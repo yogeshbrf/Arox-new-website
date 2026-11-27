@@ -2,14 +2,14 @@ const express = require('express');
 const router = express.Router();
 const registrationController = require('../../controllers/registrationController');
 const upload = require('../../middleware/upload');
-const { authenticate } = require('../../middleware/auth');
+const { authenticate, optionalAuth } = require('../../middleware/auth');
 const roleGuard = require('../../middleware/roleGuard');
 
 // POST /api/registrations - Create new registration
 router.post('/', upload.single('photo'), registrationController.create);
 
-// POST /api/registrations/apply - Public application form
-router.post('/apply', upload.single('photo'), registrationController.apply);
+// POST /api/registrations/apply - Public application form (links logged-in account when present)
+router.post('/apply', optionalAuth, upload.single('photo'), registrationController.apply);
 
 // PUT /api/registrations/:id - Admin only updates registration/internship details
 router.put('/:id', authenticate, roleGuard('admin', 'super_admin'), registrationController.update);

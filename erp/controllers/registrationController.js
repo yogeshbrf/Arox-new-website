@@ -361,12 +361,16 @@ const registrationController = {
         courseRecord = db.prepare('SELECT * FROM courses WHERE is_active = 1 ORDER BY id ASC LIMIT 1').get();
       }
 
-      // Check existing user or student account
-      const existingUser = db.prepare('SELECT id, email, status FROM users WHERE LOWER(email) = LOWER(?)').get(email);
+      // Check existing user or student account (email match OR authenticated session user)
+      let existingUser = db.prepare('SELECT id, email, status FROM users WHERE LOWER(email) = LOWER(?)').get(email);
+      if (!existingUser && req.user && req.user.id) {
+        existingUser = db.prepare('SELECT id, email, status FROM users WHERE id = ?').get(req.user.id);
+      }
       let existingStudent = Student.findByEmail(email);
       if (!existingStudent && existingUser) {
         existingStudent = db.prepare('SELECT * FROM students WHERE user_id = ?').get(existingUser.id);
       }
+      const alreadyRegisteredUser = !!existingUser;
 
       // Check if student is already enrolled in this exact course
       if (existingStudent && courseRecord) {
@@ -379,11 +383,22 @@ const registrationController = {
         }
       }
 
-      // Check and validate referral code if provided (supports referrals table + unique employee referral codes)
+      // Check and validate referral code if provided (supports referrals table, unique employee referral codes, or existing student referral)
       let validatedReferralCode = null;
       let referredByEmployeeId = null;
       let referralDiscountPercent = 0;
-      const rawRefCode = (req.body.referral_code || req.body.referral || '').trim().toUpperCase();
+      let rawRefCode = (req.body.referral_code || req.body.referral || '').trim().toUpperCase();
+      if (!rawRefCode && existingStudent) {
+        if (existingStudent.referral_code) {
+          rawRefCode = String(existingStudent.referral_code).trim().toUpperCase();
+        } else if (existingStudent.referred_by) {
+          const fallbackEmp = db.prepare('SELECT id, referral_code FROM users WHERE id = ? AND deleted_at IS NULL').get(existingStudent.referred_by);
+          if (fallbackEmp) {
+            referredByEmployeeId = fallbackEmp.id;
+            if (fallbackEmp.referral_code) rawRefCode = String(fallbackEmp.referral_code).trim().toUpperCase();
+          }
+        }
+      }
       if (rawRefCode) {
         const refRecord = db.prepare('SELECT * FROM referrals WHERE UPPER(code) = ? AND is_active = 1').get(rawRefCode);
         const empRefUser = db.prepare('SELECT id, referral_code FROM users WHERE UPPER(referral_code) = ? AND deleted_at IS NULL').get(rawRefCode);
@@ -448,9 +463,29 @@ const registrationController = {
             referredByEmployeeId, validatedReferralCode || null
           );
           studentDbId = studentResult.lastInsertRowid;
-        } else if (referredByEmployeeId && !existingStudent.referred_by) {
-          db.prepare('UPDATE students SET referred_by = ?, referral_code = COALESCE(referral_code, ?), updated_at = CURRENT_TIMESTAMP WHERE id = ?')
-            .run(referredByEmployeeId, validatedReferralCode || null, studentDbId);
+        } else {
+          // Keep existing student profile and enrich missing fields or referral attribution
+          db.prepare(`
+            UPDATE students SET
+              photo = COALESCE(photo, ?),
+              gender = COALESCE(NULLIF(gender, ''), ?),
+              college = COALESCE(NULLIF(college, ''), ?),
+              university = COALESCE(NULLIF(university, ''), ?),
+              degree = COALESCE(NULLIF(degree, ''), ?),
+              department = COALESCE(NULLIF(department, ''), ?),
+              graduation_year = COALESCE(NULLIF(graduation_year, ''), ?),
+              phone = COALESCE(NULLIF(phone, ''), ?),
+              referred_by = COALESCE(referred_by, ?),
+              referral_code = COALESCE(NULLIF(referral_code, ''), ?),
+              updated_at = CURRENT_TIMESTAMP
+            WHERE id = ?
+          `).run(
+            req.file ? `/uploads/photos/${req.file.filename}` : null,
+            gender || null, college || null, university || null, degree || null,
+            department || null, graduation_year || null, phone || null,
+            referredByEmployeeId || null, validatedReferralCode || null,
+            studentDbId
+          );
         }
 
         // 3. Create registration with referral_code
@@ -482,8 +517,8 @@ const registrationController = {
       // Broadcast triangular sync event
       const syncService = require('../services/syncService');
       syncService.broadcast('registration:created', {
-        registrationId,
-        studentId,
+        registrationId: result.registrationId,
+        studentId: result.studentId,
         studentName: `${first_name} ${last_name}`,
         course: courseRecord.title,
         referralCode: validatedReferralCode,
@@ -498,24 +533,30 @@ const registrationController = {
         });
       }
 
-      // Send welcome email (async)
-      emailService.sendWelcomeEmail(
-        { first_name, last_name, email, student_id: studentId },
-        { email, password: rawPassword }
-      ).catch(err => logger.error('Welcome email failed:', err));
+      // Send welcome email only for newly created user accounts (existing users keep their existing password)
+      if (!alreadyRegisteredUser) {
+        emailService.sendWelcomeEmail(
+          { first_name, last_name, email, student_id: result.studentId },
+          { email, password: rawPassword }
+        ).catch(err => logger.error('Welcome email failed:', err));
+      }
 
       res.status(201).json({
         success: true,
-        message: 'Application submitted successfully! 🎉',
+        message: alreadyRegisteredUser
+          ? 'Application submitted and linked to your existing account! 🎉'
+          : 'Application submitted successfully! 🎉',
         data: {
-          studentId,
-          registrationId,
-          credentials: {
+          studentId: result.studentId,
+          registrationId: result.registrationId,
+          alreadyRegisteredUser,
+          referralCode: validatedReferralCode || null,
+          credentials: alreadyRegisteredUser ? null : {
             email,
             password: rawPassword
           },
-          offerLetterUrl: `/api/registrations/${registrationId}/offer-letter`,
-          applicationPdfUrl: `/api/registrations/${registrationId}/application-pdf`
+          offerLetterUrl: `/api/registrations/${result.registrationId}/offer-letter`,
+          applicationPdfUrl: `/api/registrations/${result.registrationId}/application-pdf`
         }
       });
     } catch (error) {

@@ -1,11 +1,23 @@
+<%
+  const studentRefCode = (typeof student !== 'undefined' && student && student.referral_code) ? String(student.referral_code).trim() : '';
+  const registerInternshipUrl = '/apply.html?tab=internship' + (studentRefCode ? ('&ref=' + encodeURIComponent(studentRefCode)) : '');
+%>
 <div class="erp-h1" style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; color: #000000;">
   <div>
     <div style="font-size: 24px; font-weight: 750;">My Enrolled Programs</div>
     <div style="font-size: 13px; color: #64748B; font-weight: 500; margin-top: 2px;">Track your curriculum syllabus, batch status, daily attendance, and credentials</div>
   </div>
-  <div style="font-size: 13px; color: #64748B; font-weight: 500; display: inline-flex; align-items: center; gap: 6px;">
-    <i data-lucide="book-marked" style="width: 15px; height: 15px;"></i>
-    <span>Curriculum & Credentials</span>
+  <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+    <% if (!courses || courses.length === 0) { %>
+      <a href="<%= registerInternshipUrl %>" class="erp-btn erp-btn-primary" style="background: #000000; color: #FFFFFF; padding: 9px 18px; border-radius: 8px; font-size: 13px; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
+        <i data-lucide="rocket" style="width: 15px; height: 15px;"></i>
+        <span>Register Internship</span>
+      </a>
+    <% } %>
+    <div style="font-size: 13px; color: #64748B; font-weight: 500; display: inline-flex; align-items: center; gap: 6px;">
+      <i data-lucide="book-marked" style="width: 15px; height: 15px;"></i>
+      <span>Curriculum &amp; Credentials</span>
+    </div>
   </div>
 </div>
 
@@ -177,7 +189,14 @@
           <% }); %>
         <% } %>
         <tr class="empty-state-row" style="display: <%= (!courses || courses.length === 0) ? '' : 'none' %>;">
-          <td colspan="6" style="padding: 32px; text-align: center; color: #64748B;">No enrolled programs matching current filters.</td>
+          <td colspan="6" style="padding: 36px; text-align: center; color: #64748B;">
+            <div style="margin-bottom: 10px;">No enrolled programs matching current filters.</div>
+            <% if (!courses || courses.length === 0) { %>
+              <a href="<%= registerInternshipUrl %>" class="erp-btn erp-btn-primary" style="display: inline-flex; align-items: center; gap: 6px; padding: 9px 18px; background: #000000; color: #FFFFFF; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 13px;">
+                <i data-lucide="plus-circle" style="width: 15px; height: 15px;"></i> Register Internship
+              </a>
+            <% } %>
+          </td>
         </tr>
       </tbody>
     </table>
@@ -239,6 +258,11 @@
   <div class="kanban-empty-state" style="display: <%= (!courses || courses.length === 0) ? 'block' : 'none' %>;">
     <i data-lucide="book-open" style="width: 36px; height: 36px; margin: 0 auto 10px; color: #94A3B8;"></i>
     <div style="font-weight: 700; font-size: 15px; color: #000;">No Enrolled Programs Found</div>
-    <div style="font-size: 12px; color: #64748B; margin-top: 4px;">Explore our certified internships and training tracks to enroll.</div>
+    <div style="font-size: 12px; color: #64748B; margin-top: 4px; margin-bottom: 14px;">Explore our certified internships and training tracks to enroll.</div>
+    <% if (!courses || courses.length === 0) { %>
+      <a href="<%= registerInternshipUrl %>" class="erp-btn erp-btn-primary" style="display: inline-flex; align-items: center; gap: 6px; padding: 9px 18px; background: #000000; color: #FFFFFF; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 13px;">
+        <i data-lucide="plus-circle" style="width: 15px; height: 15px;"></i> Register Internship
+      </a>
+    <% } %>
   </div>
 </div>

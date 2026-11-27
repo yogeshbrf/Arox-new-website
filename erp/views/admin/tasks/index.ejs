@@ -160,6 +160,20 @@
                 <% if (task.description) { %>
                   <div style="font-size: 11px; color: #64748B; margin-top: 2px;"><%= task.description %></div>
                 <% } %>
+                <% if (task.attachment_name || task.attachment_path) {
+                     const docLabel = task.attachment_original_name || task.attachment_name || 'Document';
+                     const docExt = String(task.attachment_ext || '').toUpperCase();
+                %>
+                  <div style="margin-top: 6px; display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap; padding: 3px 8px; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 6px;">
+                    <i data-lucide="paperclip" style="width: 12px; height: 12px; color: #155EEF;"></i>
+                    <span style="font-size: 11px; font-weight: 600; color: #0F172A; max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="<%= docLabel %>"><%= docLabel %></span>
+                    <% if (docExt) { %><span style="font-size: 9.5px; font-weight: 800; color: #1E40AF; background: #DBEAFE; padding: 1px 5px; border-radius: 4px;"><%= docExt %></span><% } %>
+                    <button type="button" onclick="openTaskAttachmentPreview('<%= task.id %>', '<%= task.attachment_ext || '' %>', '<%= docLabel.replace(/'/g, "\\'") %>')"
+                            style="border: none; background: #0F172A; color: #fff; font-size: 10.5px; font-weight: 700; padding: 2px 7px; border-radius: 4px; cursor: pointer;">View</button>
+                    <a href="/api/employee/tasks/<%= task.id %>/attachment?download=1"
+                       style="font-size: 10.5px; font-weight: 700; color: #155EEF; text-decoration: none; padding: 2px 5px;">Download</a>
+                  </div>
+                <% } %>
               </td>
               <td style="padding: 12px 16px; font-weight: 600; color: #000;">
                 <div style="display: inline-flex; align-items: center; gap: 6px;">
@@ -264,6 +278,20 @@
             <p style="margin: 0; font-size: 12px; color: #475569; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
               <%= task.description %>
             </p>
+          <% } %>
+
+          <% if (task.attachment_name || task.attachment_path) {
+               const kDocLabel = task.attachment_original_name || task.attachment_name || 'Document';
+          %>
+            <div style="margin-top: 8px; padding: 6px 8px; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; display: flex; align-items: center; justify-content: space-between; gap: 6px;">
+              <span style="font-size: 11px; font-weight: 600; color: #0F172A; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><%= kDocLabel %></span>
+              <span style="display: inline-flex; gap: 4px; flex-shrink: 0;">
+                <button type="button" onclick="openTaskAttachmentPreview('<%= task.id %>', '<%= task.attachment_ext || '' %>', '<%= kDocLabel.replace(/'/g, "\\'") %>')"
+                        style="border: none; background: #0F172A; color: #fff; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 4px; cursor: pointer;">View</button>
+                <a href="/api/employee/tasks/<%= task.id %>/attachment?download=1"
+                   style="font-size: 10px; font-weight: 700; color: #155EEF; text-decoration: none; padding: 2px 5px; border: 1px solid #BFDBFE; border-radius: 4px; background: #EFF6FF;">Download</a>
+              </span>
+            </div>
           <% } %>
 
           <div class="kanban-chip-row" style="margin-top: 10px;">
@@ -452,6 +480,15 @@
             <input type="date" name="due_date" style="width: 100%; height: 38px; padding: 0 10px; border: 1px solid #CBD5E1; border-radius: 6px; font-size: 13px;">
           </div>
         </div>
+
+        <div>
+          <label style="font-size: 12px; font-weight: 600; color: #334155; display: block; margin-bottom: 4px;">
+            Task Document Attachment <span style="color: #64748B; font-weight: 500;">(.xlsx, .docx, .pdf, .pptx up to 10 MB)</span>
+          </label>
+          <input type="file" id="adminTaskAttachment" name="attachment"
+                 accept=".xlsx,.docx,.pdf,.pptx,application/pdf,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.presentationml.presentation"
+                 style="width: 100%; padding: 8px 10px; border: 1px dashed #94A3B8; border-radius: 6px; font-size: 12.5px; background: #F8FAFC;">
+        </div>
       </div>
 
       <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 18px;">
@@ -522,6 +559,16 @@
             <option value="completed">Completed</option>
           </select>
         </div>
+
+        <div>
+          <label style="font-size: 12px; font-weight: 600; color: #334155; display: block; margin-bottom: 4px;">
+            Task Document Attachment <span style="color: #64748B; font-weight: 500;">(.xlsx, .docx, .pdf, .pptx up to 10 MB)</span>
+          </label>
+          <div id="editTaskCurrentDoc" style="margin-bottom: 6px; font-size: 12px; color: #475569;"></div>
+          <input type="file" id="editTaskAttachment" name="attachment"
+                 accept=".xlsx,.docx,.pdf,.pptx,application/pdf,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.presentationml.presentation"
+                 style="width: 100%; padding: 8px 10px; border: 1px dashed #94A3B8; border-radius: 6px; font-size: 12.5px; background: #F8FAFC;">
+        </div>
       </div>
 
       <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 18px;">
@@ -554,6 +601,17 @@
     document.getElementById('editTaskStatus').value = t.status || 'pending';
     document.getElementById('editTaskAssignee').value = t.assigned_to || '';
     document.getElementById('editTaskDueDate').value = t.due_date ? t.due_date.slice(0, 10) : '';
+    const curDocEl = document.getElementById('editTaskCurrentDoc');
+    if (curDocEl) {
+      if (t.attachment_name || t.attachment_path) {
+        const nm = t.attachment_original_name || t.attachment_name || 'Document';
+        curDocEl.innerHTML = `Current document: <strong>${nm}</strong> · <a href="/api/employee/tasks/${t.id}/attachment?download=1" style="color:#155EEF;font-weight:700;">Download</a>`;
+      } else {
+        curDocEl.textContent = 'No document currently attached.';
+      }
+    }
+    const editFileInput = document.getElementById('editTaskAttachment');
+    if (editFileInput) editFileInput.value = '';
 
     document.getElementById('adminEditTaskModal').style.display = 'flex';
   }
@@ -566,24 +624,30 @@
     e.preventDefault();
     const id = document.getElementById('editTaskId').value;
     const btn = document.getElementById('saveEditTaskBtn');
+    const fileInput = document.getElementById('editTaskAttachment');
+    if (fileInput && fileInput.files && fileInput.files[0] && fileInput.files[0].size > 10 * 1024 * 1024) {
+      return alert('Task document must not exceed 10 MB.');
+    }
+
     btn.disabled = true;
     btn.textContent = 'Saving...';
 
-    const payload = {
-      title: document.getElementById('editTaskTitle').value.trim(),
-      description: document.getElementById('editTaskDesc').value.trim(),
-      category: document.getElementById('editTaskCategory').value.trim(),
-      priority: document.getElementById('editTaskPriority').value,
-      status: document.getElementById('editTaskStatus').value,
-      assigned_to: document.getElementById('editTaskAssignee').value,
-      due_date: document.getElementById('editTaskDueDate').value || null
-    };
+    const fd = new FormData();
+    fd.append('title', document.getElementById('editTaskTitle').value.trim());
+    fd.append('description', document.getElementById('editTaskDesc').value.trim());
+    fd.append('category', document.getElementById('editTaskCategory').value.trim());
+    fd.append('priority', document.getElementById('editTaskPriority').value);
+    fd.append('status', document.getElementById('editTaskStatus').value);
+    fd.append('assigned_to', document.getElementById('editTaskAssignee').value);
+    fd.append('due_date', document.getElementById('editTaskDueDate').value || '');
+    if (fileInput && fileInput.files && fileInput.files[0]) {
+      fd.append('attachment', fileInput.files[0]);
+    }
 
     try {
       const res = await fetch(`/api/employee/tasks/${id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
+        body: fd
       });
       const result = await res.json();
       if (result.success) {
@@ -630,20 +694,23 @@
       return alert('Please select at least one employee to assign this task.');
     }
 
+    const fileInput = document.getElementById('adminTaskAttachment');
+    if (fileInput && fileInput.files && fileInput.files[0] && fileInput.files[0].size > 10 * 1024 * 1024) {
+      return alert('Task attachment cannot exceed 10 MB.');
+    }
+
     const btn = document.getElementById('saveAdminTaskBtn');
     btn.disabled = true;
     btn.textContent = 'Assigning...';
 
     const formData = new FormData(e.target);
-    const data = Object.fromEntries(formData.entries());
-    data.assigned_to_ids = checkedIds;
-    data.assigned_to = checkedIds[0];
+    formData.set('assigned_to_ids', checkedIds.join(','));
+    formData.set('assigned_to', String(checkedIds[0]));
 
     try {
       const res = await fetch('/api/employee/tasks', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
+        body: formData
       });
       const result = await res.json();
       if (result.success) {
@@ -693,3 +760,4 @@
     }
   }
 </script>
+<script src="/js/doc-preview.js"></script>

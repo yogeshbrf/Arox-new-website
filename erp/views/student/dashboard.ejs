@@ -67,6 +67,12 @@
 
 <div class="erp-h1" style="margin-bottom: 24px; color: #000000;">Student Overview</div>
 
+<%
+  const hasEnrolledCourses = (typeof enrollments !== 'undefined' && enrollments && enrollments.length > 0);
+  const studentRefCode = (typeof student !== 'undefined' && student && student.referral_code) ? String(student.referral_code).trim() : '';
+  const registerInternshipUrl = '/apply.html?tab=internship' + (studentRefCode ? ('&ref=' + encodeURIComponent(studentRefCode)) : '');
+%>
+
 <% if (typeof latestRegistration !== 'undefined' && latestRegistration) { %>
   <div style="background: #000000; border: 1px solid #000000; border-radius: 12px; padding: 24px; margin-bottom: 32px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; color: #FFFFFF;">
     <div>
@@ -80,6 +86,22 @@
     <div>
       <a href="/api/registrations/<%= latestRegistration.registration_id %>/offer-letter" target="_blank" class="erp-btn" style="background: #FFFFFF; color: #000000; font-weight: 700; border: none; padding: 10px 20px;">
         <i data-lucide="download" style="color: #000000;"></i> Download Offer Letter
+      </a>
+    </div>
+  </div>
+<% } else if (!hasEnrolledCourses) { %>
+  <div style="background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%); border: 1px solid #0F172A; border-radius: 12px; padding: 24px; margin-bottom: 32px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; color: #FFFFFF;">
+    <div>
+      <h2 style="font-size: 20px; font-weight: 700; color: #FFFFFF; margin-bottom: 6px;">
+        Welcome to AROX Tech, <%= (typeof student !== 'undefined' && student) ? student.first_name : 'Student' %>!
+      </h2>
+      <p style="color: #CBD5E1; font-size: 14px; margin: 0;">
+        Your student account is active<%= studentRefCode ? (' (Referral Code: ' + studentRefCode + ' linked)') : '' %>. Register for an internship course without creating new credentials.
+      </p>
+    </div>
+    <div>
+      <a href="<%= registerInternshipUrl %>" class="erp-btn" style="background: #FFFFFF; color: #000000; font-weight: 700; border: none; padding: 11px 22px; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; border-radius: 8px;">
+        <i data-lucide="rocket" style="width: 16px; height: 16px; color: #000000;"></i> Register Internship
       </a>
     </div>
   </div>
@@ -175,7 +197,11 @@
       <% } else { %>
         <div style="text-align: center; padding: 24px; color: #94A3B8;">
           <i data-lucide="book-open" style="width: 24px; height: 24px; display: block; margin: 0 auto 8px; opacity: 0.5;"></i>          <div style="font-size: 13px; font-weight: 500; color: #64748B; margin-bottom: 4px;">No courses enrolled yet</div>
-          <div style="font-size: 12px;">Browse our programs to get started</div>
+          <div style="font-size: 13px; font-weight: 500; color: #64748B; margin-bottom: 4px;">No courses enrolled yet</div>
+          <div style="font-size: 12px; margin-bottom: 14px;">Apply directly with your registered account<%= studentRefCode ? (' — referral ' + studentRefCode + ' will auto-fill') : '' %></div>
+          <a href="<%= registerInternshipUrl %>" class="erp-btn erp-btn-primary" style="display: inline-flex; align-items: center; gap: 6px; padding: 9px 18px; background: #000000; color: #FFFFFF; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 13px;">
+            <i data-lucide="plus-circle" style="width: 15px; height: 15px;"></i> Register Internship
+          </a>
         </div>
       <% } %>
     </div>
