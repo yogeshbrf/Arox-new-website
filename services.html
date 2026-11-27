@@ -1668,7 +1668,7 @@
                 <polyline points="9 18 15 12 9 6"></polyline>
               </svg>
             </a>
-            <button onclick="if(window.lenis){window.lenis.scrollTo('#services-stack-wrapper')}else{document.getElementById('services-stack-wrapper').scrollIntoView({behavior:'smooth'})}" class="services-btn-secondary">
+            <button onclick="(function(){const target=window.innerWidth<=768?(document.getElementById('aroxMobileServicesView')||document.getElementById('services-stack-wrapper')):document.getElementById('services-stack-wrapper');if(target){const y=target.getBoundingClientRect().top+window.scrollY;window.scrollTo({top:y,left:0,behavior:'smooth'});}})()" class="services-btn-secondary">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <rect x="3" y="3" width="7" height="7"></rect>
                 <rect x="14" y="3" width="7" height="7"></rect>

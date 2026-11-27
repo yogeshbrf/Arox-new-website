@@ -4338,8 +4338,8 @@
         height: 36px !important;
       }
       .arox-mob-search-btn {
-        width: 28px !important;
-        height: 28px !important;
+        width: 36px !important;
+        height: 36px !important;
         padding: 0 !important;
         border-radius: 0 !important;
         border: none !important;
@@ -4355,8 +4355,13 @@
         z-index: 2 !important;
       }
       .arox-mob-search-btn svg {
-        width: 20px !important;
-        height: 20px !important;
+        width: 22px !important;
+        height: 22px !important;
+        min-width: 22px !important;
+        min-height: 22px !important;
+        fill: none !important;
+        stroke: currentColor !important;
+        stroke-width: 2.4 !important;
         display: block !important;
         overflow: visible !important;
         flex-shrink: 0 !important;
@@ -5021,20 +5026,48 @@
         transition: background-color 0.3s ease !important;
       }
 
-      /* DARK THEME: Container */
+      /* DARK THEME: Single seamless background from hero to footer (matching home page) */
+      html.dark body,
+      html.theme-dark body,
+      body.theme-dark,
+      [data-theme="dark"] body,
+      html.dark #hero,
+      html.theme-dark #hero,
+      body.theme-dark #hero,
+      [data-theme="dark"] #hero,
       html.dark #hscrollSection,
       html.theme-dark #hscrollSection,
       body.theme-dark #hscrollSection,
-      [data-theme="dark"] #hscrollSection {
+      [data-theme="dark"] #hscrollSection,
+      html.dark .arox-mobile-courses-view,
+      html.theme-dark .arox-mobile-courses-view,
+      html.dark .cta-section,
+      html.theme-dark .cta-section,
+      html.dark footer,
+      html.theme-dark footer {
         background: #000000 !important;
       }
 
-      /* LIGHT THEME: Container */
+      /* LIGHT THEME: Single seamless background from hero to footer (matching home page) */
+      html.theme-light body,
+      html:not(.dark) body,
+      body.theme-light,
+      [data-theme="light"] body,
+      html.theme-light #hero,
+      html:not(.dark) #hero,
+      body.theme-light #hero,
+      [data-theme="light"] #hero,
       html.theme-light #hscrollSection,
       html:not(.dark) #hscrollSection,
       body.theme-light #hscrollSection,
-      [data-theme="light"] #hscrollSection {
-        background: #F4F8FD !important;
+      [data-theme="light"] #hscrollSection,
+      html.theme-light .arox-mobile-courses-view,
+      html:not(.dark) .arox-mobile-courses-view,
+      html.theme-light .cta-section,
+      html:not(.dark) .cta-section,
+      html.theme-light footer,
+      html:not(.dark) footer {
+        background: #FFFFFF !important;
       }
 
       /* Mobile View Display */
@@ -6246,30 +6279,12 @@
 
   window.handleHeroSecondaryClick = function(event) {
     if (event && event.preventDefault) event.preventDefault();
-    const hscroll = document.getElementById('hscrollSection');
-    const isCurrentlyIntern = hscroll && hscroll.classList.contains('is-internship-view');
-
     if (window.innerWidth <= 768) {
-      const trainSection = document.getElementById('aroxMobTrainingSection') || document.querySelector('.arox-mob-section:nth-of-type(1)');
-      const internSection = document.getElementById('aroxMobInternSection') || document.querySelector('.arox-mob-section:nth-of-type(2)');
-      if (isCurrentlyIntern) {
-        if (typeof window.navigateToSection === 'function') {
-          window.navigateToSection('training');
-        }
-        if (trainSection) {
-          trainSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-      } else {
-        if (typeof window.navigateToSection === 'function') {
-          window.navigateToSection('internship');
-        }
-        if (internSection) {
-          internSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-      }
+      window.location.href = 'contact.html';
       return;
     }
-
+    const hscroll = document.getElementById('hscrollSection');
+    const isCurrentlyIntern = hscroll && hscroll.classList.contains('is-internship-view');
     if (typeof window.navigateToSection === 'function') {
       window.navigateToSection(isCurrentlyIntern ? 'training' : 'internship');
     }
@@ -7904,14 +7919,14 @@
       flippedId = null;
       buildFlipCards('training');
 
-      // Update CTA and Hero button labels for Training section
+      // Update CTA and Hero button labels for Training section (Mobile stays 'Start a Project')
       const ctaApplyBtnText = document.getElementById('ctaApplyBtnText');
       if (ctaApplyBtnText) {
-        ctaApplyBtnText.textContent = 'Apply for Internship';
+        ctaApplyBtnText.textContent = (window.innerWidth <= 768) ? 'Start a Project' : 'Apply for Internship';
       }
       const heroSecondaryBtnText = document.getElementById('heroSecondaryBtnText');
       if (heroSecondaryBtnText) {
-        heroSecondaryBtnText.textContent = 'Explore Internship';
+        heroSecondaryBtnText.textContent = (window.innerWidth <= 768) ? 'Start a Project' : 'Explore Internship';
       }
 
       if (bootcampsSection) bootcampsSection.style.display = '';
@@ -7969,14 +7984,14 @@
         gsap.killTweensOf(internshipDomainWrap);
         internshipDomainWrap.style.display = 'flex';
 
-        // Update CTA and Hero button labels for Internship section
+        // Update CTA and Hero button labels for Internship section (Mobile stays 'Start a Project')
         const ctaApplyBtnText = document.getElementById('ctaApplyBtnText');
         if (ctaApplyBtnText) {
-          ctaApplyBtnText.textContent = 'Apply for Training';
+          ctaApplyBtnText.textContent = (window.innerWidth <= 768) ? 'Start a Project' : 'Apply for Training';
         }
         const heroSecondaryBtnText = document.getElementById('heroSecondaryBtnText');
         if (heroSecondaryBtnText) {
-          heroSecondaryBtnText.textContent = 'Explore Training';
+          heroSecondaryBtnText.textContent = (window.innerWidth <= 768) ? 'Start a Project' : 'Explore Training';
         }
         internshipDomainWrap.style.opacity = '1';
         internshipDomainWrap.style.visibility = 'visible';
@@ -8153,6 +8168,10 @@
   let _lastCtaClickTime = 0;
   window.handleCtaSecondaryClick = function(event) {
     if (event && event.preventDefault) event.preventDefault();
+    if (window.innerWidth <= 768) {
+      window.location.href = 'contact.html';
+      return;
+    }
     const now = Date.now();
     if (now - _lastCtaClickTime < 350) return; // Prevent double invocation
     _lastCtaClickTime = now;
@@ -8218,7 +8237,18 @@
   }
   setActiveType(initialTab, true);
 
-  // Sync hero button when scrolling between sections on mobile
+  // Sync hero button when scrolling between sections on mobile (keep 'Start a Project' locked on mobile)
+  function syncMobileProjectButtons() {
+    if (window.innerWidth <= 768) {
+      const heroText = document.getElementById('heroSecondaryBtnText');
+      const ctaText = document.getElementById('ctaApplyBtnText');
+      if (heroText) heroText.textContent = 'Start a Project';
+      if (ctaText) ctaText.textContent = 'Start a Project';
+    }
+  }
+  syncMobileProjectButtons();
+  window.addEventListener('resize', syncMobileProjectButtons);
+
   if ('IntersectionObserver' in window) {
     const mobTrainEl = document.getElementById('aroxMobTrainingSection');
     const mobInternEl = document.getElementById('aroxMobInternSection');
@@ -8226,21 +8256,19 @@
       const mobSectionObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
           if (entry.isIntersecting && entry.intersectionRatio > 0.3) {
-            const btnText = document.getElementById('heroSecondaryBtnText');
             const hscroll = document.getElementById('hscrollSection');
             if (entry.target.id === 'aroxMobInternSection') {
-              if (btnText) btnText.textContent = 'Explore Training';
               if (hscroll) {
                 hscroll.classList.add('is-internship-view');
                 hscroll.classList.remove('is-training-view');
               }
             } else if (entry.target.id === 'aroxMobTrainingSection') {
-              if (btnText) btnText.textContent = 'Explore Internship';
               if (hscroll) {
                 hscroll.classList.remove('is-internship-view');
                 hscroll.classList.add('is-training-view');
               }
             }
+            syncMobileProjectButtons();
           }
         });
       }, { threshold: 0.3 });

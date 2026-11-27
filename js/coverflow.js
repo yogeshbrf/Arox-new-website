@@ -447,15 +447,16 @@
       const isActive = rel === 0;
       
       // Calculate transforms
-      const scaleVal = isActive ? 1.0 : (isMobile ? 0.85 : 0.82);
-      const opacityVal = isActive ? 1.0 : (visible ? (isMobile ? 0.70 : 0.55) : 0);
+      const scaleVal = isActive ? 1.0 : (isMobile ? 0.84 : 0.82);
+      const opacityVal = isActive ? 1.0 : (visible ? (isMobile ? 0.85 : 0.55) : 0);
       const translateZVal = isActive ? 40 : (rel > 0 ? -100 - (ax - 1) * 80 : -100 - (ax - 1) * 80);
-      const rotateYVal = isActive ? 0 : (isMobile ? (rel > 0 ? -10 : 10) : (rel > 0 ? -20 : 20));
+      const rotateYVal = isActive ? 0 : (isMobile ? (rel > 0 ? -16 : 16) : (rel > 0 ? -20 : 20));
       
-      // Horizontal separation distance offset
+      // Horizontal separation distance offset (keeps side cards visibly peeking behind center on mobile like tablet view)
       let translateXVal = 0;
       if (isMobile) {
-        translateXVal = rel * 105;
+        const mobOffset = Math.min(95, Math.max(68, Math.round(window.innerWidth * 0.20)));
+        translateXVal = rel * mobOffset;
       } else if (isTablet) {
         translateXVal = rel * 150;
       } else {

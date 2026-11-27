@@ -510,20 +510,20 @@ html[data-theme="dark"] .coverflow-card-media svg stop[stop-color="#ffffff"] {
 
 @media (max-width: 768px) {
   .featured-projects-section {
-    padding: 3rem 1rem 2rem;
+    padding: 3rem 0 2rem;
     overflow: hidden;
   }
   .projects-container {
-    overflow: hidden;
+    overflow: visible;
     width: 100%;
   }
   .coverflow-root {
     height: 440px;
-    overflow: hidden;
+    overflow: visible;
   }
   .coverflow-stage, .coverflow-card {
-    width: 260px;
-    height: 395px;
+    width: 240px;
+    height: 385px;
     border-radius: 20px;
   }
   .coverflow-card-media {
@@ -567,11 +567,11 @@ html[data-theme="dark"] .coverflow-card-media svg stop[stop-color="#ffffff"] {
 
 @media (max-width: 480px) {
   .coverflow-root {
-    height: 430px;
+    height: 425px;
   }
   .coverflow-stage, .coverflow-card {
-    width: 250px;
-    height: 385px;
+    width: 230px;
+    height: 375px;
     border-radius: 18px;
   }
   .coverflow-project-name {
