@@ -1,18 +1,20 @@
 
 /* ─── NAVBAR & HERO TOP CLEANLINESS (NO BLUE BACKSIDE GLOW) ─── */
-#site-header {
-    background: rgba(11, 12, 17, 0.75) !important;
-    backdrop-filter: blur(20px) !important;
-    -webkit-backdrop-filter: blur(20px) !important;
-    border-bottom: 1px solid var(--border) !important;
-    box-shadow: none !important;
-}
-.theme-light #site-header,
-[data-theme="light"] #site-header,
-html:not(.dark) #site-header {
-    background: rgba(255, 255, 255, 0.92) !important;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.06) !important;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03) !important;
+@media (min-width: 769px) {
+    #site-header {
+        background: rgba(11, 12, 17, 0.75) !important;
+        backdrop-filter: blur(20px) !important;
+        -webkit-backdrop-filter: blur(20px) !important;
+        border-bottom: 1px solid var(--border) !important;
+        box-shadow: none !important;
+    }
+    .theme-light #site-header,
+    [data-theme="light"] #site-header,
+    html:not(.dark) #site-header {
+        background: rgba(255, 255, 255, 0.92) !important;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.06) !important;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03) !important;
+    }
 }
 #site-header::before,
 #site-header::after,

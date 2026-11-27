@@ -1139,6 +1139,19 @@
           localStorage.setItem('arox_token_' + currentRole, result.data.token);
           localStorage.setItem('arox_token', result.data.token);
           localStorage.setItem('arox_role', currentRole);
+          if (result.data.user) {
+            const u = result.data.user;
+            const uName = [u.first_name, u.last_name].filter(Boolean).join(' ').trim() || (u.email ? u.email.split('@')[0] : 'AROX User');
+            const roleLabels = { admin: 'Admin', super_admin: 'Admin', employee: 'Employee', trainer: 'Trainer', staff: 'Employee', student: 'Student' };
+            localStorage.setItem('arox_user', JSON.stringify({
+              id: u.id,
+              email: u.email,
+              name: uName,
+              role: currentRole,
+              displayRole: roleLabels[currentRole] || roleLabels[(u.role || '').toLowerCase()] || 'User',
+              dashboardUrl: result.redirectUrl || (currentRole === 'admin' ? '/admin/dashboard' : (currentRole === 'employee' ? '/employee/dashboard' : '/student/dashboard'))
+            }));
+          }
         }
 
         const roleDashboards = {
@@ -1213,6 +1226,19 @@
           localStorage.setItem('arox_token_' + currentRole, result.data.token);
           localStorage.setItem('arox_token', result.data.token);
           localStorage.setItem('arox_role', currentRole);
+          if (result.data.user) {
+            const u = result.data.user;
+            const uName = [u.first_name, u.last_name].filter(Boolean).join(' ').trim() || (u.email ? u.email.split('@')[0] : 'AROX User');
+            const roleLabels = { admin: 'Admin', super_admin: 'Admin', employee: 'Employee', trainer: 'Trainer', staff: 'Employee', student: 'Student' };
+            localStorage.setItem('arox_user', JSON.stringify({
+              id: u.id,
+              email: u.email,
+              name: uName,
+              role: currentRole,
+              displayRole: roleLabels[currentRole] || roleLabels[(u.role || '').toLowerCase()] || 'User',
+              dashboardUrl: result.redirectUrl || (currentRole === 'admin' ? '/admin/dashboard' : (currentRole === 'employee' ? '/employee/dashboard' : '/student/dashboard'))
+            }));
+          }
         }
 
         const roleDashboards = {

@@ -212,19 +212,228 @@
     });
   }
 
+  /* ── MOBILE TOP LOGIN/PROFILE, POPOVER & BOTTOM TAB BAR ───────────────────── */
+  const bottomNav = (() => {
+    let nav = document.getElementById('mobile-bottom-nav');
+    if (nav) return nav;
+    const p = (window.location.pathname || '').toLowerCase();
+    const isAbout = p.includes('about');
+    const isServices = p.includes('services');
+    const isTraining = p.includes('training') || p.includes('courses') || p.includes('detail') || p.includes('internship');
+    const isContact = p.includes('contact');
+    const isHome = !isAbout && !isServices && !isTraining && !isContact;
+
+    nav = document.createElement('nav');
+    nav.id = 'mobile-bottom-nav';
+    nav.className = 'mobile-bottom-nav';
+    nav.setAttribute('aria-label', 'Mobile bottom navigation');
+    nav.innerHTML = `
+      <a href="index.html" class="mob-bnav-item${isHome ? ' active' : ''}">
+        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        <span>Home</span>
+      </a>
+      <a href="about.html" class="mob-bnav-item${isAbout ? ' active' : ''}">
+        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+        <span>About</span>
+      </a>
+      <a href="services.html" class="mob-bnav-item${isServices ? ' active' : ''}">
+        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+        <span>Services</span>
+      </a>
+      <a href="courses.html" class="mob-bnav-item${isTraining ? ' active' : ''}">
+        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+        <span>Training</span>
+      </a>
+      <a href="contact.html" class="mob-bnav-item${isContact ? ' active' : ''}">
+        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        <span>Contact</span>
+      </a>
+    `;
+    document.body.appendChild(nav);
+    return nav;
+  })();
+
+  const mobileAuthWrap = (() => {
+    const navRight = document.querySelector('#site-header .nav-right');
+    if (!navRight) return null;
+    let wrap = navRight.querySelector('#mobile-auth-wrap');
+    if (!wrap) {
+      wrap = document.createElement('div');
+      wrap.id = 'mobile-auth-wrap';
+      wrap.className = 'mobile-auth-wrap';
+      navRight.appendChild(wrap);
+    }
+    return wrap;
+  })();
+
+  function closeProfileDropdown() {
+    const dd = document.getElementById('mobile-profile-dropdown');
+    if (dd) dd.classList.remove('open');
+  }
+
+  function clearStoredAuth() {
+    try {
+      localStorage.removeItem('arox_user');
+      localStorage.removeItem('arox_token');
+      localStorage.removeItem('arox_role');
+      localStorage.removeItem('arox_token_admin');
+      localStorage.removeItem('arox_token_employee');
+      localStorage.removeItem('arox_token_student');
+    } catch (e) {}
+  }
+
+  function renderMobileAuth(user) {
+    if (!mobileAuthWrap) return;
+    if (!user) {
+      mobileAuthWrap.innerHTML = `
+        <a href="/login" class="mobile-top-login-btn" id="mobile-top-login-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+          <span>Login</span>
+        </a>
+      `;
+      return;
+    }
+
+    const safeName = String(user.name || 'AROX User').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    const safeRole = String(user.displayRole || 'Member').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    const dashUrl = user.dashboardUrl || '/student/dashboard';
+
+    mobileAuthWrap.innerHTML = `
+      <button type="button" class="mobile-profile-btn" id="mobile-profile-btn" aria-label="User Profile" aria-expanded="false">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 12c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm0 2c-3.33 0-10 1.67-10 5v2h20v-2c0-3.33-6.67-5-10-5z"/>
+        </svg>
+      </button>
+      <div class="mobile-profile-dropdown" id="mobile-profile-dropdown" role="menu">
+        <div class="mobile-profile-header">
+          <div class="mobile-profile-avatar">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 12c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm0 2c-3.33 0-10 1.67-10 5v2h20v-2c0-3.33-6.67-5-10-5z"/>
+            </svg>
+          </div>
+          <div class="mobile-profile-info">
+            <span class="mobile-profile-name">${safeName}</span>
+            <span class="mobile-profile-role">${safeRole}</span>
+          </div>
+        </div>
+        <div class="mobile-profile-menu">
+          <a href="${dashUrl}" class="mobile-profile-link" id="mobile-profile-dashboard">
+            <span class="mobile-profile-link-left">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="7" height="7" rx="1"></rect>
+                <rect x="14" y="3" width="7" height="7" rx="1"></rect>
+                <rect x="14" y="14" width="7" height="7" rx="1"></rect>
+                <rect x="3" y="14" width="7" height="7" rx="1"></rect>
+              </svg>
+              <span>Go to Dashboard</span>
+            </span>
+            <svg class="mobile-profile-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          </a>
+          <button type="button" class="mobile-profile-logout" id="mobile-profile-logout">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+              <polyline points="16 17 21 12 16 7"></polyline>
+              <line x1="21" y1="12" x2="9" y2="12"></line>
+            </svg>
+            <span>Logout</span>
+          </button>
+        </div>
+      </div>
+    `;
+
+    const profileBtn = document.getElementById('mobile-profile-btn');
+    const dropdown = document.getElementById('mobile-profile-dropdown');
+    const logoutBtn = document.getElementById('mobile-profile-logout');
+
+    if (profileBtn && dropdown) {
+      profileBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const willOpen = !dropdown.classList.contains('open');
+        dropdown.classList.toggle('open', willOpen);
+        profileBtn.setAttribute('aria-expanded', String(willOpen));
+      });
+    }
+
+    if (logoutBtn) {
+      logoutBtn.addEventListener('click', async (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        clearStoredAuth();
+        renderMobileAuth(null);
+        try {
+          await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
+        } catch (err) {}
+      });
+    }
+  }
+
+  document.addEventListener('click', (e) => {
+    if (mobileAuthWrap && !mobileAuthWrap.contains(e.target)) {
+      closeProfileDropdown();
+    }
+  });
+
+  (function initMobileAuth() {
+    let cachedUser = null;
+    try {
+      const raw = localStorage.getItem('arox_user');
+      if (raw) cachedUser = JSON.parse(raw);
+    } catch (e) {}
+    renderMobileAuth(cachedUser);
+
+    fetch('/api/auth/me', { credentials: 'include' })
+      .then(async (res) => {
+        if (res.status === 401 || res.status === 403) {
+          clearStoredAuth();
+          renderMobileAuth(null);
+          return;
+        }
+        if (!res.ok) return;
+        const json = await res.json();
+        if (json && json.success && json.data) {
+          const d = json.data;
+          const r = (d.role || 'student').toLowerCase();
+          const roleMap = { super_admin: 'Admin', admin: 'Admin', trainer: 'Trainer', staff: 'Employee', employee: 'Employee', student: 'Student' };
+          const normalized = {
+            id: d.id,
+            email: d.email,
+            name: d.name || [d.first_name, d.last_name].filter(Boolean).join(' ').trim() || (d.email ? d.email.split('@')[0] : 'AROX User'),
+            role: r,
+            displayRole: d.displayRole || roleMap[r] || 'Member',
+            dashboardUrl: d.dashboardUrl || (['admin', 'super_admin'].includes(r) ? '/admin/dashboard' : (['employee', 'trainer', 'staff'].includes(r) ? '/employee/dashboard' : '/student/dashboard'))
+          };
+          try { localStorage.setItem('arox_user', JSON.stringify(normalized)); } catch (e) {}
+          renderMobileAuth(normalized);
+        }
+      })
+      .catch(() => {});
+  })();
+
   window.addEventListener('scroll', () => {
     const y = window.scrollY;
+    const isMobile = window.innerWidth <= 768;
     if (header) {
       header.classList.toggle('scrolled', y > 40);
-      const isMobile = window.innerWidth <= 768;
       if (isMobile) {
         if (mobileOpen || y <= 40 || y < lastScrollY) {
           header.classList.remove('hidden-nav');
           header.style.pointerEvents = '';
+          if (bottomNav) {
+            bottomNav.classList.remove('hidden-nav');
+            bottomNav.style.pointerEvents = '';
+          }
         } else if (y > lastScrollY && y > 60) {
           header.classList.add('hidden-nav');
+          if (bottomNav) bottomNav.classList.add('hidden-nav');
+          closeProfileDropdown();
         }
       } else {
+        if (bottomNav) bottomNav.classList.remove('hidden-nav');
         if (window.isHScrollActive || window.isServicesScrollActive) {
           header.classList.add('hidden-nav');
         } else {

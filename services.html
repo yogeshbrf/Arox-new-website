@@ -829,32 +829,34 @@
 
   <!-- Modern Entire Width Services Hero Background & Theme Styles -->
   <style id="services-hero-modern-styles">
-    /* Transparent Frosted Glass Navbar */
-    #site-header {
-      background: rgba(11, 12, 17, 0.20) !important;
-      backdrop-filter: blur(16px) !important;
-      -webkit-backdrop-filter: blur(16px) !important;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
-      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.08) !important;
-    }
-    .theme-light #site-header,
-    [data-theme="light"] #site-header,
-    html:not(.dark) #site-header {
-      background: transparent !important;
-      backdrop-filter: blur(8px) !important;
-      -webkit-backdrop-filter: blur(8px) !important;
-      border-bottom: 1px solid rgba(0, 0, 0, 0.04) !important;
-      box-shadow: none !important;
-    }
-    #site-header.scrolled {
-      background: rgba(11, 12, 17, 0.70) !important;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
-    }
-    .theme-light #site-header.scrolled,
-    [data-theme="light"] #site-header.scrolled,
-    html:not(.dark) #site-header.scrolled {
-      background: rgba(255, 255, 255, 0.78) !important;
-      border-bottom: 1px solid rgba(0, 0, 0, 0.06) !important;
+    /* Transparent Frosted Glass Navbar (Desktop Only) */
+    @media (min-width: 769px) {
+      #site-header {
+        background: rgba(11, 12, 17, 0.20) !important;
+        backdrop-filter: blur(16px) !important;
+        -webkit-backdrop-filter: blur(16px) !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.08) !important;
+      }
+      .theme-light #site-header,
+      [data-theme="light"] #site-header,
+      html:not(.dark) #site-header {
+        background: transparent !important;
+        backdrop-filter: blur(8px) !important;
+        -webkit-backdrop-filter: blur(8px) !important;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.04) !important;
+        box-shadow: none !important;
+      }
+      #site-header.scrolled {
+        background: rgba(11, 12, 17, 0.70) !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+      }
+      .theme-light #site-header.scrolled,
+      [data-theme="light"] #site-header.scrolled,
+      html:not(.dark) #site-header.scrolled {
+        background: rgba(255, 255, 255, 0.78) !important;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.06) !important;
+      }
     }
 
     .page-hero-pro.hero-services {

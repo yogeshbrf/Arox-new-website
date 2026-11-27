@@ -383,12 +383,31 @@ const authController = {
         student = Student.findByUserId(user.id);
       }
 
+      const fullName = [user.first_name, user.last_name].filter(Boolean).join(' ').trim() ||
+                       (student ? [student.first_name, student.last_name].filter(Boolean).join(' ').trim() : '') ||
+                       (user.email ? user.email.split('@')[0] : 'AROX User');
+      const roleLower = (user.role_name || 'student').toLowerCase();
+      let dashboardUrl = '/student/dashboard';
+      let displayRole = 'Student';
+      if (['admin', 'super_admin'].includes(roleLower)) {
+        dashboardUrl = '/admin/dashboard';
+        displayRole = 'Admin';
+      } else if (['employee', 'trainer', 'staff'].includes(roleLower)) {
+        dashboardUrl = '/employee/dashboard';
+        displayRole = roleLower === 'trainer' ? 'Trainer' : 'Employee';
+      }
+
       res.json({
         success: true,
         data: {
           id: user.id,
           email: user.email,
+          first_name: user.first_name || '',
+          last_name: user.last_name || '',
+          name: fullName,
           role: user.role_name,
+          displayRole,
+          dashboardUrl,
           student
         }
       });
