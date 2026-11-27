@@ -4338,19 +4338,28 @@
         height: 36px !important;
       }
       .arox-mob-search-btn {
-        width: 36px !important;
-        height: 36px !important;
-        border-radius: 50% !important;
-        border: 1.5px solid #0066FF !important;
-        background: rgba(0, 102, 255, 0.08) !important;
+        width: 28px !important;
+        height: 28px !important;
+        padding: 0 !important;
+        border-radius: 0 !important;
+        border: none !important;
+        background: transparent !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
         cursor: pointer !important;
         color: #0066FF !important;
-        box-shadow: 0 2px 8px rgba(0, 102, 255, 0.2) !important;
-        transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+        box-shadow: none !important;
+        transition: none !important;
+        overflow: visible !important;
         z-index: 2 !important;
+      }
+      .arox-mob-search-btn svg {
+        width: 20px !important;
+        height: 20px !important;
+        display: block !important;
+        overflow: visible !important;
+        flex-shrink: 0 !important;
       }
       html.dark .arox-mob-search-btn,
       .dark .arox-mob-search-btn,
@@ -4358,23 +4367,28 @@
       html.theme-dark .arox-mob-search-btn,
       body.theme-dark .arox-mob-search-btn,
       [data-theme="dark"] .arox-mob-search-btn {
-        border-color: #00D2FF !important;
-        background: rgba(0, 210, 255, 0.12) !important;
+        border: none !important;
+        background: transparent !important;
         color: #00D2FF !important;
-        box-shadow: 0 2px 10px rgba(0, 210, 255, 0.25) !important;
+        box-shadow: none !important;
       }
       html.theme-light .arox-mob-search-btn,
       html:not(.dark) .arox-mob-search-btn,
       body.theme-light .arox-mob-search-btn,
       .theme-light .arox-mob-search-btn,
       [data-theme="light"] .arox-mob-search-btn {
-        border-color: #0066FF !important;
-        background: rgba(0, 102, 255, 0.08) !important;
+        border: none !important;
+        background: transparent !important;
         color: #0066FF !important;
-        box-shadow: 0 2px 8px rgba(0, 102, 255, 0.18) !important;
+        box-shadow: none !important;
       }
+      .arox-mob-search-btn:hover,
+      .arox-mob-search-btn:focus,
       .arox-mob-search-btn:active {
-        transform: scale(0.92) !important;
+        border: none !important;
+        background: transparent !important;
+        box-shadow: none !important;
+        transform: none !important;
       }
       .arox-mob-search-bar {
         position: absolute !important;
@@ -7014,11 +7028,6 @@
                 </div>
                 <div class="tech-icons">
                   ${techIconsHTML}
-                </div>
-                <div style="margin-top: 14px;">
-                  <button class="card-action-btn" style="width: 100%; justify-content: center;" onclick="if (typeof window.openCourseApplyModal === 'function') { window.openCourseApplyModal('${course.id || course.title}'); } else if (typeof openModal === 'function') { openModal('${course.id || course.title}', 1); } event.stopPropagation();">
-                    Apply Now &rarr;
-                  </button>
                 </div>
               </div>
             </div>
@@ -11347,11 +11356,6 @@
               </div>
               <div class="arox-mob-tech-icons">
                 ${techIconsHTML}
-              </div>
-              <div style="margin-top: 14px; width: 100%;">
-                <button type="button" class="card-action-btn" style="width: 100%; justify-content: center;" onclick="if (typeof window.openCourseApplyModal === 'function') { window.openCourseApplyModal('${item.id || item.title}'); } else if (typeof openModal === 'function') { openModal('${item.id || item.title}', 1); } event.stopPropagation();">
-                  Apply Now &rarr;
-                </button>
               </div>
             </div>
           </div>

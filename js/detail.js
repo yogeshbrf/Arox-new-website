@@ -512,12 +512,27 @@
             });
         }
 
-        // Activate initial topic
+        // Activate initial topic and highlight the first tech stack tool
         if (topics.length > 0) {
-            activateTopic(0);
+            const firstTool = (course.techStack && course.techStack.length > 0) ? course.techStack[0] : '';
+            let initialIdx = 0;
+            if (firstTool) {
+                let matchedIdx = topics.findIndex(t => t.tool && t.tool.toLowerCase() === firstTool.toLowerCase());
+                if (matchedIdx === -1) {
+                    matchedIdx = topics.findIndex(t =>
+                        (t.title && t.title.toLowerCase().includes(firstTool.toLowerCase())) ||
+                        (t.desc && t.desc.toLowerCase().includes(firstTool.toLowerCase())) ||
+                        (t.points && t.points.some(p => p.toLowerCase().includes(firstTool.toLowerCase())))
+                    );
+                }
+                if (matchedIdx !== -1) {
+                    initialIdx = matchedIdx;
+                }
+            }
+            activateTopic(initialIdx, firstTool || undefined);
         }
 
-        // 3. Scroll Observer: Topics arrive sequentially and remain in place (Desktop only)
+        // 3. Scroll Observer: Topics arrive sequentially and remain in place (Desktop only; mobile changes only on click)
         if (window.innerWidth > 768) {
             const observerOptions = {
                 root: null,
@@ -526,6 +541,7 @@
             };
 
             const topicObserver = new IntersectionObserver((entries) => {
+                if (window.innerWidth <= 768) return;
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
                         const item = entry.target;
