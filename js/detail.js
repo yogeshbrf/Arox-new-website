@@ -800,6 +800,7 @@
             };
             const courseTitle = course.title || 'Selected Program';
             const startDate = document.getElementById('form-start-date')?.value || '';
+            const learningMode = document.getElementById('form-learning-mode')?.value || '';
             const duration = document.getElementById('form-duration')?.value || '';
 
             const reqCheckboxes = document.querySelectorAll('input[name="req"]:checked');
@@ -817,7 +818,8 @@
                     <div><strong style="color:var(--heading);">College:</strong> ${college}</div>
                     <div><strong style="color:var(--heading);">University:</strong> ${acad.university}</div>
                     <div><strong style="color:var(--heading);">Degree &amp; Spec:</strong> ${acad.degree} in ${acad.specialization} (${acad.gradYear})</div>
-                    <div><strong style="color:var(--heading);">Mode &amp; Start:</strong> ${duration} from ${startDate}</div>
+                    <div><strong style="color:var(--heading);">Learning Mode:</strong> ${learningMode}</div>
+                    <div><strong style="color:var(--heading);">Duration &amp; Start:</strong> ${duration} from ${startDate}</div>
                 </div>
                 <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border);">
                     <strong style="color:var(--heading);">Requirements:</strong> ${reqs}
@@ -956,11 +958,13 @@
         if (btnNextStep4) {
             btnNextStep4.addEventListener('click', () => {
                 const startDate = document.getElementById('form-start-date');
+                const learningMode = document.getElementById('form-learning-mode');
                 const duration = document.getElementById('form-duration');
                 const err = document.getElementById('error-step3');
 
                 if (!startDate || !startDate.value) { if (err) err.textContent = 'Please select a preferred start date.'; if (startDate) startDate.focus(); return; }
-                if (!duration || !duration.value) { if (err) err.textContent = 'Please select a learning mode / duration.'; if (duration) duration.focus(); return; }
+                if (!learningMode || !learningMode.value) { if (err) err.textContent = 'Please select a learning mode.'; if (learningMode) learningMode.focus(); return; }
+                if (!duration || !duration.value) { if (err) err.textContent = 'Please select a duration.'; if (duration) duration.focus(); return; }
 
                 if (err) err.textContent = '';
                 setStep(4);
@@ -1100,6 +1104,7 @@
                 payload.append('department', acad.specialization);
                 payload.append('graduation_year', acad.gradYear);
                 payload.append('course', course.title || 'Course Enrollment');
+                payload.append('learning_mode', document.getElementById('form-learning-mode')?.value || '');
                 payload.append('course_duration', document.getElementById('form-duration')?.value || '');
                 payload.append('course_start_date', document.getElementById('form-start-date')?.value || '');
                 payload.append('referral_code', validatedReferralCode || (document.getElementById('form-referral-code') ? document.getElementById('form-referral-code').value.trim() : ''));
@@ -1122,7 +1127,7 @@
                         summaryBox.innerHTML = `
                             <div><strong>Name:</strong> ${fullName}</div>
                             <div><strong>Email:</strong> ${document.getElementById('form-email')?.value.trim()}</div>
-                            <div><strong>Program:</strong> ${course.title} (${document.getElementById('form-duration')?.value})</div>
+                            <div><strong>Program:</strong> ${course.title} (${document.getElementById('form-learning-mode')?.value || ''}, ${document.getElementById('form-duration')?.value || ''})</div>
                             ${validatedReferralCode ? `<div><strong>Referral:</strong> <span style="color:#16a34a;font-weight:700;">${validatedReferralCode} (${validatedDiscount}% Off)</span></div>` : ''}
                             <div><strong>Status:</strong> Registration Received ✓</div>
                         `;
@@ -1137,7 +1142,7 @@
                         summaryBox.innerHTML = `
                             <div><strong>Name:</strong> ${fullName}</div>
                             <div><strong>Email:</strong> ${document.getElementById('form-email')?.value.trim()}</div>
-                            <div><strong>Program:</strong> ${course.title} (${document.getElementById('form-duration')?.value})</div>
+                            <div><strong>Program:</strong> ${course.title} (${document.getElementById('form-learning-mode')?.value || ''}, ${document.getElementById('form-duration')?.value || ''})</div>
                             ${validatedReferralCode ? `<div><strong>Referral:</strong> <span style="color:#16a34a;font-weight:700;">${validatedReferralCode} (${validatedDiscount}% Off)</span></div>` : ''}
                             <div><strong>Status:</strong> Registration Received ✓</div>
                         `;

@@ -274,7 +274,7 @@
       if (el) el.value = '';
     });
 
-    ['form-gender', 'form-university', 'form-degree', 'form-grad-year', 'form-duration'].forEach((id) => {
+    ['form-gender', 'form-university', 'form-degree', 'form-grad-year', 'form-learning-mode', 'form-duration'].forEach((id) => {
       const sel = document.getElementById(id);
       if (sel) sel.selectedIndex = 0;
     });

@@ -6623,10 +6623,21 @@
               <label class="arox-field-label" for="form-selected-course">Selected Program</label>
               <input type="text" class="arox-input" id="form-selected-course" placeholder="Selected program will appear here" readonly>
             </div>
+            <div class="arox-field-group">
+              <label class="arox-field-label" for="form-start-date">Start Date *</label>
+              <input type="date" class="arox-input" id="form-start-date" required>
+            </div>
             <div class="arox-field-row">
               <div class="arox-field-group">
-                <label class="arox-field-label" for="form-start-date">Start Date *</label>
-                <input type="date" class="arox-input" id="form-start-date" required>
+                <label class="arox-field-label" for="form-learning-mode">Learning Mode *</label>
+                <select class="arox-select" id="form-learning-mode" required>
+                  <option value="" disabled selected>Select learning mode...</option>
+                  <option value="Online Live Mentored">Online Live Mentored</option>
+                  <option value="In-Person Classroom">In-Person Classroom</option>
+                  <option value="Fast-Track Hybrid">Fast-Track Hybrid</option>
+                  <option value="Weekend Professional">Weekend Professional</option>
+                  <option value="Self-Paced with Mentorship">Self-Paced with Mentorship</option>
+                </select>
               </div>
               <div class="arox-field-group">
                 <label class="arox-field-label" for="form-duration">Duration *</label>
@@ -6634,10 +6645,12 @@
                   <option value="" disabled selected>Select duration...</option>
                   <option value="15 Days">15 Days</option>
                   <option value="1 Month">1 Month</option>
+                  <option value="6 Weeks">6 Weeks</option>
                   <option value="2 Months">2 Months</option>
                   <option value="3 Months">3 Months</option>
+                  <option value="4 Months">4 Months</option>
                   <option value="6 Months">6 Months</option>
-                  <option value="Flexible">Flexible Duration</option>
+                  <option value="Flexible Duration">Flexible Duration</option>
                 </select>
               </div>
             </div>
@@ -10369,6 +10382,7 @@
       };
       const course = currentInternship ? `${currentInternship.title} Internship` : 'Internship Program';
       const startDate = document.getElementById('form-start-date').value;
+      const learningMode = document.getElementById('form-learning-mode') ? document.getElementById('form-learning-mode').value : '';
       const duration = document.getElementById('form-duration').value;
 
       const reqCheckboxes = document.querySelectorAll('input[name="req"]:checked');
@@ -10386,6 +10400,7 @@
           <div><strong style="color:var(--heading);">College:</strong> ${college}</div>
           <div><strong style="color:var(--heading);">University:</strong> ${acad.university}</div>
           <div><strong style="color:var(--heading);">Degree &amp; Spec:</strong> ${acad.degree} in ${acad.specialization} (${acad.gradYear})</div>
+          <div><strong style="color:var(--heading);">Learning Mode:</strong> ${learningMode}</div>
           <div><strong style="color:var(--heading);">Duration &amp; Start:</strong> ${duration} from ${startDate}</div>
         </div>
         <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border);">
@@ -10606,10 +10621,12 @@
 
     document.getElementById('form-btn-next-step4').addEventListener('click', () => {
       const startDate = document.getElementById('form-start-date');
+      const learningMode = document.getElementById('form-learning-mode');
       const duration = document.getElementById('form-duration');
       const err = document.getElementById('error-step3');
 
       if (!startDate.value) { err.textContent = 'Please select a preferred start date.'; startDate.focus(); return; }
+      if (learningMode && !learningMode.value) { err.textContent = 'Please select a learning mode.'; learningMode.focus(); return; }
       if (!duration.value) { err.textContent = 'Please select a duration.'; duration.focus(); return; }
 
       err.textContent = '';
@@ -10717,6 +10734,7 @@
       payload.append('department', acadSubmit.specialization);
       payload.append('graduation_year', acadSubmit.gradYear);
       payload.append('course', currentInternship ? currentInternship.title : 'Internship Program');
+      payload.append('learning_mode', document.getElementById('form-learning-mode') ? document.getElementById('form-learning-mode').value : '');
       payload.append('course_duration', document.getElementById('form-duration').value);
       payload.append('course_start_date', document.getElementById('form-start-date').value);
       payload.append('referral_code', validatedReferralCode || (document.getElementById('form-referral-code') ? document.getElementById('form-referral-code').value.trim() : ''));
@@ -10740,7 +10758,7 @@
             <div><strong>Reference ID:</strong> <span style="color:#0066ff;font-weight:700;">${studentId}</span></div>
             <div><strong>Name:</strong> ${fullName}</div>
             <div><strong>Email:</strong> ${emailVal}</div>
-            <div><strong>Program:</strong> ${currentInternship ? currentInternship.title : ''} Internship (${document.getElementById('form-duration').value})</div>
+            <div><strong>Program:</strong> ${currentInternship ? currentInternship.title : ''} (${document.getElementById('form-learning-mode') ? document.getElementById('form-learning-mode').value : ''}, ${document.getElementById('form-duration').value})</div>
             ${validatedReferralCode ? `<div><strong>Referral Applied:</strong> <span style="color:#16a34a;font-weight:700;">${validatedReferralCode} (${validatedDiscount}% Off)</span></div>` : ''}
             <div><strong>Status:</strong> Registration Received ✓</div>
             <div style="margin-top:10px;padding:10px;border-radius:8px;background:rgba(0,102,255,0.08);border:1px solid rgba(0,102,255,0.2);font-size:0.8rem;line-height:1.5;">
@@ -10765,7 +10783,7 @@
             <div><strong>Reference ID:</strong> <span style="color:#0066ff;font-weight:700;">${studentId}</span></div>
             <div><strong>Name:</strong> ${fullName}</div>
             <div><strong>Email:</strong> ${emailVal}</div>
-            <div><strong>Program:</strong> ${currentInternship ? currentInternship.title : ''} Internship (${document.getElementById('form-duration').value})</div>
+            <div><strong>Program:</strong> ${currentInternship ? currentInternship.title : ''} (${document.getElementById('form-learning-mode') ? document.getElementById('form-learning-mode').value : ''}, ${document.getElementById('form-duration').value})</div>
             ${validatedReferralCode ? `<div><strong>Referral Applied:</strong> <span style="color:#16a34a;font-weight:700;">${validatedReferralCode} (${validatedDiscount}% Off)</span></div>` : ''}
             <div><strong>Status:</strong> Registration Received ✓</div>
             <div style="margin-top:10px;padding:10px;border-radius:8px;background:rgba(0,102,255,0.08);border:1px solid rgba(0,102,255,0.2);font-size:0.8rem;line-height:1.5;">

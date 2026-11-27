@@ -1218,11 +1218,15 @@ select:-webkit-autofill {
 
         <div class="form-row">
           <div class="form-group">
+            <label class="form-label">Learning Mode <span class="required">*</span></label>
+            <div class="searchable-select" id="learningModeSelect" data-field="learningMode"></div>
+            <div class="form-error" id="learningModeError">Please select a learning mode</div>
+          </div>
+          <div class="form-group">
             <label class="form-label">Duration <span class="required">*</span></label>
             <div class="searchable-select" id="durationSelect" data-field="duration"></div>
             <div class="form-error" id="durationError">Please select a duration</div>
           </div>
-          <div class="form-group"></div>
         </div>
 
         <div class="form-group">
@@ -1372,7 +1376,7 @@ select:-webkit-autofill {
     let formData = {
       fullName: '', email: '', phone: '', gender: '',
       collegeName: '', university: '', degree: '', specialization: '', gradYear: '',
-      course: '', startDate: '', duration: '', requirements: [],
+      course: '', startDate: '', learningMode: '', duration: '', requirements: [],
       paymentMethod: 'pay_now',
       photo: null
     };
@@ -1440,7 +1444,8 @@ select:-webkit-autofill {
       'Database Management',
       'Other'
     ];
-    const DURATIONS = ['15 Days', '1 Month', '2 Months', '3 Months', '4 Months', '6 Months', '1 Year'];
+    const LEARNING_MODES = ['Online Live Mentored', 'In-Person Classroom', 'Fast-Track Hybrid', 'Weekend Professional', 'Self-Paced with Mentorship'];
+    const DURATIONS = ['15 Days', '1 Month', '6 Weeks', '2 Months', '3 Months', '4 Months', '6 Months', '1 Year'];
     const REQUIREMENTS = ['Graduation Certificate', 'Attendance Certificate', 'Project Completion Certificate', 'Internship Report', 'Course Completion Certificate', 'Bonafide Certificate', 'College ID Card', 'Resume'];
 
     // ======= Initialize =======
@@ -1793,6 +1798,7 @@ select:-webkit-autofill {
       searchableSelects['specialization'] = createSearchableSelect('specSelect', initSpecs, 'Select specialization', 'specialization');
       searchableSelects['gradYear'] = createSearchableSelect('gradYearSelect', GRAD_YEARS, 'Select year', 'gradYear');
       searchableSelects['course'] = createSearchableSelect('courseSelect', COURSES, 'Select course', 'course');
+      searchableSelects['learningMode'] = createSearchableSelect('learningModeSelect', LEARNING_MODES, 'Select learning mode', 'learningMode');
       searchableSelects['duration'] = createSearchableSelect('durationSelect', DURATIONS, 'Select duration', 'duration');
     }
 
@@ -1913,6 +1919,7 @@ select:-webkit-autofill {
       } else if (step === 2) {
         if (!formData.course) { showSelectError('courseSelect', 'courseError'); valid = false; }
         if (!formData.startDate) { showError('startDate', 'startDateError'); valid = false; }
+        if (!formData.learningMode) { showSelectError('learningModeSelect', 'learningModeError'); valid = false; }
         if (!formData.duration) { showSelectError('durationSelect', 'durationError'); valid = false; }
       }
 
@@ -2084,6 +2091,7 @@ select:-webkit-autofill {
           <div class="preview-grid">
             <div class="preview-item"><div class="preview-item-label">Course</div><div class="preview-item-value">${formData.course}</div></div>
             <div class="preview-item"><div class="preview-item-label">Start Date</div><div class="preview-item-value">${formData.startDate ? new Date(formData.startDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' }) : '—'}</div></div>
+            <div class="preview-item"><div class="preview-item-label">Learning Mode</div><div class="preview-item-value">${formData.learningMode}</div></div>
             <div class="preview-item"><div class="preview-item-label">Duration</div><div class="preview-item-value">${formData.duration}</div></div>
           </div>
           <div class="preview-item" style="margin-top:8px;"><div class="preview-item-label">Requirements</div><div class="preview-requirements" style="margin-top:6px;">${reqTags}</div></div>
@@ -2118,6 +2126,7 @@ select:-webkit-autofill {
         payload.append('graduation_year', formData.gradYear);
         payload.append('course', formData.course);
         payload.append('course_start_date', formData.startDate);
+        payload.append('learning_mode', formData.learningMode);
         payload.append('course_duration', formData.duration);
         payload.append('payment_plan', formData.paymentMethod === 'pay_now' ? 'full' : formData.paymentMethod === 'pay_advance' ? 'advance' : 'full');
         

@@ -681,21 +681,34 @@
                                 <label class="arox-field-label" for="form-selected-course">Selected Program</label>
                                 <input type="text" class="arox-input" id="form-selected-course" placeholder="Selected course will appear here" readonly>
                             </div>
+                            <div class="arox-field-group">
+                                <label class="arox-field-label" for="form-start-date">Start Date *</label>
+                                <input type="date" class="arox-input" id="form-start-date" required>
+                            </div>
                             <div class="arox-field-row">
                                 <div class="arox-field-group">
-                                    <label class="arox-field-label" for="form-start-date">Start Date *</label>
-                                    <input type="date" class="arox-input" id="form-start-date" required>
+                                    <label class="arox-field-label" for="form-learning-mode">Learning Mode *</label>
+                                    <select class="arox-select" id="form-learning-mode" required>
+                                        <option value="" disabled selected>Select learning mode...</option>
+                                        <option value="Online Live Mentored">Online Live Mentored</option>
+                                        <option value="In-Person Classroom">In-Person Classroom</option>
+                                        <option value="Fast-Track Hybrid">Fast-Track Hybrid</option>
+                                        <option value="Weekend Professional">Weekend Professional</option>
+                                        <option value="Self-Paced with Mentorship">Self-Paced with Mentorship</option>
+                                    </select>
                                 </div>
                                 <div class="arox-field-group">
-                                    <label class="arox-field-label" for="form-duration">Learning Mode / Duration *</label>
+                                    <label class="arox-field-label" for="form-duration">Duration *</label>
                                     <select class="arox-select" id="form-duration" required>
-                                        <option value="" disabled selected>Select learning mode / duration...</option>
+                                        <option value="" disabled selected>Select duration...</option>
                                         <option value="15 Days">15 Days</option>
-                                        <option value="Online Live Mentored (3 Months)">Online Live Mentored (3 Months)</option>
-                                        <option value="In-Person Classroom (3 Months)">In-Person Classroom (3 Months)</option>
-                                        <option value="Fast-Track Hybrid (6 Weeks)">Fast-Track Hybrid (6 Weeks)</option>
-                                        <option value="Weekend Professional (4 Months)">Weekend Professional (4 Months)</option>
-                                        <option value="Self-Paced with Mentorship">Self-Paced with Mentorship</option>
+                                        <option value="1 Month">1 Month</option>
+                                        <option value="6 Weeks">6 Weeks</option>
+                                        <option value="2 Months">2 Months</option>
+                                        <option value="3 Months">3 Months</option>
+                                        <option value="4 Months">4 Months</option>
+                                        <option value="6 Months">6 Months</option>
+                                        <option value="Flexible Duration">Flexible Duration</option>
                                     </select>
                                 </div>
                             </div>
