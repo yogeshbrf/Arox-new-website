@@ -1519,7 +1519,7 @@ html:not(.dark) .google-btn-back:hover {
     }
 }
 
-/* ─── Detail Page Mobile Responsive Updates (<= 768px) ─── */
+/* ─── Detail Page Mobile Responsive Updates (<= 768px ONLY) ─── */
 @media (max-width: 768px) {
     /* 1. Prevent AOS translate offset glitches on mobile hero elements */
     .detail-hero [data-aos] {
@@ -1528,16 +1528,13 @@ html:not(.dark) .google-btn-back:hover {
         transition: none !important;
     }
 
-    /* 2. Hero Section Viewport Fit & App Screen Flow (Zero Dead Whitespace) */
+    /* 2. Hero Section — Neat, Balanced Flow Clearing Fixed 64px Header */
     .detail-hero {
-        min-height: calc(100dvh - 56px) !important;
-        min-height: calc(100vh - 56px) !important;
+        min-height: auto !important;
         height: auto !important;
-        display: flex !important;
-        flex-direction: column !important;
-        justify-content: space-between !important;
-        padding-top: calc(56px + 10px) !important;
-        padding-bottom: 20px !important;
+        display: block !important;
+        padding-top: calc(64px + 14px) !important;
+        padding-bottom: 28px !important;
         box-sizing: border-box !important;
         overflow: hidden !important;
         position: relative !important;
@@ -1546,22 +1543,22 @@ html:not(.dark) .google-btn-back:hover {
     .detail-hero .detail-container {
         display: flex !important;
         flex-direction: column !important;
-        justify-content: space-between !important;
-        flex: 1 !important;
+        justify-content: flex-start !important;
+        align-items: stretch !important;
         width: 100% !important;
-        max-width: 390px !important;
+        max-width: 520px !important;
         padding: 0 16px !important;
         margin: 0 auto !important;
         box-sizing: border-box !important;
     }
 
-    /* 3. Back to Courses Button - Mobile App Pill (Matching User Screenshot) */
+    /* Breadcrumb / Back Pill */
     .detail-breadcrumb-wrap {
         display: flex !important;
         justify-content: flex-start !important;
         align-items: center !important;
         width: 100% !important;
-        margin: 0 0 6px 0 !important;
+        margin: 0 0 14px 0 !important;
         text-align: left !important;
     }
     #back-to-courses-btn,
@@ -1569,39 +1566,31 @@ html:not(.dark) .google-btn-back:hover {
         display: inline-flex !important;
         align-items: center !important;
         justify-content: flex-start !important;
-        align-self: flex-start !important;
-        font-size: 11.5px !important;
+        font-size: 12px !important;
         font-weight: 600 !important;
-        padding: 5px 13px !important;
+        padding: 6px 14px !important;
         gap: 6px !important;
         border-radius: 9999px !important;
-        background: #FFFFFF !important;
-        color: #334155 !important;
-        border: 1px solid rgba(0, 0, 0, 0.08) !important;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
+        background: var(--surface, #FFFFFF) !important;
+        color: var(--heading, #1E293B) !important;
+        border: 1px solid var(--border, rgba(0, 0, 0, 0.08)) !important;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05) !important;
         margin: 0 !important;
         white-space: nowrap !important;
         text-decoration: none !important;
     }
-    .theme-dark #back-to-courses-btn,
-    .theme-dark .detail-back-btn {
-        background: rgba(255, 255, 255, 0.06) !important;
-        color: #E2E8F0 !important;
-        border-color: rgba(255, 255, 255, 0.12) !important;
-    }
     #back-to-courses-btn i,
     .detail-back-btn i {
-        font-size: 10px !important;
+        font-size: 11px !important;
     }
 
-    /* 4. Hero Content - Mobile App Single Column Flow */
+    /* Hero Content Single Column Flow */
     .detail-hero .hero-grid {
         display: flex !important;
         flex-direction: column !important;
-        justify-content: space-between !important;
+        justify-content: flex-start !important;
         align-items: center !important;
         text-align: center !important;
-        flex: 1 !important;
         width: 100% !important;
         max-width: 100% !important;
         margin: 0 auto !important;
@@ -1613,50 +1602,61 @@ html:not(.dark) .google-btn-back:hover {
         transform: none !important;
     }
 
-    /* 1. Title - Matching Screenshot: 2 Clean Lines */
+    /* Typography Hierarchy: 1. Main title - 16px Bold */
+    .detail-hero .hero-title,
+    .detail-section .section-heading,
+    #curriculum-interactive-section .section-heading,
+    .faq-grid .section-heading,
+    .cta-section .cta-heading,
+    #cta .cta-heading {
+        font-size: 16px !important;
+        font-weight: 700 !important;
+        line-height: 1.35 !important;
+        letter-spacing: -0.015em !important;
+        color: var(--heading) !important;
+    }
+
     .detail-hero .hero-title {
         order: 1 !important;
-        font-size: clamp(20px, 5.6vw, 24px) !important;
-        line-height: 1.22 !important;
-        font-weight: 800 !important;
         text-align: center !important;
-        margin: 6px auto 4px auto !important;
+        margin: 0 auto 8px auto !important;
         max-width: 340px !important;
         width: 100% !important;
-        letter-spacing: -0.02em !important;
-        color: var(--heading) !important;
     }
     .detail-hero .hero-title br:first-of-type {
         display: none !important;
     }
+    .detail-hero .hero-title br:last-of-type {
+        display: inline !important;
+    }
     .detail-hero .hero-title .accent {
         color: #0066FF !important;
     }
+    .theme-dark .detail-hero .hero-title .accent,
+    .dark .detail-hero .hero-title .accent {
+        color: #00D2FF !important;
+    }
 
-    /* 2. Subtitle / Description */
+    /* Typography Hierarchy: 3. Body - 12px */
     .detail-hero .hero-desc {
         order: 2 !important;
         font-size: 12px !important;
-        line-height: 1.45 !important;
+        line-height: 1.55 !important;
         text-align: center !important;
-        margin: 0 auto 6px auto !important;
-        max-width: 320px !important;
+        margin: 0 auto 16px auto !important;
+        max-width: 340px !important;
         width: 100% !important;
-        color: #64748B !important;
-    }
-    .theme-dark .detail-hero .hero-desc,
-    .dark .detail-hero .hero-desc {
-        color: #94A3B8 !important;
+        color: var(--text-secondary, var(--body)) !important;
     }
 
-    /* 3. Hero Visual Image - Beautifully Sized, Not Crushed */
+    /* Hero Visual Graphic — Crisp & Proportionate */
     .detail-hero .hero-visual {
         order: 3 !important;
         display: flex !important;
         justify-content: center !important;
         align-items: center !important;
         width: 100% !important;
-        margin: 4px auto 10px auto !important;
+        margin: 0 auto 18px auto !important;
         opacity: 1 !important;
         transform: none !important;
     }
@@ -1664,52 +1664,55 @@ html:not(.dark) .google-btn-back:hover {
         display: flex !important;
         justify-content: center !important;
         align-items: center !important;
-        max-width: 220px !important;
+        max-width: 240px !important;
         width: 100% !important;
         margin: 0 auto !important;
     }
     .detail-hero .hero-floating-img {
-        max-width: 200px !important;
-        max-height: clamp(120px, 19vh, 160px) !important;
+        max-width: min(220px, 64vw) !important;
+        max-height: 175px !important;
         width: auto !important;
         height: auto !important;
         object-fit: contain !important;
         margin: 0 auto !important;
-        filter: drop-shadow(0 8px 20px rgba(0, 102, 255, 0.2)) !important;
+        border-radius: 14px !important;
+        filter: drop-shadow(0 8px 20px rgba(0, 102, 255, 0.18)) !important;
     }
 
-    /* 4. Hero Features List - 2 Columns with Vibrant Blue Checkmark Badges */
+    /* Hero Highlights — Clean 2-Col Framed Grid (Zero Truncation) */
     .detail-hero .hero-features {
         order: 4 !important;
         display: grid !important;
-        grid-template-columns: repeat(2, 1fr) !important;
-        gap: 6px 12px !important;
-        margin: 0 auto 12px auto !important;
-        max-width: 330px !important;
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 10px 12px !important;
+        margin: 0 auto 18px auto !important;
+        padding: 12px 14px !important;
+        border-radius: 14px !important;
+        background: var(--surface) !important;
+        border: 1px solid var(--border) !important;
+        max-width: 360px !important;
         width: 100% !important;
-        font-size: 11px !important;
+        box-sizing: border-box !important;
         text-align: left !important;
     }
     .detail-hero .hero-features .feat {
         display: flex !important;
-        align-items: center !important;
-        gap: 6px !important;
-        font-size: 11px !important;
+        align-items: flex-start !important;
+        gap: 7px !important;
+        font-size: 12px !important;
         font-weight: 600 !important;
-        line-height: 1.25 !important;
-        color: #1E293B !important;
-        white-space: nowrap !important;
-        overflow: hidden !important;
-        text-overflow: ellipsis !important;
-    }
-    .theme-dark .detail-hero .hero-features .feat,
-    .dark .detail-hero .hero-features .feat {
-        color: #E2E8F0 !important;
+        line-height: 1.35 !important;
+        color: var(--heading) !important;
+        white-space: normal !important;
+        overflow: visible !important;
+        text-overflow: clip !important;
+        text-align: left !important;
     }
     .detail-hero .hero-features .feat-check {
-        width: 15px !important;
-        height: 15px !important;
-        font-size: 8px !important;
+        width: 16px !important;
+        height: 16px !important;
+        font-size: 8.5px !important;
+        margin-top: 1px !important;
         border-radius: 50% !important;
         background: #0066FF !important;
         color: #FFFFFF !important;
@@ -1719,7 +1722,7 @@ html:not(.dark) .google-btn-back:hover {
         flex-shrink: 0 !important;
     }
 
-    /* 5. Dual Action Buttons - Mobile App Style with Glow Pill */
+    /* Hero Dual CTA Buttons */
     .detail-hero .hero-btns {
         order: 5 !important;
         display: flex !important;
@@ -1729,25 +1732,25 @@ html:not(.dark) .google-btn-back:hover {
         align-items: center !important;
         gap: 10px !important;
         width: 100% !important;
-        max-width: 330px !important;
-        margin: 2px auto 0 auto !important;
+        max-width: 360px !important;
+        margin: 0 auto !important;
     }
     .detail-hero .hero-btns .btn-primary {
         display: inline-flex !important;
         align-items: center !important;
         justify-content: center !important;
-        flex: 1 !important;
-        min-height: 40px !important;
-        height: 40px !important;
-        padding: 0 16px !important;
-        font-size: 12.5px !important;
+        flex: 1 1 0 !important;
+        min-height: 42px !important;
+        height: 42px !important;
+        padding: 0 14px !important;
+        font-size: 12px !important;
         font-weight: 700 !important;
         white-space: nowrap !important;
         border-radius: 9999px !important;
         background: #0066FF !important;
         color: #FFFFFF !important;
         border: none !important;
-        box-shadow: 0 8px 22px -4px rgba(0, 102, 255, 0.45) !important;
+        box-shadow: 0 8px 20px -4px rgba(0, 102, 255, 0.4) !important;
         gap: 5px !important;
         text-decoration: none !important;
     }
@@ -1755,38 +1758,56 @@ html:not(.dark) .google-btn-back:hover {
         display: inline-flex !important;
         align-items: center !important;
         justify-content: center !important;
-        flex: 1 !important;
-        min-height: 40px !important;
-        height: 40px !important;
-        padding: 0 16px !important;
-        font-size: 12.5px !important;
+        flex: 1 1 0 !important;
+        min-height: 42px !important;
+        height: 42px !important;
+        padding: 0 12px !important;
+        font-size: 12px !important;
         font-weight: 600 !important;
         white-space: nowrap !important;
         border-radius: 9999px !important;
-        background: #FFFFFF !important;
-        color: #0F172A !important;
-        border: 1.5px solid #E2E8F0 !important;
+        background: var(--surface, #FFFFFF) !important;
+        color: var(--heading, #0F172A) !important;
+        border: 1.5px solid var(--border, #E2E8F0) !important;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
         gap: 5px !important;
         text-decoration: none !important;
-    }
-    .theme-dark .detail-hero .hero-btns .btn-outline,
-    .dark .detail-hero .hero-btns .btn-outline {
-        background: rgba(255, 255, 255, 0.05) !important;
-        color: #F8FAFC !important;
-        border: 1.5px solid rgba(255, 255, 255, 0.15) !important;
     }
     .detail-hero .hero-btns svg {
         width: 13px !important;
         height: 13px !important;
         margin-left: 2px !important;
+        flex-shrink: 0 !important;
     }
 
-    /* 6. What Our Students Say - Single Line Continuous Left Marquee */
+    /* Section Vertical Spacing & Typography */
+    .detail-section {
+        padding: 2rem 0 !important;
+    }
+    .detail-card {
+        padding: 16px !important;
+        border-radius: 16px !important;
+    }
+    .detail-section .section-subtext,
+    .cta-section .cta-text,
+    #cta .cta-text {
+        font-size: 12px !important;
+        line-height: 1.5 !important;
+    }
+
+    /* What Our Students Say — Single Line Marquee */
     .reviews-card-wrap {
         overflow: hidden !important;
         max-width: 100% !important;
         box-sizing: border-box !important;
+    }
+    .reviews-card-wrap .section-heading {
+        text-align: center !important;
+        margin-bottom: 6px !important;
+    }
+    .reviews-card-wrap .section-subtext {
+        text-align: center !important;
+        margin: 0 auto 16px auto !important;
     }
     #reviews-container {
         display: flex !important;
@@ -1796,10 +1817,10 @@ html:not(.dark) .google-btn-back:hover {
         width: 100% !important;
         max-width: 100% !important;
         min-width: 0 !important;
-        gap: 16px !important;
-        padding-top: 0.5rem !important;
-        padding-bottom: 1.5rem !important;
-        margin-bottom: 1.5rem !important;
+        gap: 14px !important;
+        padding-top: 0.25rem !important;
+        padding-bottom: 1.25rem !important;
+        margin-bottom: 1.25rem !important;
         position: relative !important;
         box-sizing: border-box !important;
     }
@@ -1808,7 +1829,7 @@ html:not(.dark) .google-btn-back:hover {
         flex-direction: row !important;
         flex-wrap: nowrap !important;
         flex-shrink: 0 !important;
-        gap: 16px !important;
+        gap: 14px !important;
         align-items: stretch !important;
         animation: reviewsMarqueeLeft 24s linear infinite !important;
         will-change: transform !important;
@@ -1818,39 +1839,45 @@ html:not(.dark) .google-btn-back:hover {
         animation-play-state: paused !important;
     }
     .reviews-marquee-track .review-card {
-        flex: 0 0 280px !important;
-        width: 280px !important;
-        min-width: 280px !important;
-        max-width: 280px !important;
+        flex: 0 0 265px !important;
+        width: 265px !important;
+        min-width: 265px !important;
+        max-width: 265px !important;
+        padding: 1.25rem !important;
         box-sizing: border-box !important;
         display: flex !important;
         flex-direction: column !important;
         justify-content: space-between !important;
         margin-bottom: 0 !important;
     }
+    .review-text,
+    .reviewer-role {
+        font-size: 12px !important;
+        line-height: 1.5 !important;
+    }
+    .reviewer-name {
+        font-size: 14px !important;
+        font-weight: 700 !important;
+        line-height: 1.35 !important;
+    }
     @keyframes reviewsMarqueeLeft {
-        0% {
-            transform: translateX(0);
-        }
-        100% {
-            transform: translateX(calc(-100% - 16px));
-        }
+        0% { transform: translateX(0); }
+        100% { transform: translateX(calc(-100% - 14px)); }
     }
 
-    /* 7. Interactive Syllabus / Curriculum Section (Matching Image 1) */
+    /* Interactive Syllabus / Curriculum Section */
     #curriculum-interactive-section .detail-card > div:first-child {
         display: flex !important;
         flex-direction: column !important;
         align-items: center !important;
         text-align: center !important;
-        gap: 0.6rem !important;
-        margin-bottom: 1.5rem !important;
-        padding-bottom: 0.875rem !important;
+        gap: 8px !important;
+        margin-bottom: 16px !important;
+        padding-bottom: 12px !important;
     }
     #curriculum-interactive-section .section-heading {
         text-align: center !important;
-        font-size: clamp(20px, 5.5vw, 24px) !important;
-        margin-bottom: 0.25rem !important;
+        margin-bottom: 2px !important;
     }
     #curriculum-interactive-section .section-subtext {
         text-align: center !important;
@@ -1858,44 +1885,26 @@ html:not(.dark) .google-btn-back:hover {
         margin: 0 !important;
     }
     #curriculum-interactive-section .scroll-progress-badge {
-        margin: 0 auto !important;
-        font-size: 11px !important;
+        margin: 2px auto 0 auto !important;
+        font-size: 12px !important;
         padding: 4px 12px !important;
     }
 
-    /* 3-Column to Image 1 Layout: Tools Top-Left, Content Top-Right, Module Details Bottom */
+    /* Clean Single-Column Stack on Mobile so 14px Chapters & 12px Body Never Cramp */
     .syllabus-3col-grid {
         display: grid !important;
-        grid-template-columns: 1fr 1.45fr !important;
+        grid-template-columns: 1fr !important;
         grid-template-areas:
-            "tools topics"
-            "detail detail" !important;
-        gap: 12px !important;
+            "tools"
+            "topics"
+            "detail" !important;
+        gap: 14px !important;
         align-items: stretch !important;
         width: 100% !important;
     }
-    .syl-col-tools {
-        grid-area: tools !important;
-        width: 100% !important;
-        min-width: 0 !important;
-        border: 1px solid var(--border) !important;
-        border-radius: 14px !important;
-        padding: 12px 10px !important;
-        background: var(--surface) !important;
-        box-sizing: border-box !important;
-    }
-    .syl-col-topics {
-        grid-area: topics !important;
-        width: 100% !important;
-        min-width: 0 !important;
-        border: 1px solid var(--border) !important;
-        border-radius: 14px !important;
-        padding: 12px 10px !important;
-        background: var(--surface) !important;
-        box-sizing: border-box !important;
-    }
+    .syl-col-tools,
+    .syl-col-topics,
     .syl-col-detail {
-        grid-area: detail !important;
         width: 100% !important;
         min-width: 0 !important;
         border: 1px solid var(--border) !important;
@@ -1905,23 +1914,28 @@ html:not(.dark) .google-btn-back:hover {
         box-sizing: border-box !important;
         text-align: left !important;
     }
+    .syl-col-tools { grid-area: tools !important; }
+    .syl-col-topics { grid-area: topics !important; }
+    .syl-col-detail { grid-area: detail !important; }
+
     .sticky-col-wrapper {
         position: static !important;
         top: auto !important;
     }
 
-    /* Column Headers & Accent Bars */
+    /* Typography Hierarchy: 2. Chapter / Sub-Section Titles - 14px */
     .col-title {
-        font-size: 12px !important;
+        font-size: 14px !important;
         font-weight: 700 !important;
-        gap: 6px !important;
-        margin-bottom: 2px !important;
+        line-height: 1.35 !important;
+        gap: 7px !important;
+        margin-bottom: 4px !important;
         display: flex !important;
         align-items: center !important;
     }
     .col-title .accent-bar {
-        width: 3px !important;
-        height: 12px !important;
+        width: 3.5px !important;
+        height: 14px !important;
         border-radius: 2px !important;
         display: inline-block !important;
         background: #0066FF !important;
@@ -1930,29 +1944,31 @@ html:not(.dark) .google-btn-back:hover {
         background: #10B981 !important;
     }
     .col-subtitle {
-        font-size: 9.5px !important;
-        margin-bottom: 10px !important;
-        line-height: 1.25 !important;
-        opacity: 0.8 !important;
+        font-size: 12px !important;
+        line-height: 1.45 !important;
+        margin-bottom: 12px !important;
+        opacity: 0.85 !important;
     }
 
-    /* Tools List */
+    /* Tools List — Neat Wrapping Pill Row on Mobile */
     .tools-stack-list {
         display: flex !important;
-        flex-direction: column !important;
-        gap: 6px !important;
+        flex-direction: row !important;
+        flex-wrap: wrap !important;
+        gap: 8px !important;
     }
     .tech-badge-card {
-        display: flex !important;
+        display: inline-flex !important;
         align-items: center !important;
-        gap: 6px !important;
-        padding: 6px 8px !important;
-        border-radius: 8px !important;
+        gap: 7px !important;
+        padding: 7px 11px !important;
+        border-radius: 10px !important;
         border: 1px solid var(--border) !important;
         background: var(--bg, var(--surface)) !important;
         transition: all 0.2s ease !important;
         cursor: pointer !important;
         box-sizing: border-box !important;
+        flex: 0 0 auto !important;
     }
     .tech-badge-card:hover,
     .tech-badge-card.active-tool {
@@ -1971,18 +1987,16 @@ html:not(.dark) .google-btn-back:hover {
         flex-shrink: 0 !important;
     }
     .tech-badge-card span {
-        font-size: 11px !important;
+        font-size: 12px !important;
         font-weight: 600 !important;
         white-space: nowrap !important;
-        overflow: hidden !important;
-        text-overflow: ellipsis !important;
     }
 
-    /* Course Content List */
+    /* Course Content Chapters — Clean List Without Repeated "Module 1, 2..." Badges */
     .topics-timeline {
         display: flex !important;
         flex-direction: column !important;
-        gap: 6px !important;
+        gap: 8px !important;
         padding-bottom: 0 !important;
     }
     .topic-scroll-item {
@@ -1992,9 +2006,9 @@ html:not(.dark) .google-btn-back:hover {
     .topic-card-body {
         display: flex !important;
         align-items: center !important;
-        gap: 8px !important;
-        padding: 7px 8px !important;
-        border-radius: 8px !important;
+        gap: 10px !important;
+        padding: 10px 12px !important;
+        border-radius: 10px !important;
         border: 1px solid var(--border) !important;
         background: var(--bg, var(--surface)) !important;
         transition: all 0.2s ease !important;
@@ -2014,17 +2028,17 @@ html:not(.dark) .google-btn-back:hover {
         background: rgba(0, 210, 255, 0.08) !important;
     }
     .topic-num-badge {
-        width: 22px !important;
-        height: 22px !important;
-        min-width: 22px !important;
-        border-radius: 5px !important;
-        font-size: 10px !important;
+        width: 26px !important;
+        height: 26px !important;
+        min-width: 26px !important;
+        border-radius: 7px !important;
+        font-size: 12px !important;
         font-weight: 700 !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
         flex-shrink: 0 !important;
-        background: rgba(0, 102, 255, 0.08) !important;
+        background: rgba(0, 102, 255, 0.09) !important;
         color: #0066FF !important;
     }
     .topic-scroll-item.active-topic .topic-num-badge {
@@ -2041,30 +2055,18 @@ html:not(.dark) .google-btn-back:hover {
         min-width: 0 !important;
     }
     .topic-title {
-        font-size: 11px !important;
-        font-weight: 700 !important;
-        line-height: 1.25 !important;
-        margin-bottom: 2px !important;
-        white-space: nowrap !important;
-        overflow: hidden !important;
-        text-overflow: ellipsis !important;
+        font-size: 14px !important;
+        font-weight: 600 !important;
+        line-height: 1.35 !important;
+        margin-bottom: 0 !important;
+        white-space: normal !important;
+        overflow: visible !important;
+        text-overflow: clip !important;
     }
-    .topic-tag {
-        font-size: 9px !important;
-        padding: 1px 5px !important;
-        border-radius: 4px !important;
-        display: inline-flex !important;
-        align-items: center !important;
-        gap: 3px !important;
-        color: #0066FF !important;
-        background: rgba(0, 102, 255, 0.08) !important;
-        white-space: nowrap !important;
-        overflow: hidden !important;
-        text-overflow: ellipsis !important;
-    }
-    .theme-dark .topic-tag {
-        color: #00D2FF !important;
-        background: rgba(0, 210, 255, 0.1) !important;
+    /* Remove repeated Module 1, Module 2... elements in mobile view */
+    .topic-tag,
+    .detail-header-badge {
+        display: none !important;
     }
 
     /* Module Details Panel */
@@ -2082,59 +2084,56 @@ html:not(.dark) .google-btn-back:hover {
         flex-direction: column !important;
         align-items: flex-start !important;
     }
-    .detail-header-badge {
-        display: none !important; /* Removed in mobile view per user request */
-    }
     .detail-main-title {
         font-size: 14px !important;
         font-weight: 700 !important;
         margin-bottom: 6px !important;
-        line-height: 1.3 !important;
+        line-height: 1.35 !important;
         text-align: left !important;
         width: 100% !important;
     }
     .detail-desc {
-        font-size: 11.5px !important;
-        line-height: 1.5 !important;
-        margin-bottom: 10px !important;
+        font-size: 12px !important;
+        line-height: 1.55 !important;
+        margin-bottom: 12px !important;
         text-align: left !important;
         width: 100% !important;
     }
     .detail-bullets-title {
-        font-size: 10.5px !important;
+        font-size: 12px !important;
         font-weight: 700 !important;
-        margin-bottom: 6px !important;
+        margin-bottom: 8px !important;
         letter-spacing: 0.03em !important;
         text-align: left !important;
         width: 100% !important;
     }
     .detail-bullets-list {
-        gap: 5px !important;
+        gap: 6px !important;
         margin-bottom: 12px !important;
         text-align: left !important;
         width: 100% !important;
         padding-left: 0 !important;
     }
     .detail-bullets-list li {
-        font-size: 11px !important;
-        gap: 6px !important;
-        line-height: 1.4 !important;
+        font-size: 12px !important;
+        gap: 7px !important;
+        line-height: 1.5 !important;
         text-align: left !important;
         display: flex !important;
         align-items: flex-start !important;
         justify-content: flex-start !important;
     }
     .detail-bullets-list li i {
-        font-size: 10px !important;
-        margin-top: 2px !important;
+        font-size: 11px !important;
+        margin-top: 3px !important;
         color: #10B981 !important;
         flex-shrink: 0 !important;
     }
     .detail-lab-box {
         border: 1px solid rgba(0, 102, 255, 0.2) !important;
         background: rgba(0, 102, 255, 0.04) !important;
-        border-radius: 8px !important;
-        padding: 10px 12px !important;
+        border-radius: 10px !important;
+        padding: 12px !important;
         text-align: left !important;
         width: 100% !important;
         box-sizing: border-box !important;
@@ -2144,27 +2143,27 @@ html:not(.dark) .google-btn-back:hover {
         background: rgba(0, 210, 255, 0.05) !important;
     }
     .detail-lab-header {
-        font-size: 11px !important;
+        font-size: 12px !important;
         font-weight: 700 !important;
         color: #0066FF !important;
-        margin-bottom: 3px !important;
+        margin-bottom: 4px !important;
         display: flex !important;
         align-items: center !important;
         justify-content: flex-start !important;
-        gap: 5px !important;
+        gap: 6px !important;
         text-align: left !important;
     }
     .theme-dark .detail-lab-header {
         color: #00D2FF !important;
     }
     .detail-lab-text {
-        font-size: 11px !important;
-        line-height: 1.4 !important;
+        font-size: 12px !important;
+        line-height: 1.5 !important;
         color: var(--body) !important;
         text-align: left !important;
     }
 
-    /* FAQ Section Left-Aligned on Mobile */
+    /* FAQ Section — Chapter (Question) 14px, Body (Answer) 12px */
     .faq-grid,
     .faq-grid .section-heading,
     #faq-accordion,
@@ -2173,123 +2172,47 @@ html:not(.dark) .google-btn-back:hover {
     .faq-answer {
         text-align: left !important;
     }
+    .faq-grid .section-heading {
+        margin-bottom: 14px !important;
+    }
     .faq-item summary {
         display: flex !important;
         justify-content: space-between !important;
         align-items: center !important;
+        gap: 10px !important;
         text-align: left !important;
         width: 100% !important;
+        font-size: 14px !important;
+        font-weight: 600 !important;
+        line-height: 1.4 !important;
     }
     .faq-answer {
+        font-size: 12px !important;
+        line-height: 1.55 !important;
         text-align: left !important;
     }
 }
 
 @media (max-width: 360px) {
-    .detail-hero .hero-title {
-        font-size: 19px !important;
-        line-height: 1.2 !important;
-    }
-    .detail-hero .hero-desc {
-        font-size: 11.5px !important;
-        line-height: 1.38 !important;
-    }
-    .detail-hero .hero-features {
-        gap: 5px 8px !important;
-        margin-bottom: 10px !important;
-    }
-    .detail-hero .hero-features .feat {
-        font-size: 10.5px !important;
-    }
     .detail-hero .hero-floating-img {
-        max-height: 120px !important;
-        max-width: 170px !important;
+        max-height: 145px !important;
+        max-width: 185px !important;
     }
     .detail-hero .hero-btns .btn-primary,
     .detail-hero .hero-btns .btn-outline {
-        padding: 0 13px !important;
+        padding: 0 10px !important;
         font-size: 12px !important;
-        height: 38px !important;
-        min-height: 38px !important;
+        height: 40px !important;
+        min-height: 40px !important;
     }
 }
 
-@media (max-width: 768px) and (max-height: 680px) {
-    .detail-hero {
-        padding-top: calc(56px + 8px) !important;
-        padding-bottom: 14px !important;
-    }
-    .detail-hero .hero-title {
-        font-size: 19px !important;
-        margin-bottom: 4px !important;
-    }
-    .detail-hero .hero-desc {
-        font-size: 11.5px !important;
-        line-height: 1.35 !important;
-        margin-bottom: 6px !important;
-    }
-    .detail-hero .hero-features {
-        gap: 5px 8px !important;
-        margin-bottom: 10px !important;
-    }
-    .detail-hero .hero-features .feat {
-        font-size: 10.5px !important;
-    }
-    .detail-hero .hero-btns {
-        margin-bottom: 0 !important;
-    }
-    .detail-hero .hero-btns .btn-primary,
-    .detail-hero .hero-btns .btn-outline {
-        min-height: 38px !important;
-        height: 38px !important;
-        padding: 0 14px !important;
-        font-size: 12px !important;
-    }
-    .detail-hero .hero-floating-img {
-        max-height: clamp(100px, 16vh, 135px) !important;
-    }
-}
 @media (max-width: 480px) {
     .reviews-marquee-track .review-card {
         flex: 0 0 250px !important;
         width: 250px !important;
         min-width: 250px !important;
         max-width: 250px !important;
-        padding: 1.25rem !important;
-    }
-    .syllabus-3col-grid {
-        grid-template-columns: 1fr 1.35fr !important;
-        gap: 8px !important;
-    }
-    .syl-col-tools,
-    .syl-col-topics {
-        padding: 10px 7px !important;
-    }
-    .tech-badge-card {
-        padding: 5px 6px !important;
-        gap: 4px !important;
-    }
-    .tech-badge-card img {
-        width: 15px !important;
-        height: 15px !important;
-    }
-    .tech-badge-card span {
-        font-size: 10px !important;
-    }
-    .topic-card-body {
-        padding: 6px !important;
-        gap: 6px !important;
-    }
-    .topic-num-badge {
-        width: 20px !important;
-        height: 20px !important;
-        min-width: 20px !important;
-        font-size: 9px !important;
-    }
-    .topic-title {
-        font-size: 10px !important;
-    }
-    .topic-tag {
-        font-size: 8.5px !important;
+        padding: 1.15rem !important;
     }
 }
