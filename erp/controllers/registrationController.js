@@ -80,27 +80,30 @@ const registrationController = {
         }
       }
 
-      // Check for referral code if provided
+      // Check for referral code if provided (supports referrals table + unique employee referral codes)
       const rawRefCode = (req.body.referral_code || req.body.referral || '').trim().toUpperCase();
       let validatedReferralCode = null;
+      let referredByEmployeeId = null;
       let referralDiscount = 0;
 
       if (rawRefCode) {
         const refRecord = db.prepare('SELECT * FROM referrals WHERE UPPER(code) = ? AND is_active = 1').get(rawRefCode);
-        if (!refRecord) {
+        const empRefUser = db.prepare('SELECT id, referral_code FROM users WHERE UPPER(referral_code) = ? AND deleted_at IS NULL').get(rawRefCode);
+        if (!refRecord && !empRefUser) {
           return res.status(400).json({
             success: false,
             message: `Invalid referral code "${rawRefCode}". Please check code or leave blank.`
           });
         }
-        if (refRecord.max_uses > 0 && refRecord.times_used >= refRecord.max_uses) {
+        if (refRecord && refRecord.max_uses > 0 && refRecord.times_used >= refRecord.max_uses) {
           return res.status(400).json({
             success: false,
             message: `Referral code "${rawRefCode}" has reached its maximum usage limit.`
           });
         }
-        validatedReferralCode = refRecord.code;
-        referralDiscount = Math.round(basePrice * ((refRecord.discount_percent || 0) / 100));
+        validatedReferralCode = (refRecord ? refRecord.code : empRefUser.referral_code).toUpperCase();
+        referredByEmployeeId = (refRecord && refRecord.employee_id) || (empRefUser && empRefUser.id) || null;
+        referralDiscount = refRecord ? Math.round(basePrice * ((refRecord.discount_percent || 0) / 100)) : 0;
       }
 
       if (referralDiscount > discount) {
@@ -143,12 +146,14 @@ const registrationController = {
           INSERT INTO students (
             user_id, student_id, photo, first_name, last_name, email, phone,
             gender, dob, address, city, state, pincode,
-            college, university, degree, department, year_of_study, graduation_year, roll_number
-          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            college, university, degree, department, year_of_study, graduation_year, roll_number,
+            referred_by, referral_code
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `).run(
           userId, studentId, photoPath, first_name, last_name, email, phone,
           gender, dob, address, city || '', state || '', pincode || '',
-          college, university, degree, department, year_of_study, graduation_year, roll_number || ''
+          college, university, degree, department, year_of_study, graduation_year, roll_number || '',
+          referredByEmployeeId, validatedReferralCode || null
         );
 
         const studentDbId = studentResult.lastInsertRowid;
@@ -374,26 +379,29 @@ const registrationController = {
         }
       }
 
-      // Check and validate referral code if provided
+      // Check and validate referral code if provided (supports referrals table + unique employee referral codes)
       let validatedReferralCode = null;
+      let referredByEmployeeId = null;
       let referralDiscountPercent = 0;
       const rawRefCode = (req.body.referral_code || req.body.referral || '').trim().toUpperCase();
       if (rawRefCode) {
         const refRecord = db.prepare('SELECT * FROM referrals WHERE UPPER(code) = ? AND is_active = 1').get(rawRefCode);
-        if (!refRecord) {
+        const empRefUser = db.prepare('SELECT id, referral_code FROM users WHERE UPPER(referral_code) = ? AND deleted_at IS NULL').get(rawRefCode);
+        if (!refRecord && !empRefUser) {
           return res.status(400).json({
             success: false,
             message: `Invalid referral code "${rawRefCode}". Please check code or leave blank.`
           });
         }
-        if (refRecord.max_uses > 0 && refRecord.times_used >= refRecord.max_uses) {
+        if (refRecord && refRecord.max_uses > 0 && refRecord.times_used >= refRecord.max_uses) {
           return res.status(400).json({
             success: false,
             message: `Referral code "${rawRefCode}" has reached its maximum usage limit.`
           });
         }
-        validatedReferralCode = refRecord.code;
-        referralDiscountPercent = refRecord.discount_percent || 0;
+        validatedReferralCode = (refRecord ? refRecord.code : empRefUser.referral_code).toUpperCase();
+        referredByEmployeeId = (refRecord && refRecord.employee_id) || (empRefUser && empRefUser.id) || null;
+        referralDiscountPercent = refRecord ? (refRecord.discount_percent || 0) : 0;
       }
 
       // Compute pricing — Initially, the registered student does NOT have any payments mentioned
@@ -431,23 +439,30 @@ const registrationController = {
           const studentResult = db.prepare(`
             INSERT INTO students (
               user_id, student_id, photo, first_name, last_name, email, phone,
-              gender, college, university, degree, department, year_of_study, graduation_year
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+              gender, college, university, degree, department, year_of_study, graduation_year,
+              referred_by, referral_code
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
           `).run(
             userId, finalStudentId, photoPath, first_name, last_name, email, phone,
-            gender || null, college || null, university || null, degree || null, department || null, year_of_study || null, graduation_year || null
+            gender || null, college || null, university || null, degree || null, department || null, year_of_study || null, graduation_year || null,
+            referredByEmployeeId, validatedReferralCode || null
           );
           studentDbId = studentResult.lastInsertRowid;
+        } else if (referredByEmployeeId && !existingStudent.referred_by) {
+          db.prepare('UPDATE students SET referred_by = ?, referral_code = COALESCE(referral_code, ?), updated_at = CURRENT_TIMESTAMP WHERE id = ?')
+            .run(referredByEmployeeId, validatedReferralCode || null, studentDbId);
         }
 
         // 3. Create registration with referral_code
+        const chosenMode = (req.body.learning_mode || req.body.mode || courseRecord.mode || 'online').toLowerCase();
+        const validMode = ['online', 'offline', 'hybrid'].includes(chosenMode) ? chosenMode : (courseRecord.mode || 'online');
         const regResult = db.prepare(`
           INSERT INTO registrations (
-            registration_id, student_id, course_id, batch_name,
+            registration_id, student_id, course_id, batch_name, mode,
             start_date, status, payment_plan, total_amount, paid_amount, balance_amount, referral_code
-          ) VALUES (?, ?, ?, ?, ?, 'confirmed', ?, ?, ?, ?, ?)
+          ) VALUES (?, ?, ?, ?, ?, ?, 'confirmed', ?, ?, ?, ?, ?)
         `).run(
-          registrationId, studentDbId, courseRecord.id, courseRecord.batch_name || 'Batch 2026',
+          registrationId, studentDbId, courseRecord.id, courseRecord.batch_name || 'Batch 2026', validMode,
           course_start_date || courseRecord.start_date || new Date().toISOString().split('T')[0],
           paymentPlan, totalAmount, paidAmount, balanceAmount, validatedReferralCode || null
         );
@@ -717,10 +732,20 @@ const registrationController = {
           reg.id
         );
 
-        // 3. Update referral usage counters if changed
+        // 3. Update referral usage counters & referring employee attribution if changed
         if (newRef !== undefined && newRef !== oldRef) {
           if (newRef) {
             db.prepare('UPDATE referrals SET times_used = times_used + 1, updated_at = CURRENT_TIMESTAMP WHERE UPPER(code) = ?').run(newRef);
+            const empRef = db.prepare(`
+              SELECT COALESCE(
+                (SELECT employee_id FROM referrals WHERE UPPER(code) = ? AND employee_id IS NOT NULL LIMIT 1),
+                (SELECT id FROM users WHERE UPPER(referral_code) = ? AND deleted_at IS NULL LIMIT 1)
+              ) as emp_id
+            `).get(newRef, newRef);
+            db.prepare('UPDATE students SET referral_code = ?, referred_by = ? WHERE id = ?')
+              .run(finalReferralCode, empRef ? empRef.emp_id : null, reg.student_id);
+          } else {
+            db.prepare('UPDATE students SET referral_code = NULL, referred_by = NULL WHERE id = ?').run(reg.student_id);
           }
           if (oldRef) {
             db.prepare('UPDATE referrals SET times_used = MAX(0, times_used - 1), updated_at = CURRENT_TIMESTAMP WHERE UPPER(code) = ?').run(oldRef);

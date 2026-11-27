@@ -197,8 +197,11 @@ body.erp-body {
 }
 
 .erp-nav-item i, .erp-nav-item svg {
-  width: 18px;
-  height: 18px;
+  width: 21px;
+  height: 21px;
+  flex-shrink: 0;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
   margin-right: 12px;
   stroke-width: 2px;
   color: #64748B;
@@ -866,8 +869,8 @@ button:hover svg.lucide-arrow-right path:last-child,
   #employee-sync-capsule,
   #student-sync-capsule,
   .erp-topbar-right .sync-status-capsule,
-  .erp-topbar-right .erp-profile,
-  .erp-topbar-right .erp-avatar,
+  .erp-topbar-right .erp-profile-info,
+  .erp-topbar-right .erp-profile-caret,
   .erp-topbar-right button[title="Notifications"],
   .erp-topbar-right > button {
     display: none !important;
@@ -1394,8 +1397,8 @@ button:hover svg.lucide-arrow-right path:last-child,
   #employee-sync-capsule,
   #student-sync-capsule,
   .erp-topbar-right .sync-status-capsule,
-  .erp-topbar-right .erp-profile,
-  .erp-topbar-right .erp-avatar,
+  .erp-topbar-right .erp-profile-info,
+  .erp-topbar-right .erp-profile-caret,
   .erp-topbar-right button[title="Notifications"],
   .erp-topbar-right > button {
     display: none !important;
@@ -2269,4 +2272,302 @@ button:hover svg.lucide-arrow-right path:last-child,
 .erp-tab-btn.active {
   color: #000000;
   border-bottom-color: #000000;
+}
+
+/* =========================================================================
+   UNIFIED SIDEBAR (Always Auto-Hidden Rail, Hover-Open & Click-to-Pin)
+   + MOBILE TOPBAR (Logo / Current Page / Right Profile Icon)
+   ========================================================================= */
+.erp-nav-item {
+  border-radius: 10px;
+  padding: 11px 14px;
+  gap: 13px;
+  transition: background 0.18s ease, color 0.18s ease, padding 0.22s ease;
+}
+
+.erp-nav-item i, .erp-nav-item svg {
+  width: 22px !important;
+  height: 22px !important;
+  min-width: 22px;
+  stroke-width: 1.9;
+}
+
+@media (min-width: 769px) {
+  .erp-layout {
+    display: flex;
+    min-height: 100vh;
+  }
+
+  .erp-sidebar {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 78px !important;
+    z-index: 1050;
+    overflow-x: hidden;
+    overflow-y: auto;
+    border-right: 1px solid #E2E8F0;
+    background: #FFFFFF;
+    transition: width 0.24s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.24s ease;
+  }
+
+  .erp-sidebar-header {
+    height: 76px;
+    padding: 0 14px;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .erp-sidebar:not(.sidebar-pinned):not(:hover):not(.hover-open) .sidebar-logo-container,
+  .erp-sidebar:not(.sidebar-pinned):not(:hover):not(.hover-open) .erp-nav-section,
+  .erp-sidebar:not(.sidebar-pinned):not(:hover):not(.hover-open) .erp-nav-item span,
+  .erp-sidebar:not(.sidebar-pinned):not(:hover):not(.hover-open) .erp-sidebar-section-badge {
+    opacity: 0;
+    width: 0;
+    overflow: hidden;
+    pointer-events: none;
+    display: none !important;
+  }
+
+  .erp-sidebar:not(.sidebar-pinned):not(:hover):not(.hover-open) .erp-nav-item {
+    justify-content: center;
+    padding: 12px 0;
+    margin: 4px 10px;
+  }
+
+  .erp-sidebar:not(.sidebar-pinned):not(:hover):not(.hover-open) .erp-nav-item i,
+  .erp-sidebar:not(.sidebar-pinned):not(:hover):not(.hover-open) .erp-nav-item svg {
+    margin-right: 0 !important;
+  }
+
+  /* Expanded state via hover OR pinned click */
+  .erp-sidebar:hover,
+  .erp-sidebar.hover-open,
+  .erp-sidebar.sidebar-pinned {
+    width: 278px !important;
+  }
+
+  .erp-sidebar:not(.sidebar-pinned):hover,
+  .erp-sidebar:not(.sidebar-pinned).hover-open {
+    box-shadow: 12px 0 38px rgba(15, 23, 42, 0.14);
+  }
+
+  .erp-sidebar:hover .erp-sidebar-header,
+  .erp-sidebar.hover-open .erp-sidebar-header,
+  .erp-sidebar.sidebar-pinned .erp-sidebar-header {
+    padding: 0 18px;
+    justify-content: space-between;
+  }
+
+  .erp-sidebar:hover .sidebar-logo-container,
+  .erp-sidebar.hover-open .sidebar-logo-container,
+  .erp-sidebar.sidebar-pinned .sidebar-logo-container {
+    display: flex !important;
+    opacity: 1;
+    width: auto;
+  }
+
+  .erp-sidebar:hover .erp-nav-item,
+  .erp-sidebar.hover-open .erp-nav-item,
+  .erp-sidebar.sidebar-pinned .erp-nav-item {
+    justify-content: flex-start;
+    padding: 11px 14px;
+    margin: 2px 4px;
+  }
+
+  .erp-sidebar:hover .erp-nav-item span,
+  .erp-sidebar.hover-open .erp-nav-item span,
+  .erp-sidebar.sidebar-pinned .erp-nav-item span {
+    display: inline !important;
+    opacity: 1;
+    width: auto;
+  }
+
+  .sidebar-toggle-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    border: 1px solid #E2E8F0;
+    background: #F8FAFC;
+    color: #334155;
+    flex-shrink: 0;
+  }
+
+  .sidebar-toggle-btn svg,
+  .sidebar-toggle-btn i {
+    width: 19px !important;
+    height: 19px !important;
+  }
+
+  .sidebar-toggle-btn.is-pinned {
+    background: #0B1F3A;
+    border-color: #0B1F3A;
+    color: #FFFFFF;
+  }
+
+  .erp-main {
+    margin-left: 78px !important;
+    width: calc(100% - 78px) !important;
+    min-width: 0;
+    transition: margin-left 0.24s cubic-bezier(0.4, 0, 0.2, 1), width 0.24s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .erp-layout.sidebar-pinned .erp-main {
+    margin-left: 278px !important;
+    width: calc(100% - 278px) !important;
+  }
+}
+
+/* Mobile Topbar Brand & Profile Dropdown */
+.erp-mobile-nav-brand {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.erp-mobile-logo-link {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  text-decoration: none;
+}
+
+.erp-mobile-logo-link img {
+  height: 28px;
+  width: auto;
+  max-width: 96px;
+  object-fit: contain;
+}
+
+.erp-mobile-nav-sep {
+  color: #94A3B8;
+  font-weight: 600;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.erp-mobile-current-page {
+  font-size: 14px;
+  font-weight: 700;
+  color: #0F172A;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 165px;
+}
+
+.erp-profile-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.erp-profile-trigger {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 2px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  text-align: left;
+}
+
+.erp-profile-dropdown {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  width: 240px;
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 12px;
+  box-shadow: 0 18px 38px rgba(15, 23, 42, 0.14);
+  padding: 12px;
+  z-index: 2000;
+  display: none;
+}
+
+.erp-profile-dropdown.open {
+  display: block;
+}
+
+.erp-profile-dropdown-header {
+  padding-bottom: 10px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid #F1F5F9;
+}
+
+.erp-profile-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 9px 10px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #1E293B;
+  text-decoration: none;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+}
+
+.erp-profile-dropdown-item:hover {
+  background: #F1F5F9;
+}
+
+.erp-profile-dropdown-item.danger {
+  color: #DC2626;
+}
+
+.erp-profile-dropdown-item.danger:hover {
+  background: #FEF2F2;
+}
+
+@media (max-width: 768px) {
+  .erp-topbar {
+    padding: 0 12px !important;
+    height: 60px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 8px !important;
+  }
+
+  .erp-breadcrumb {
+    display: none !important;
+  }
+
+  .erp-mobile-nav-brand {
+    display: inline-flex !important;
+  }
+
+  .erp-topbar-right {
+    margin-left: auto !important;
+    display: flex !important;
+    align-items: center !important;
+    flex-shrink: 0 !important;
+  }
+
+  .erp-topbar-right .erp-profile-wrapper,
+  .erp-topbar-right .erp-profile,
+  .erp-topbar-right .erp-profile-trigger,
+  .erp-topbar-right .erp-avatar {
+    display: inline-flex !important;
+  }
+
+  .erp-topbar-right .erp-profile-info {
+    display: none !important;
+  }
+
+  .erp-topbar-right .erp-avatar {
+    width: 36px !important;
+    height: 36px !important;
+    font-size: 14px !important;
+    flex-shrink: 0 !important;
+  }
 }

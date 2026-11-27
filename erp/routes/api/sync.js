@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const syncService = require('../../services/syncService');
-const { optionalAuth } = require('../../middleware/auth');
+const { authenticate, optionalAuth } = require('../../middleware/auth');
 
 /**
  * GET /api/sync/events
@@ -52,7 +52,7 @@ router.get('/status', (req, res) => {
  * POST /api/sync/broadcast
  * Broadcast an event across all connected panels
  */
-router.post('/broadcast', (req, res) => {
+router.post('/broadcast', authenticate, (req, res) => {
   const { type, data } = req.body;
   if (!type) {
     return res.status(400).json({ success: false, message: 'Event type is required.' });

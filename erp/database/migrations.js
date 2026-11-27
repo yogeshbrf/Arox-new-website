@@ -143,6 +143,176 @@ function runTriangularSyncMigrations(db) {
   addColumnIfNotExists('users', 'designation TEXT', 'designation');
   addColumnIfNotExists('users', 'department TEXT', 'department');
   addColumnIfNotExists('users', 'deleted_at DATETIME', 'deleted_at');
+  addColumnIfNotExists('users', 'referral_code TEXT', 'referral_code');
+
+  // Student -> Referring Employee attribution columns
+  addColumnIfNotExists('students', 'referred_by INTEGER', 'referred_by');
+  addColumnIfNotExists('students', 'referral_code TEXT', 'referral_code');
+
+  // Link referral codes directly to employee users & support referrer_type
+  addColumnIfNotExists('referrals', 'employee_id INTEGER', 'employee_id');
+  addColumnIfNotExists('referrals', "referrer_type TEXT DEFAULT 'student'", 'referrer_type');
+
+  // Live offline class & trainer availability details synced from Admin -> Student dashboard
+  addColumnIfNotExists('courses', 'class_timing TEXT', 'class_timing');
+  addColumnIfNotExists('courses', "class_available INTEGER DEFAULT 1", 'class_available');
+  addColumnIfNotExists('courses', "trainer_available_today INTEGER DEFAULT 1", 'trainer_available_today');
+  addColumnIfNotExists('courses', 'trainer_status_note TEXT', 'trainer_status_note');
+  addColumnIfNotExists('courses', 'classroom_location TEXT', 'classroom_location');
+
+  // Multi-employee task batch grouping & proof link
+  addColumnIfNotExists('employee_tasks', 'batch_group_id TEXT', 'batch_group_id');
+  addColumnIfNotExists('employee_tasks', 'assigned_by_name TEXT', 'assigned_by_name');
+
+  // Attendance admin override flag + updated timestamp
+  addColumnIfNotExists('attendance', 'updated_by_admin INTEGER DEFAULT 0', 'updated_by_admin');
+  addColumnIfNotExists('attendance', 'updated_at DATETIME', 'updated_at');
+
+  // Create Employee Work Proofs table (.pdf, .pptx, .xlsx, .docx up to 10MB)
+  try {
+    db.exec(`
+      CREATE TABLE IF NOT EXISTS employee_proofs (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        employee_id INTEGER NOT NULL,
+        task_id INTEGER,
+        category TEXT NOT NULL,
+        title TEXT,
+        remarks TEXT,
+        file_name TEXT NOT NULL,
+        original_name TEXT NOT NULL,
+        file_path TEXT NOT NULL,
+        file_ext TEXT NOT NULL,
+        file_size INTEGER DEFAULT 0,
+        status TEXT DEFAULT 'submitted' CHECK(status IN ('submitted','approved','needs_revision','rejected')),
+        reviewed_by INTEGER,
+        review_notes TEXT,
+        reviewed_at DATETIME,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+  } catch (e) {
+    logger.warn('Could not ensure employee_proofs table:', e.message);
+  }
+
+  // Upgrade attendance.method CHECK constraint to also allow 'offline' safely
+  try {
+    const attSchemaRow = db.prepare("SELECT sql FROM sqlite_master WHERE type='table' AND name='attendance'").get();
+    if (attSchemaRow && attSchemaRow.sql && !attSchemaRow.sql.includes("'offline'")) {
+      db.exec(`
+        CREATE TABLE IF NOT EXISTS attendance_v2 (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          student_id INTEGER NOT NULL,
+          course_id INTEGER NOT NULL,
+          date DATE NOT NULL,
+          status TEXT DEFAULT 'present' CHECK(status IN ('present','absent','late','leave','holiday')),
+          check_in_time TEXT,
+          check_out_time TEXT,
+          method TEXT DEFAULT 'manual' CHECK(method IN ('manual','qr','online','offline','gps')),
+          remarks TEXT,
+          marked_by INTEGER,
+          updated_by_admin INTEGER DEFAULT 0,
+          updated_at DATETIME,
+          created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+          UNIQUE(student_id, course_id, date)
+        );
+        INSERT INTO attendance_v2 (id, student_id, course_id, date, status, check_in_time, check_out_time, method, remarks, marked_by, updated_by_admin, updated_at, created_at)
+        SELECT id, student_id, course_id, date, status, check_in_time, check_out_time, method, remarks, marked_by, COALESCE(updated_by_admin, 0), updated_at, created_at FROM attendance;
+        DROP TABLE attendance;
+        ALTER TABLE attendance_v2 RENAME TO attendance;
+        CREATE INDEX IF NOT EXISTS idx_attendance_student_date ON attendance(student_id, date);
+      `);
+      logger.info('Upgraded attendance table CHECK constraint to allow offline mode');
+    }
+  } catch (e) {
+    logger.warn('Could not upgrade attendance method CHECK constraint:', e.message);
+  }
+
+  // Ensure every employee user (and trainer/staff) has a unique referral_code + matching referrals row
+  try {
+    const employees = db.prepare(`
+      SELECT u.id, u.first_name, u.last_name, u.email, u.referral_code, r.name as role_name
+      FROM users u
+      JOIN roles r ON u.role_id = r.id
+      WHERE r.name IN ('employee', 'trainer', 'staff') AND u.deleted_at IS NULL
+    `).all();
+
+    for (const emp of employees) {
+      let code = (emp.referral_code || '').trim().toUpperCase();
+      if (!code) {
+        const cleanPrefix = (emp.first_name || 'EMP').replace(/[^A-Za-z]/g, '').slice(0, 3).toUpperCase() || 'EMP';
+        code = `AROX-${cleanPrefix}${String(emp.id).padStart(2, '0')}`;
+        let suffix = 1;
+        while (
+          db.prepare('SELECT id FROM users WHERE UPPER(referral_code) = UPPER(?) AND id != ?').get(code, emp.id) ||
+          db.prepare('SELECT id FROM referrals WHERE LOWER(code) = LOWER(?) AND (employee_id IS NULL OR employee_id != ?)').get(code, emp.id)
+        ) {
+          code = `AROX-${cleanPrefix}${emp.id}${suffix++}`;
+        }
+        db.prepare('UPDATE users SET referral_code = ? WHERE id = ?').run(code, emp.id);
+      }
+
+      const fullName = `${emp.first_name || ''} ${emp.last_name || ''}`.trim() || emp.email;
+      const existingRef = db.prepare('SELECT id, employee_id FROM referrals WHERE LOWER(code) = LOWER(?)').get(code);
+      if (!existingRef) {
+        db.prepare(`
+          INSERT INTO referrals (code, referrer_name, referrer_email, referrer_type, discount_percent, max_uses, times_used, employee_id, is_active)
+          VALUES (?, ?, ?, 'employee', 5, 0, 0, ?, 1)
+        `).run(code, fullName, emp.email, emp.id);
+      } else if (!existingRef.employee_id) {
+        db.prepare("UPDATE referrals SET employee_id = ?, referrer_type = 'employee', is_active = 1 WHERE id = ?").run(emp.id, existingRef.id);
+      }
+    }
+
+    // Backfill students.referred_by from students.referral_code or registrations.referral_code if missing
+    db.exec(`
+      UPDATE students
+      SET referral_code = (
+        SELECT r.referral_code FROM registrations r
+        WHERE r.student_id = students.id AND r.referral_code IS NOT NULL AND TRIM(r.referral_code) != ''
+        ORDER BY r.id DESC LIMIT 1
+      )
+      WHERE (referral_code IS NULL OR TRIM(referral_code) = '')
+        AND EXISTS (
+          SELECT 1 FROM registrations r
+          WHERE r.student_id = students.id AND r.referral_code IS NOT NULL AND TRIM(r.referral_code) != ''
+        );
+
+      UPDATE students
+      SET referred_by = COALESCE(
+        (SELECT u.id FROM users u WHERE UPPER(u.referral_code) = UPPER(students.referral_code) LIMIT 1),
+        (SELECT rf.employee_id FROM referrals rf WHERE LOWER(rf.code) = LOWER(students.referral_code) AND rf.employee_id IS NOT NULL LIMIT 1)
+      )
+      WHERE referred_by IS NULL AND referral_code IS NOT NULL AND TRIM(referral_code) != '';
+    `);
+  } catch (e) {
+    logger.warn('Could not backfill employee referral codes:', e.message);
+  }
+
+  // Ensure default payment settings reflect 6379000598@amazonpay if unset or still old default
+  try {
+    const upiRow = db.prepare("SELECT value FROM settings WHERE key = 'upi_id' AND section = 'payment'").get();
+    const oldVal = upiRow ? String(upiRow.value || '').replace(/^"|"$/g, '') : '';
+    if (!upiRow || !oldVal || oldVal === 'aroxtechnologies@icici' || oldVal === 'aroxtech@upi') {
+      const defaults = {
+        upi_id: '6379000598@amazonpay',
+        upi_name: 'AROX Tech Pvt. Ltd.',
+        bank_name: 'Amazon Pay UPI',
+        account_number: '',
+        ifsc_code: '',
+        qr_note: 'Pay via any UPI app to 6379000598@amazonpay'
+      };
+      const stmt = db.prepare(`
+        INSERT INTO settings (key, value, section, updated_at)
+        VALUES (?, ?, 'payment', CURRENT_TIMESTAMP)
+        ON CONFLICT(key) DO UPDATE SET value = excluded.value, section = excluded.section, updated_at = CURRENT_TIMESTAMP
+      `);
+      for (const [k, v] of Object.entries(defaults)) {
+        stmt.run(k, String(v));
+      }
+    }
+  } catch (e) {
+    logger.warn('Could not initialize payment settings:', e.message);
+  }
 
   // Insert default roles if missing
   try {

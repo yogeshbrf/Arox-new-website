@@ -156,6 +156,7 @@ app.use(['/api', '/admin', '/employee', '/student'], async (req, res, next) => {
 app.use(['/admin', '/employee', '/student'], (req, res, next) => {
   try {
     res.locals.org = settingsService.getOrgSettings();
+    res.locals.paymentConfig = settingsService.getPaymentSettings();
   } catch (e) {
     res.locals.org = appConfig.org;
   }
@@ -172,6 +173,7 @@ app.use('/api/courses', require('./erp/routes/api/courses'));
 app.use('/api/registrations', require('./erp/routes/api/registrations'));
 app.use('/api/payments', require('./erp/routes/api/payments'));
 app.use('/api/student', require('./erp/routes/api/student'));
+app.use('/api/admin', require('./erp/routes/api/admin'));
 app.use('/api/employee', require('./erp/routes/api/employee'));
 app.use('/api/sync', require('./erp/routes/api/sync'));
 app.use('/api/referrals', require('./erp/routes/api/referrals'));

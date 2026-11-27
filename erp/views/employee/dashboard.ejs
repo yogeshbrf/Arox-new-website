@@ -1,16 +1,23 @@
-<div class="erp-h1" style="margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; color: #000000;">
+<div class="erp-h1" style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; color: #000000;">
   <div>
-    <div style="font-size: 26px; font-weight: 750; letter-spacing: -0.02em;">Welcome back, <%= user.first_name || 'Staff' %> 👋</div>
-    <div style="font-size: 13px; color: #64748B; font-weight: 500; margin-top: 4px;">Employee Workspace & CRM Dashboard</div>
+    <div style="font-size: 26px; font-weight: 750; letter-spacing: -0.02em;">Welcome back, <%= user.first_name || 'Staff' %></div>
+    <div style="font-size: 13px; color: #64748B; font-weight: 500; margin-top: 4px;">Employee Workspace, Referred Students &amp; Proof Uploads</div>
   </div>
-  <div style="display: flex; gap: 10px; align-items: center;">
+  <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+    <% if (typeof referralCode !== 'undefined' && referralCode) { %>
+      <div style="display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; background: #EFF6FF; border: 1px solid #BFDBFE; border-radius: 8px; font-size: 12px;">
+        <span style="color: #1E40AF; font-weight: 700;">My Referral Code:</span>
+        <span style="font-family: monospace; font-weight: 800; color: #0F172A;" id="empDashRefCode"><%= referralCode %></span>
+        <button type="button" onclick="copyEmpRefCode()" style="padding: 3px 8px; background: #155EEF; color: #fff; border: none; border-radius: 5px; font-size: 11px; font-weight: 700; cursor: pointer;">Copy</button>
+      </div>
+    <% } %>
     <a href="/employee/leads" class="erp-btn erp-btn-sm" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; background: #000; color: #fff; border-radius: 8px; font-size: 12px; font-weight: 600;">
       <i data-lucide="plus" style="width: 14px; height: 14px;"></i>
       <span>Add Lead</span>
     </a>
-    <a href="/employee/clients" class="erp-btn erp-btn-sm" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; background: #fff; color: #000; border: 1px solid #CBD5E1; border-radius: 8px; font-size: 12px; font-weight: 600;">
-      <i data-lucide="building-2" style="width: 14px; height: 14px;"></i>
-      <span>Find Clients</span>
+    <a href="/employee/students" class="erp-btn erp-btn-sm" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; background: #fff; color: #000; border: 1px solid #CBD5E1; border-radius: 8px; font-size: 12px; font-weight: 600;">
+      <i data-lucide="users" style="width: 14px; height: 14px;"></i>
+      <span>My Referred Students (<%= typeof referredStudentsCount !== 'undefined' ? referredStudentsCount : 0 %>)</span>
     </a>
   </div>
 </div>
@@ -209,6 +216,189 @@
     </div>
   </div>
 </div>
+
+<!-- Employee Referred Students (Strict Referral Code Scope) + Upload Work Proof -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 24px; margin-bottom: 32px;">
+
+  <!-- My Referred Students Only -->
+  <div class="erp-card" style="background: #FFFFFF; border: 1px solid #E2E8F0; padding: 24px; border-radius: 12px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid #E2E8F0;">
+      <div>
+        <h3 style="font-size: 16px; font-weight: 750; margin: 0; color: #000;">My Referred Students (<%= (typeof referredStudents !== 'undefined' && referredStudents) ? referredStudents.length : 0 %>)</h3>
+        <p style="font-size: 12px; color: #64748B; margin: 2px 0 0 0;">
+          <% if (typeof referralCode !== 'undefined' && referralCode) { %>
+            Only students registered with code <strong style="font-family: monospace; color: #155EEF;"><%= referralCode %></strong>
+          <% } else { %>
+            Students referred via your unique code
+          <% } %>
+        </p>
+      </div>
+      <a href="/employee/students" style="font-size: 12px; font-weight: 600; color: #000; text-decoration: underline;">View All &rarr;</a>
+    </div>
+
+    <% if (typeof referralCode !== 'undefined' && referralCode) { %>
+      <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 10px 12px; background: #F8FAFC; border: 1px dashed #CBD5E1; border-radius: 8px; margin-bottom: 14px; font-size: 12px;">
+        <span style="color: #475569; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Share link: <strong id="empRefInvitePath">/apply?ref=<%= referralCode %></strong></span>
+        <button type="button" onclick="copyEmpInviteLink()" style="padding: 4px 10px; background: #0F172A; color: #fff; border: none; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer; white-space: nowrap;">Copy Link</button>
+      </div>
+    <% } %>
+
+    <% if (typeof referredStudents !== 'undefined' && referredStudents && referredStudents.length > 0) { %>
+      <div style="display: flex; flex-direction: column; gap: 10px; max-height: 310px; overflow-y: auto;">
+        <% referredStudents.forEach(st => { %>
+          <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; border: 1px solid #E2E8F0; border-radius: 8px; background: #F8FAFC;">
+            <div>
+              <div style="font-weight: 700; font-size: 13px; color: #0F172A;"><%= st.first_name %> <%= st.last_name || '' %></div>
+              <div style="font-size: 11px; color: #64748B;"><%= st.course_title || 'Registered Account' %> · <%= st.phone || st.email %></div>
+            </div>
+            <span style="font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 99px; background: #DBEAFE; color: #1E40AF; text-transform: uppercase;">
+              <%= st.reg_status || 'enrolled' %>
+            </span>
+          </div>
+        <% }) %>
+      </div>
+    <% } else { %>
+      <div style="text-align: center; padding: 28px 16px; color: #64748B; font-size: 13px;">
+        No students have registered with your referral code yet. Share <strong><%= (typeof referralCode !== 'undefined' && referralCode) ? referralCode : 'your code' %></strong> to onboard students!
+      </div>
+    <% } %>
+  </div>
+
+  <!-- Upload Work Proof (Dropdown + PDF/PPTX/XLSX/DOCX up to 10MB) -->
+  <div class="erp-card" style="background: #FFFFFF; border: 1px solid #E2E8F0; padding: 24px; border-radius: 12px;">
+    <div style="border-bottom: 1px solid #E2E8F0; padding-bottom: 12px; margin-bottom: 16px;">
+      <h3 style="font-size: 16px; font-weight: 750; margin: 0; color: #000; display: flex; align-items: center; gap: 8px;">
+        <i data-lucide="file-up" style="width: 18px; height: 18px; color: #155EEF;"></i>
+        Upload Work Deliverable Proof
+      </h3>
+      <p style="font-size: 12px; color: #64748B; margin: 2px 0 0 0;">Accepted formats: <strong>.pdf, .pptx, .xlsx, .docx</strong> (Max 10 MB)</p>
+    </div>
+
+    <form id="employeeProofForm" onsubmit="handleUploadProof(event)" enctype="multipart/form-data" style="display: flex; flex-direction: column; gap: 12px;">
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+        <div>
+          <label class="erp-label">Proof Category *</label>
+          <select id="proofCategorySelect" name="category" class="erp-input" required>
+            <option value="Daily Work Report">Daily Work Report</option>
+            <option value="Task Deliverable">Task Deliverable Proof</option>
+            <option value="Client Presentation">Client Presentation (.pptx)</option>
+            <option value="Spreadsheets & Metrics">Spreadsheets &amp; Metrics (.xlsx)</option>
+            <option value="Documentation">Documentation (.docx / .pdf)</option>
+            <option value="Training & Batch Proof">Training / Lab Session Proof</option>
+          </select>
+        </div>
+        <div>
+          <label class="erp-label">Link Assigned Task (Optional)</label>
+          <select id="proofTaskIdSelect" name="task_id" class="erp-input">
+            <option value="">-- General Deliverable --</option>
+            <% if (typeof myTasks !== 'undefined' && myTasks) { %>
+              <% myTasks.forEach(t => { %>
+                <option value="<%= t.id %>"><%= t.title %> (<%= t.status %>)</option>
+              <% }) %>
+            <% } %>
+          </select>
+        </div>
+      </div>
+
+      <div>
+        <label class="erp-label">Proof Title / Short Description *</label>
+        <input type="text" id="proofTitleInput" name="title" class="erp-input" required placeholder="e.g. Week 3 Client Outreach Deck / Report">
+      </div>
+
+      <div>
+        <label class="erp-label">Attach Document (.pdf, .pptx, .xlsx, .docx — Max 10MB) *</label>
+        <input type="file" id="proofFileInput" name="proof" accept=".pdf,.pptx,.xlsx,.docx,application/pdf,application/vnd.openxmlformats-officedocument.presentationml.presentation,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.openxmlformats-officedocument.wordprocessingml.document" class="erp-input" required style="padding: 8px;">
+      </div>
+
+      <div>
+        <label class="erp-label">Remarks (Optional)</label>
+        <input type="text" id="proofRemarksInput" name="remarks" class="erp-input" placeholder="Summary notes for Admin reviewer...">
+      </div>
+
+      <button type="submit" id="btnUploadProof" class="erp-btn erp-btn-primary" style="background: #0F172A; color: #fff; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; gap: 8px;">
+        <i data-lucide="upload-cloud" style="width: 16px; height: 16px;"></i>
+        Upload Proof Document
+      </button>
+    </form>
+
+    <!-- Uploaded Proofs History -->
+    <div style="margin-top: 18px; border-top: 1px solid #E2E8F0; padding-top: 14px;">
+      <div style="font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 8px;">My Submitted Proofs (<%= (typeof uploadedProofs !== 'undefined' && uploadedProofs) ? uploadedProofs.length : 0 %>)</div>
+      <% if (typeof uploadedProofs !== 'undefined' && uploadedProofs && uploadedProofs.length > 0) { %>
+        <div style="display: flex; flex-direction: column; gap: 8px; max-height: 190px; overflow-y: auto;">
+          <% uploadedProofs.forEach(pf => { %>
+            <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 8px 10px; border: 1px solid #E2E8F0; border-radius: 8px; background: #F8FAFC; font-size: 12px;">
+              <div style="min-width: 0;">
+                <a href="<%= pf.file_path %>" target="_blank" style="font-weight: 700; color: #155EEF; text-decoration: none; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><%= pf.title || pf.original_name %></a>
+                <div style="font-size: 11px; color: #64748B;"><%= pf.category %> · <span style="text-transform: uppercase;"><%= pf.file_ext %></span> (<%= (Number(pf.file_size || 0) / (1024 * 1024)).toFixed(2) %> MB)</div>
+              </div>
+              <div style="display: flex; align-items: center; gap: 6px; flex-shrink: 0;">
+                <span style="font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 99px; text-transform: uppercase; background: <%= pf.status === 'approved' ? '#DCFCE7' : (pf.status === 'rejected' ? '#FEE2E2' : '#DBEAFE') %>; color: <%= pf.status === 'approved' ? '#166534' : (pf.status === 'rejected' ? '#B91C1C' : '#1E40AF') %>;"><%= pf.status %></span>
+                <% if (pf.status !== 'approved') { %>
+                  <button type="button" onclick="deleteMyProof(<%= pf.id %>)" style="border:none; background:#FEE2E2; color:#B91C1C; border-radius:5px; padding:3px 7px; font-size:11px; font-weight:700; cursor:pointer;">Delete</button>
+                <% } %>
+              </div>
+            </div>
+          <% }) %>
+        </div>
+      <% } else { %>
+        <div style="font-size: 12px; color: #94A3B8;">No work proofs uploaded yet.</div>
+      <% } %>
+    </div>
+  </div>
+</div>
+
+<script>
+  function copyEmpRefCode() {
+    const code = '<%= typeof referralCode !== "undefined" && referralCode ? referralCode : "" %>';
+    if (!code) return;
+    navigator.clipboard.writeText(code).then(() => alert('Referral code copied: ' + code));
+  }
+
+  function copyEmpInviteLink() {
+    const code = '<%= typeof referralCode !== "undefined" && referralCode ? referralCode : "" %>';
+    if (!code) return;
+    const url = window.location.origin + '/apply?ref=' + encodeURIComponent(code);
+    navigator.clipboard.writeText(url).then(() => alert('Invite link copied: ' + url));
+  }
+
+  async function handleUploadProof(e) {
+    e.preventDefault();
+    const fileInput = document.getElementById('proofFileInput');
+    const file = fileInput && fileInput.files && fileInput.files[0];
+    if (!file) return alert('Please select a file (.pdf, .pptx, .xlsx, .docx).');
+    if (file.size > 10 * 1024 * 1024) return alert('File exceeds the 10 MB limit.');
+    if (!/\.(pdf|pptx|xlsx|docx)$/i.test(file.name)) {
+      return alert('Invalid format. Only .pdf, .pptx, .xlsx, and .docx files are allowed.');
+    }
+
+    const btn = document.getElementById('btnUploadProof');
+    const orig = btn.innerHTML;
+    btn.disabled = true;
+    btn.textContent = 'Uploading...';
+
+    try {
+      const fd = new FormData(e.target);
+      const res = await fetch('/api/employee/proofs', { method: 'POST', body: fd });
+      const data = await res.json();
+      if (!res.ok || !data.success) throw new Error(data.message || 'Upload failed');
+      alert('Work proof uploaded successfully!');
+      window.location.reload();
+    } catch (err) {
+      alert(err.message);
+      btn.disabled = false;
+      btn.innerHTML = orig;
+    }
+  }
+
+  async function deleteMyProof(id) {
+    if (!confirm('Remove this work proof document?')) return;
+    const res = await fetch('/api/employee/proofs/' + id, { method: 'DELETE' });
+    const data = await res.json();
+    if (!data.success) return alert(data.message || 'Delete failed');
+    window.location.reload();
+  }
+</script>
 
 <script>
   function handleQuickCompleteFollowup(btn) {

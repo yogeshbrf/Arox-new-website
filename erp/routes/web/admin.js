@@ -11,6 +11,7 @@ const coursesController = require('../../controllers/admin/coursesController');
 const registrationsController = require('../../controllers/admin/registrationsController');
 const registrationController = require('../../controllers/registrationController');
 const paymentsController = require('../../controllers/admin/paymentsController');
+const adminAttendanceController = require('../../controllers/admin/attendanceController');
 const crmController = require('../../controllers/admin/crmController');
 const referralsController = require('../../controllers/admin/referralsController');
 const reviewsController = require('../../controllers/admin/reviewsController');
@@ -77,6 +78,9 @@ router.post('/registrations/:id', registrationController.update);
 
 // --- Payments ---
 router.get('/payments', paymentsController.index);
+
+// --- Live Attendance Management ---
+router.get('/attendance', adminAttendanceController.renderPage);
 
 // ============================================================
 // GENERATORS - Individual Pages

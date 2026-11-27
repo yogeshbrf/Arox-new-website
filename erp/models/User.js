@@ -47,13 +47,52 @@ class User {
     const phone = data.phone || '';
     const status = data.status || 'active';
     const email = data.email;
+    let referralCode = data.referral_code ? String(data.referral_code).trim().toUpperCase() : null;
 
     const result = db.prepare(`
-      INSERT INTO users (email, password_hash, role_id, status, first_name, last_name, phone, email_verified)
-      VALUES (?, ?, ?, ?, ?, ?, ?, 0)
-    `).run(email, passwordHash, roleId, status, first_name, last_name, phone);
+      INSERT INTO users (email, password_hash, role_id, status, first_name, last_name, phone, email_verified, referral_code)
+      VALUES (?, ?, ?, ?, ?, ?, ?, 0, ?)
+    `).run(email, passwordHash, roleId, status, first_name, last_name, phone, referralCode);
 
-    return { id: result.lastInsertRowid, email, roleId };
+    const newId = result.lastInsertRowid;
+    if (roleId === 4) {
+      referralCode = this.ensureEmployeeReferralCode(newId, first_name, last_name, email, referralCode);
+    }
+
+    return { id: newId, email, roleId, referral_code: referralCode };
+  }
+
+  static ensureEmployeeReferralCode(userId, firstName = '', lastName = '', email = '', preferredCode = null) {
+    const db = getDb();
+    let userRow = db.prepare('SELECT id, first_name, last_name, email, referral_code FROM users WHERE id = ?').get(userId);
+    if (!userRow) return null;
+
+    let code = (preferredCode || userRow.referral_code || '').trim().toUpperCase();
+    if (!code) {
+      const prefix = (firstName || userRow.first_name || 'EMP').replace(/[^A-Za-z]/g, '').slice(0, 3).toUpperCase() || 'EMP';
+      code = `AROX-${prefix}${String(userId).padStart(2, '0')}`;
+      let suffix = 1;
+      while (
+        db.prepare('SELECT id FROM users WHERE UPPER(referral_code) = UPPER(?) AND id != ?').get(code, userId) ||
+        db.prepare('SELECT id FROM referrals WHERE LOWER(code) = LOWER(?) AND (employee_id IS NULL OR employee_id != ?)').get(code, userId)
+      ) {
+        code = `AROX-${prefix}${userId}${suffix++}`;
+      }
+    }
+
+    db.prepare('UPDATE users SET referral_code = ? WHERE id = ?').run(code, userId);
+
+    const fullName = `${firstName || userRow.first_name || ''} ${lastName || userRow.last_name || ''}`.trim() || (email || userRow.email);
+    const existingRef = db.prepare('SELECT id, employee_id FROM referrals WHERE LOWER(code) = LOWER(?)').get(code);
+    if (!existingRef) {
+      db.prepare(`
+        INSERT INTO referrals (code, referrer_name, referrer_email, referrer_type, discount_percent, max_uses, times_used, employee_id, is_active)
+        VALUES (?, ?, ?, 'employee', 5, 0, 0, ?, 1)
+      `).run(code, fullName, email || userRow.email || null, userId);
+    } else if (!existingRef.employee_id) {
+      db.prepare("UPDATE referrals SET employee_id = ?, referrer_type = 'employee', is_active = 1 WHERE id = ?").run(userId, existingRef.id);
+    }
+    return code;
   }
 
   static findAll() {

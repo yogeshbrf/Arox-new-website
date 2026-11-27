@@ -8,9 +8,10 @@ function errorHandler(err, req, res, next) {
 
   // Multer errors
   if (err.code === 'LIMIT_FILE_SIZE') {
+    const maxMb = (req.originalUrl && req.originalUrl.includes('/proofs')) ? '10MB' : '5MB';
     return res.status(413).json({
       success: false,
-      message: 'File too large. Maximum size is 5MB.'
+      message: `File too large. Maximum size is ${maxMb}.`
     });
   }
 

@@ -159,7 +159,18 @@
                   <div style="font-size: 12px; color: #000000; font-weight: 600;">
                     <%= c.start_date ? new Date(c.start_date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : 'Flexible' %>
                   </div>
-                  <div class="erp-small" style="color: #64748B;"><%= c.duration || 'N/A' %></div>
+                  <div class="erp-small" style="color: #64748B;">
+                    <strong><%= c.duration || 'N/A' %></strong> · <span style="text-transform:uppercase;"><%= c.mode || 'online' %></span>
+                  </div>
+                  <div style="font-size: 11px; color: #334155; margin-top: 2px;">
+                    <%= c.class_timing || 'Timing TBA' %>
+                    <span style="margin-left: 4px; padding: 1px 6px; border-radius: 99px; font-size: 10px; font-weight: 700; background: <%= c.class_available === 0 ? '#FEE2E2' : '#DCFCE7' %>; color: <%= c.class_available === 0 ? '#B91C1C' : '#166534' %>;">
+                      Class: <%= c.class_available === 0 ? 'OFF' : 'ON' %>
+                    </span>
+                    <span style="margin-left: 2px; padding: 1px 6px; border-radius: 99px; font-size: 10px; font-weight: 700; background: <%= c.trainer_available_today === 0 ? '#FEF3C7' : '#DBEAFE' %>; color: <%= c.trainer_available_today === 0 ? '#92400E' : '#1E40AF' %>;">
+                      Trainer: <%= c.trainer_available_today === 0 ? 'OFF' : 'ON' %>
+                    </span>
+                  </div>
                 </td>
                 <td>
                   <div style="font-weight: 750; font-size: 14px; color: #000000;">
@@ -340,15 +351,65 @@
         </div>
       </div>
 
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px;">
         <div>
           <label style="display: block; font-size: 12px; font-weight: 600; color: #000000; margin-bottom: 4px;">Duration *</label>
           <input type="text" id="courseDuration" name="duration" class="erp-input" placeholder="e.g. 1 Month / 4 Weeks" required>
         </div>
 
         <div>
+          <label style="display: block; font-size: 12px; font-weight: 600; color: #000000; margin-bottom: 4px;">Learning Mode *</label>
+          <select id="courseMode" name="mode" class="erp-input" required>
+            <option value="online">Online</option>
+            <option value="offline">Offline (Classroom)</option>
+            <option value="hybrid">Hybrid</option>
+          </select>
+        </div>
+
+        <div>
           <label style="display: block; font-size: 12px; font-weight: 600; color: #000000; margin-bottom: 4px;">Course Fee (₹) *</label>
           <input type="number" id="courseFee" name="fee" class="erp-input" min="0" placeholder="e.g. 3500" required>
+        </div>
+      </div>
+
+      <!-- Offline / Live Schedule & Trainer Availability (Synced to Student Dashboard) -->
+      <div style="padding: 12px 14px; background: #F8FAFC; border: 1px solid #CBD5E1; border-radius: 10px; display: flex; flex-direction: column; gap: 12px;">
+        <div style="font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; color: #155EEF;">
+          Live Class Schedule &amp; Trainer Availability (Visible to Enrolled Students)
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px;">
+          <div>
+            <label style="display: block; font-size: 12px; font-weight: 600; color: #000000; margin-bottom: 4px;">Class Timing</label>
+            <input type="text" id="courseTiming" name="class_timing" class="erp-input" placeholder="e.g. 10:00 AM - 12:30 PM">
+          </div>
+          <div>
+            <label style="display: block; font-size: 12px; font-weight: 600; color: #000000; margin-bottom: 4px;">Assigned Trainer</label>
+            <input type="text" id="courseTrainerName" name="trainer_name" class="erp-input" placeholder="e.g. Karthik M">
+          </div>
+          <div>
+            <label style="display: block; font-size: 12px; font-weight: 600; color: #000000; margin-bottom: 4px;">Room / Lab</label>
+            <input type="text" id="courseLocation" name="classroom_location" class="erp-input" placeholder="e.g. Campus Lab 2">
+          </div>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div>
+            <label style="display: block; font-size: 12px; font-weight: 600; color: #000000; margin-bottom: 4px;">Class Available Today</label>
+            <select id="courseClassAvailable" name="class_available" class="erp-input">
+              <option value="1">Yes — Class Available Today</option>
+              <option value="0">No — Class Cancelled / Rescheduled</option>
+            </select>
+          </div>
+          <div>
+            <label style="display: block; font-size: 12px; font-weight: 600; color: #000000; margin-bottom: 4px;">Trainer Available Today</label>
+            <select id="courseTrainerAvailable" name="trainer_available_today" class="erp-input">
+              <option value="1">Yes — Trainer Available Today</option>
+              <option value="0">No — Trainer Unavailable Today</option>
+            </select>
+          </div>
+        </div>
+        <div>
+          <label style="display: block; font-size: 12px; font-weight: 600; color: #000000; margin-bottom: 4px;">Today's Announcement / Trainer Note</label>
+          <input type="text" id="courseTrainerNote" name="trainer_status_note" class="erp-input" placeholder="e.g. Bring laptop for offline project review at 10 AM">
         </div>
       </div>
 
@@ -414,7 +475,14 @@
     document.getElementById('courseType').value = course.category || course.type || 'training';
     document.getElementById('courseBatch').value = course.batch_name || '';
     document.getElementById('courseDuration').value = course.duration || '';
+    document.getElementById('courseMode').value = course.mode || 'online';
     document.getElementById('courseFee').value = course.price || course.fee || 0;
+    document.getElementById('courseTiming').value = course.class_timing || '';
+    document.getElementById('courseTrainerName').value = course.trainer_name || '';
+    document.getElementById('courseLocation').value = course.classroom_location || '';
+    document.getElementById('courseClassAvailable').value = (course.class_available === 0 || course.class_available === '0') ? '0' : '1';
+    document.getElementById('courseTrainerAvailable').value = (course.trainer_available_today === 0 || course.trainer_available_today === '0') ? '0' : '1';
+    document.getElementById('courseTrainerNote').value = course.trainer_status_note || '';
     
     if (course.start_date) {
       document.getElementById('courseStartDate').value = new Date(course.start_date).toISOString().split('T')[0];
@@ -452,7 +520,14 @@
       type: document.getElementById('courseType').value,
       batch_name: document.getElementById('courseBatch').value,
       duration: document.getElementById('courseDuration').value,
+      mode: document.getElementById('courseMode').value,
       fee: document.getElementById('courseFee').value,
+      class_timing: document.getElementById('courseTiming').value,
+      trainer_name: document.getElementById('courseTrainerName').value,
+      classroom_location: document.getElementById('courseLocation').value,
+      class_available: document.getElementById('courseClassAvailable').value,
+      trainer_available_today: document.getElementById('courseTrainerAvailable').value,
+      trainer_status_note: document.getElementById('courseTrainerNote').value,
       start_date: document.getElementById('courseStartDate').value,
       end_date: document.getElementById('courseEndDate').value,
       max_students: document.getElementById('courseMaxStudents').value,

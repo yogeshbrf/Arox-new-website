@@ -161,6 +161,22 @@
         }
         break;
 
+      case 'offline_class:updated':
+      case 'course:updated':
+        showSyncToast(data.message || 'Class schedule & trainer availability updated.', 'info');
+        if (currentPath.includes('/dashboard') || currentPath.includes('/courses') || currentPath.includes('/attendance')) {
+          reloadIfNotEditing(600);
+        }
+        break;
+
+      case 'proof:uploaded':
+      case 'proof:reviewed':
+        showSyncToast(data.message || 'Work proof status updated.', 'info');
+        if (currentPath.includes('/dashboard') || currentPath.includes('/tasks') || currentPath.includes('/reports')) {
+          reloadIfNotEditing(600);
+        }
+        break;
+
       case 'review:created':
       case 'review:acknowledged':
       case 'review:replied':
@@ -229,7 +245,7 @@
           'payment:updated', 'payment:verified', 'payment:created',
           'internship:updated',
           'referral:used', 'referral:created', 'referral:updated', 'referral:deleted',
-          'attendance:marked', 'review:created', 'review:acknowledged', 'review:replied',
+          'attendance:marked', 'offline_class:updated', 'course:updated', 'proof:uploaded', 'proof:reviewed', 'review:created', 'review:acknowledged', 'review:replied',
           'client:updated', 'client:created', 'client:deleted',
           'call_report:created', 'call_report:updated', 'student:updated', 'student:deleted',
           'task:updated', 'task:created', 'task:deleted'

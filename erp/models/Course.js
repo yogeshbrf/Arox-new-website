@@ -58,21 +58,30 @@ class Course {
       title: data.title,
       slug: data.slug,
       category: data.type || 'training',
+      mode: ['online', 'offline', 'hybrid'].includes(data.mode) ? data.mode : 'online',
       batch_name: data.batch_name,
-      duration: data.duration,
+      duration: data.duration || '8 Weeks',
       price: data.fee || 0,
       start_date: data.start_date,
       end_date: data.end_date,
       max_students: data.max_students || 50,
       description: data.description,
+      trainer_name: data.trainer_name || null,
+      class_timing: data.class_timing || null,
+      class_available: data.class_available !== undefined ? (data.class_available ? 1 : 0) : 1,
+      trainer_available_today: data.trainer_available_today !== undefined ? (data.trainer_available_today ? 1 : 0) : 1,
+      trainer_status_note: data.trainer_status_note || null,
+      classroom_location: data.classroom_location || null,
       is_active: (data.status === 'active' || data.status === '1' || data.status === 1) ? 1 : 0
     };
 
     const result = db.prepare(`
       INSERT INTO courses (
-        title, slug, category, batch_name, duration, price, start_date, end_date, max_students, description, is_active
+        title, slug, category, mode, batch_name, duration, price, start_date, end_date, max_students, description,
+        trainer_name, class_timing, class_available, trainer_available_today, trainer_status_note, classroom_location, is_active
       ) VALUES (
-        @title, @slug, @category, @batch_name, @duration, @price, @start_date, @end_date, @max_students, @description, @is_active
+        @title, @slug, @category, @mode, @batch_name, @duration, @price, @start_date, @end_date, @max_students, @description,
+        @trainer_name, @class_timing, @class_available, @trainer_available_today, @trainer_status_note, @classroom_location, @is_active
       )
     `).run(dbData);
 

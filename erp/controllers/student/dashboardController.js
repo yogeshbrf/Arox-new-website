@@ -61,11 +61,14 @@ exports.index = (req, res) => {
     const totalPayments = paymentRow && paymentRow.total ? parseFloat(paymentRow.total) || 0 : 0;
     const paidPayments = paymentRow && paymentRow.paid ? parseFloat(paymentRow.paid) || 0 : 0;
 
-    // 4. Enrolled Courses
+    // 4. Enrolled Courses (including live offline class schedule & trainer availability updated by Admin)
     const courses = db.prepare(`
-      SELECT r.id, r.registration_id as reg_display_id, r.status, 
+      SELECT r.id, r.registration_id as reg_display_id, r.status, r.mode as reg_mode,
              r.balance_amount, r.paid_amount, r.total_amount,
-             c.id as course_id, c.title as course_title, c.slug, c.category, c.duration, c.batch_name, c.start_date
+             c.id as course_id, c.title as course_title, c.slug, c.category, c.duration, c.batch_name, c.start_date,
+             COALESCE(c.mode, r.mode, 'online') as mode,
+             c.trainer_name, c.class_timing, c.class_available, c.trainer_available_today,
+             c.trainer_status_note, c.classroom_location, c.updated_at as schedule_updated_at
       FROM registrations r
       JOIN courses c ON r.course_id = c.id
       WHERE r.student_id = ?
@@ -107,11 +110,19 @@ exports.index = (req, res) => {
             classDate.setDate(classDate.getDate() + 7);
           }
           return {
+            course_id: c.course_id,
             course_title: c.course_title,
+            mode: c.mode || c.reg_mode || 'online',
+            duration: c.duration,
+            trainer_name: c.trainer_name || 'Assigned Trainer',
+            class_available: c.class_available !== 0 && c.class_available !== '0',
+            trainer_available_today: c.trainer_available_today !== 0 && c.trainer_available_today !== '0',
+            trainer_status_note: c.trainer_status_note || '',
+            classroom_location: c.classroom_location || '',
             date: classDate,
             month: classDate.toLocaleString('en-IN', { month: 'short' }).toUpperCase(),
             day: classDate.getDate(),
-            time: '10:00 AM - 12:00 PM'
+            time: c.class_timing || '10:00 AM - 12:00 PM'
           };
         })
         .sort((a, b) => a.date - b.date)

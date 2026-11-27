@@ -17,7 +17,24 @@ router.get('/validate/:code', optionalAuth, (req, res) => {
       return res.json({ success: true, valid: false, message: 'Please enter a referral code.' });
     }
     const cleanCode = rawCode.toUpperCase();
-    const ref = Referral.findByCode(cleanCode);
+    let ref = Referral.findByCode(cleanCode);
+    if (!ref) {
+      const { getDb } = require('../../config/database');
+      const empUser = getDb().prepare(`
+        SELECT id, first_name, last_name, email, referral_code, status
+        FROM users WHERE UPPER(referral_code) = UPPER(?) AND deleted_at IS NULL
+      `).get(cleanCode);
+      if (empUser && empUser.status === 'active') {
+        return res.json({
+          success: true,
+          valid: true,
+          code: (empUser.referral_code || cleanCode).toUpperCase(),
+          discountPercent: 5,
+          referrerName: `${empUser.first_name || ''} ${empUser.last_name || ''}`.trim() || empUser.email,
+          employeeId: empUser.id
+        });
+      }
+    }
     if (!ref || !ref.is_active) {
       return res.json({ success: true, valid: false, message: `Referral code "${cleanCode}" is invalid or inactive.` });
     }

@@ -3,6 +3,7 @@ const router = express.Router();
 const { authenticate } = require('../../middleware/auth');
 const roleGuard = require('../../middleware/roleGuard');
 const employeeController = require('../../controllers/employeeController');
+const upload = require('../../middleware/upload');
 
 router.use(authenticate);
 router.use(roleGuard('employee', 'trainer', 'staff', 'admin', 'super_admin'));
@@ -28,5 +29,10 @@ router.post('/tasks', employeeController.createTask);
 router.put('/tasks/:id/status', employeeController.updateTaskStatus);
 router.put('/tasks/:id', employeeController.updateTask);
 router.delete('/tasks/:id', employeeController.deleteTask);
+
+// Work Deliverable Proofs (.pdf, .pptx, .xlsx, .docx up to 10MB)
+router.get('/proofs', employeeController.listProofs);
+router.post('/proofs', upload.uploadProof.single('proof'), employeeController.uploadProof);
+router.delete('/proofs/:id', employeeController.deleteProof);
 
 module.exports = router;

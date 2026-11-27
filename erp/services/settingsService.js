@@ -39,6 +39,14 @@ const DEFAULT_SETTINGS = {
     email_on_payment: true,
     email_on_review: true,
     daily_digest: true
+  },
+  payment: {
+    upi_id: '6379000598@amazonpay',
+    upi_name: 'AROX Tech Pvt. Ltd.',
+    bank_name: 'Amazon Pay UPI',
+    account_number: '',
+    ifsc_code: '',
+    qr_note: 'Pay via any UPI app to 6379000598@amazonpay'
   }
 };
 
@@ -106,6 +114,11 @@ function getOrgSettings() {
   return all.org || DEFAULT_SETTINGS.org;
 }
 
+function getPaymentSettings() {
+  const all = getAllSettings();
+  return { ...DEFAULT_SETTINGS.payment, ...(all.payment || {}) };
+}
+
 function updateSection(section, data, req = null) {
   const db = getDb();
   ensureTable(db);
@@ -150,6 +163,7 @@ function updateSection(section, data, req = null) {
 module.exports = {
   getAllSettings,
   getOrgSettings,
+  getPaymentSettings,
   updateSection,
   DEFAULT_SETTINGS
 };

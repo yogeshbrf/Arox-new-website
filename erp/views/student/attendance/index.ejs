@@ -301,14 +301,17 @@
       <button type="button" onclick="closeCalendarModal()" style="border: none; background: transparent; font-size: 24px; cursor: pointer; color: #64748B; line-height: 1;">&times;</button>
     </div>
 
-    <!-- Today Action Banner -->
-    <div id="modalTodayBanner" style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; padding: 14px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
-      <div>
-        <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: #64748B;">Today's Attendance Status</div>
-        <div style="font-size: 14px; font-weight: 750; color: #000;" id="modalTodayStatusText">Checking status...</div>
+    <!-- Today Action Banner (Supports Marking & Updating Today's Daily Attendance) -->
+    <div id="modalTodayBanner" style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 10px; padding: 14px; margin-bottom: 16px; display: flex; flex-direction: column; gap: 12px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+        <div>
+          <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: #64748B;">Today's Daily Attendance (<%= serverToday %>)</div>
+          <div style="font-size: 14px; font-weight: 750; color: #000;" id="modalTodayStatusText">Checking status...</div>
+        </div>
+        <div id="modalTodayBadge"></div>
       </div>
-      <div id="modalTodayActionContainer">
-        <!-- Mark Attendance Button rendered dynamically -->
+      <div id="modalTodayActionContainer" style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center;">
+        <!-- Mark / Update Attendance Controls rendered dynamically -->
       </div>
     </div>
 
@@ -381,14 +384,52 @@
 
   function updateTodayBanner() {
     const bannerText = document.getElementById('modalTodayStatusText');
+    const badgeEl = document.getElementById('modalTodayBadge');
     const container = document.getElementById('modalTodayActionContainer');
 
+    const curRec = activeCourse.todayRecord || null;
+    const curStatus = curRec ? (curRec.status || 'present') : 'present';
+    const curMethod = curRec ? (curRec.method || (activeCourse.course_mode === 'offline' ? 'offline' : 'online')) : (activeCourse.course_mode === 'offline' ? 'offline' : 'online');
+    const curRemarks = curRec && curRec.remarks ? curRec.remarks : '';
+
     if (activeCourse.isMarkedToday) {
-      bannerText.innerHTML = `<span style="color: #16A34A;">● Present — Checked in at ${activeCourse.todayRecord ? activeCourse.todayRecord.check_in_time : 'Session'}</span>`;
-      container.innerHTML = `<span style="font-size: 12px; font-weight: 700; color: #16A34A; background: #DCFCE7; padding: 6px 12px; border-radius: 6px;">Attendance Verified</span>`;
+      const statusColors = { present: '#16A34A', late: '#D97706', leave: '#2563EB', absent: '#DC2626', holiday: '#7C3AED' };
+      const cColor = statusColors[curStatus] || '#16A34A';
+      bannerText.innerHTML = `<span style="color: ${cColor};">● ${curStatus.toUpperCase()} — ${(curRec && curRec.check_in_time) ? 'Checked in at ' + curRec.check_in_time : 'Recorded for today'}</span>`;
+      if (badgeEl) {
+        badgeEl.innerHTML = `<span style="font-size: 11px; font-weight: 700; color: ${cColor}; background: #EFF6FF; padding: 4px 10px; border-radius: 99px;">Marked (${curStatus.toUpperCase()})</span>`;
+      }
+      container.innerHTML = `
+        <select id="stuTodayStatus" class="erp-input" style="padding: 6px 10px; font-size: 12px; font-weight: 700; width: auto;">
+          <option value="present" ${curStatus === 'present' ? 'selected' : ''}>Present</option>
+          <option value="late" ${curStatus === 'late' ? 'selected' : ''}>Late</option>
+          <option value="leave" ${curStatus === 'leave' ? 'selected' : ''}>On Leave</option>
+          <option value="absent" ${curStatus === 'absent' ? 'selected' : ''}>Absent</option>
+        </select>
+        <select id="stuTodayMethod" class="erp-input" style="padding: 6px 10px; font-size: 12px; width: auto;">
+          <option value="online" ${curMethod === 'online' ? 'selected' : ''}>Online Mode</option>
+          <option value="offline" ${curMethod === 'offline' ? 'selected' : ''}>Offline Mode</option>
+        </select>
+        <input type="text" id="stuTodayRemarks" value="${String(curRemarks).replace(/"/g, '&quot;')}" placeholder="Optional note..." class="erp-input" style="padding: 6px 10px; font-size: 12px; flex: 1 1 160px;">
+        <button type="button" id="updateAttendanceBtn" onclick="updateTodayAttendance()" class="erp-btn erp-btn-primary" style="padding: 8px 16px; background: #155EEF; color: #fff; border-radius: 6px; font-weight: 700; font-size: 12px; cursor: pointer; border: none;">
+          Update Today's Attendance
+        </button>
+      `;
     } else if (activeCourse.canMarkToday) {
       bannerText.innerHTML = `<span style="color: #D97706;">● Unmarked for Today (${SERVER_TODAY})</span>`;
+      if (badgeEl) badgeEl.innerHTML = '';
       container.innerHTML = `
+        <select id="stuTodayStatus" class="erp-input" style="padding: 6px 10px; font-size: 12px; font-weight: 700; width: auto;">
+          <option value="present" selected>Present</option>
+          <option value="late">Late</option>
+          <option value="leave">On Leave</option>
+          <option value="absent">Absent</option>
+        </select>
+        <select id="stuTodayMethod" class="erp-input" style="padding: 6px 10px; font-size: 12px; width: auto;">
+          <option value="online" ${curMethod === 'online' ? 'selected' : ''}>Online Mode</option>
+          <option value="offline" ${curMethod === 'offline' ? 'selected' : ''}>Offline Mode</option>
+        </select>
+        <input type="text" id="stuTodayRemarks" placeholder="Optional note..." class="erp-input" style="padding: 6px 10px; font-size: 12px; flex: 1 1 160px;">
         <button type="button" id="markAttendanceBtn" onclick="markTodayAttendance()" class="erp-btn erp-btn-primary" style="padding: 8px 18px; background: #000; color: #fff; border-radius: 6px; font-weight: 700; font-size: 13px; cursor: pointer; border: none;">
           Mark Attendance Today
         </button>
@@ -456,9 +497,11 @@
         cell.style.border = '2px solid #000000';
       }
 
-      if (record && record.status === 'present') {
-        cell.style.background = '#DCFCE7';
-        cell.style.borderColor = '#86EFAC';
+      if (record) {
+        const bgMap = { present: '#DCFCE7', late: '#FEF3C7', leave: '#DBEAFE', absent: '#FEE2E2', holiday: '#EDE9FE' };
+        const bdMap = { present: '#86EFAC', late: '#FCD34D', leave: '#93C5FD', absent: '#FCA5A5', holiday: '#C4B5FD' };
+        cell.style.background = bgMap[record.status] || '#DCFCE7';
+        cell.style.borderColor = bdMap[record.status] || '#86EFAC';
       } else if (inRange) {
         cell.style.background = '#F0F9FF';
       } else {
@@ -468,8 +511,10 @@
 
       let inner = `<div style="font-size: 11px; font-weight: ${isToday ? '800' : '600'}; color: ${isToday ? '#000' : '#334155'};">${day}</div>`;
 
-      if (record && record.status === 'present') {
-        inner += `<div style="font-size: 9px; font-weight: 700; color: #16A34A; text-align: center;">✓ Present</div>`;
+      if (record) {
+        const clrMap = { present: '#16A34A', late: '#B45309', leave: '#1D4ED8', absent: '#DC2626', holiday: '#6D28D9' };
+        const txtMap = { present: '✓ Present', late: 'Late', leave: 'Leave', absent: 'Absent', holiday: 'Holiday' };
+        inner += `<div style="font-size: 9px; font-weight: 700; color: ${clrMap[record.status] || '#16A34A'}; text-align: center;">${txtMap[record.status] || record.status}</div>`;
       } else if (isToday) {
         inner += `<div style="font-size: 9px; font-weight: 800; color: #000; text-align: center;">TODAY</div>`;
       }
@@ -484,16 +529,46 @@
     const btn = document.getElementById('markAttendanceBtn');
     if (btn) btn.disabled = true;
 
+    const status = (document.getElementById('stuTodayStatus') || {}).value || 'present';
+    const method = (document.getElementById('stuTodayMethod') || {}).value || 'online';
+    const remarks = (document.getElementById('stuTodayRemarks') || {}).value || '';
+
     try {
       const res = await fetch('/api/student/attendance/mark', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ course_id: activeCourse.course_id })
+        body: JSON.stringify({ course_id: activeCourse.course_id, status, method, remarks })
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || 'Failed to mark attendance.');
 
       alert(data.message || 'Attendance marked successfully!');
+      window.location.reload();
+    } catch (err) {
+      alert(err.message);
+      if (btn) btn.disabled = false;
+    }
+  }
+
+  async function updateTodayAttendance() {
+    if (!activeCourse) return;
+    const btn = document.getElementById('updateAttendanceBtn');
+    if (btn) btn.disabled = true;
+
+    const status = (document.getElementById('stuTodayStatus') || {}).value || 'present';
+    const method = (document.getElementById('stuTodayMethod') || {}).value || 'online';
+    const remarks = (document.getElementById('stuTodayRemarks') || {}).value || '';
+
+    try {
+      const res = await fetch('/api/student/attendance/today', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ course_id: activeCourse.course_id, status, method, remarks })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Failed to update today\'s attendance.');
+
+      alert(data.message || 'Today\'s attendance updated successfully!');
       window.location.reload();
     } catch (err) {
       alert(err.message);

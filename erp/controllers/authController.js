@@ -176,6 +176,7 @@ const authController = {
             role: roleName,
             first_name: user.first_name,
             last_name: user.last_name,
+            referral_code: user.referral_code || null,
             student
           }
         }
@@ -247,11 +248,30 @@ const authController = {
         status: 'active'
       });
 
-      // Create student profile record if registering as student
+      // Create student profile record if registering as student (optionally attributed via employee referral code)
       let student = null;
       if (roleId === 3) {
         const { generateStudentId } = require('../utils/helpers');
+        const { getDb } = require('../config/database');
+        const db = getDb();
         const student_id = generateStudentId();
+        const rawRefCode = (req.body.referral_code || '').trim().toUpperCase();
+        let referredBy = null;
+        let normalizedRefCode = null;
+        if (rawRefCode) {
+          const empUser = db.prepare('SELECT id, referral_code FROM users WHERE UPPER(referral_code) = UPPER(?) AND deleted_at IS NULL').get(rawRefCode);
+          const refRow = db.prepare('SELECT id, code, employee_id FROM referrals WHERE LOWER(code) = LOWER(?) AND is_active = 1').get(rawRefCode);
+          if (empUser) {
+            referredBy = empUser.id;
+            normalizedRefCode = (empUser.referral_code || rawRefCode).toUpperCase();
+          } else if (refRow) {
+            referredBy = refRow.employee_id || null;
+            normalizedRefCode = refRow.code.toUpperCase();
+          }
+          if (refRow) {
+            try { db.prepare('UPDATE referrals SET times_used = COALESCE(times_used, 0) + 1 WHERE id = ?').run(refRow.id); } catch (e) {}
+          }
+        }
         try {
           student = Student.create({
             user_id: user.id,
@@ -273,7 +293,9 @@ const authController = {
             department: req.body.department || 'Computer Science & Engineering',
             year_of_study: 'Final Year',
             graduation_year: new Date().getFullYear().toString(),
-            roll_number: ''
+            roll_number: '',
+            referred_by: referredBy,
+            referral_code: normalizedRefCode
           });
         } catch (sErr) {
           logger.warn('Student profile auto-creation warning:', sErr.message);
@@ -313,6 +335,7 @@ const authController = {
             role: roleName,
             first_name,
             last_name,
+            referral_code: user.referral_code || null,
             student
           }
         }
@@ -412,6 +435,7 @@ const authController = {
           last_name: user.last_name || '',
           name: fullName,
           role: user.role_name,
+          referral_code: user.referral_code || null,
           displayRole,
           dashboardUrl,
           student

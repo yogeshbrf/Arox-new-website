@@ -67,14 +67,16 @@ class Referral {
     const db = getDb();
     const code = String(data.code).trim().toUpperCase();
     const result = db.prepare(`
-      INSERT INTO referrals (code, referrer_name, referrer_email, discount_percent, max_uses, times_used, is_active)
-      VALUES (?, ?, ?, ?, ?, 0, 1)
+      INSERT INTO referrals (code, referrer_name, referrer_email, referrer_type, discount_percent, max_uses, times_used, employee_id, is_active)
+      VALUES (?, ?, ?, ?, ?, ?, 0, ?, 1)
     `).run(
       code,
       data.referrer_name,
       data.referrer_email || null,
+      data.referrer_type || (data.employee_id ? 'employee' : 'student'),
       data.discount_percent || 0,
-      data.max_uses || 0
+      data.max_uses || 0,
+      data.employee_id || null
     );
     return this.findById(result.lastInsertRowid);
   }

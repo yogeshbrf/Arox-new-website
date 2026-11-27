@@ -1,0 +1,404 @@
+<!-- Admin Live Daily Attendance Manager -->
+<div class="space-y-6">
+  <!-- Header -->
+  <div class="erp-card" style="display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:16px;">
+    <div>
+      <h1 style="margin:0; font-size:20px; font-weight:800; color:#0F172A; display:flex; align-items:center; gap:10px;">
+        <i data-lucide="calendar-check-2" style="width:22px; height:22px; color:#155EEF;"></i>
+        Daily Attendance Control Center
+      </h1>
+      <p style="margin:4px 0 0; font-size:13px; color:#64748B;">
+        Mark, override, bulk-update, or audit daily student attendance across online, offline, and hybrid batches.
+      </p>
+    </div>
+    <div style="display:flex; flex-wrap:wrap; gap:10px;">
+      <button type="button" onclick="openAttendanceModal()" class="erp-btn erp-btn-primary" style="display:inline-flex; align-items:center; gap:8px;">
+        <i data-lucide="plus-circle" style="width:16px; height:16px;"></i>
+        Mark / Override Student
+      </button>
+      <button type="button" onclick="openBulkModal()" class="erp-btn erp-btn-secondary" style="display:inline-flex; align-items:center; gap:8px;">
+        <i data-lucide="check-check" style="width:16px; height:16px;"></i>
+        Bulk Mark Batch
+      </button>
+    </div>
+  </div>
+
+  <!-- Summary KPIs -->
+  <div class="grid grid-cols-2 md:grid-cols-6 gap-4">
+    <div class="erp-card" style="padding:16px;">
+      <div style="font-size:11px; font-weight:700; text-transform:uppercase; color:#64748B;">Records</div>
+      <div style="font-size:26px; font-weight:800; color:#0F172A; margin-top:4px;"><%= summary.total %></div>
+    </div>
+    <div class="erp-card" style="padding:16px;">
+      <div style="font-size:11px; font-weight:700; text-transform:uppercase; color:#15803D;">Present</div>
+      <div style="font-size:26px; font-weight:800; color:#16A34A; margin-top:4px;"><%= summary.present %></div>
+    </div>
+    <div class="erp-card" style="padding:16px;">
+      <div style="font-size:11px; font-weight:700; text-transform:uppercase; color:#B91C1C;">Absent</div>
+      <div style="font-size:26px; font-weight:800; color:#DC2626; margin-top:4px;"><%= summary.absent %></div>
+    </div>
+    <div class="erp-card" style="padding:16px;">
+      <div style="font-size:11px; font-weight:700; text-transform:uppercase; color:#B45309;">Late</div>
+      <div style="font-size:26px; font-weight:800; color:#D97706; margin-top:4px;"><%= summary.late %></div>
+    </div>
+    <div class="erp-card" style="padding:16px;">
+      <div style="font-size:11px; font-weight:700; text-transform:uppercase; color:#1D4ED8;">Leave</div>
+      <div style="font-size:26px; font-weight:800; color:#2563EB; margin-top:4px;"><%= summary.leave %></div>
+    </div>
+    <div class="erp-card" style="padding:16px;">
+      <div style="font-size:11px; font-weight:700; text-transform:uppercase; color:#6D28D9;">Holiday</div>
+      <div style="font-size:26px; font-weight:800; color:#7C3AED; margin-top:4px;"><%= summary.holiday %></div>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <form method="GET" action="/admin/attendance" class="erp-card" style="display:flex; flex-wrap:wrap; gap:12px; align-items:flex-end;">
+    <div style="flex:1 1 160px;">
+      <label class="erp-label">Date</label>
+      <input type="date" name="date" value="<%= filters.date || '' %>" class="erp-input">
+    </div>
+    <div style="flex:1 1 200px;">
+      <label class="erp-label">Course / Program</label>
+      <select name="course_id" class="erp-input">
+        <option value="">All Courses</option>
+        <% courses.forEach(function(c) { %>
+          <option value="<%= c.id %>" <%= String(filters.course_id) === String(c.id) ? 'selected' : '' %>>
+            <%= c.title %> (<%= (c.mode || 'online').toUpperCase() %>)
+          </option>
+        <% }) %>
+      </select>
+    </div>
+    <div style="flex:1 1 150px;">
+      <label class="erp-label">Status</label>
+      <select name="status" class="erp-input">
+        <option value="">All Statuses</option>
+        <% ['present', 'absent', 'late', 'leave', 'holiday'].forEach(function(st) { %>
+          <option value="<%= st %>" <%= filters.status === st ? 'selected' : '' %>><%= st.toUpperCase() %></option>
+        <% }) %>
+      </select>
+    </div>
+    <div style="flex:2 1 200px;">
+      <label class="erp-label">Search Student / Course</label>
+      <input type="text" name="search" value="<%= filters.search || '' %>" placeholder="Name, ID, course..." class="erp-input">
+    </div>
+    <div style="display:flex; gap:8px;">
+      <button type="submit" class="erp-btn erp-btn-primary">Filter</button>
+      <a href="/admin/attendance?date=" class="erp-btn erp-btn-secondary">All Dates</a>
+    </div>
+  </form>
+
+  <!-- Attendance Ledger Table -->
+  <div class="erp-card" style="padding:0; overflow:hidden;">
+    <div style="padding:16px 20px; border-bottom:1px solid #E2E8F0; display:flex; align-items:center; justify-content:space-between;">
+      <h2 style="margin:0; font-size:15px; font-weight:700;">Attendance Ledger (<%= records.length %>)</h2>
+      <span style="font-size:12px; color:#64748B;">Changes sync immediately to Student Portal</span>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="erp-table" style="width:100%;">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Student</th>
+            <th>Course &amp; Mode</th>
+            <th>Status</th>
+            <th>Mode / Time</th>
+            <th>Remarks &amp; Audit</th>
+            <th style="text-align:right;">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (records.length === 0) { %>
+            <tr>
+              <td colspan="7" style="text-align:center; padding:36px; color:#64748B;">
+                No attendance records match the selected filters. Click <strong>Mark / Override Student</strong> or <strong>Bulk Mark Batch</strong> to record attendance.
+              </td>
+            </tr>
+          <% } else { %>
+            <% records.forEach(function(rec) { %>
+              <tr>
+                <td style="font-family:monospace; font-weight:700;"><%= rec.date %></td>
+                <td>
+                  <div style="font-weight:700; color:#0F172A;"><%= rec.student_name %></div>
+                  <div style="font-size:11px; color:#64748B;"><%= rec.student_code %> · <%= rec.student_email %></div>
+                </td>
+                <td>
+                  <div style="font-weight:600;"><%= rec.course_title %></div>
+                  <div style="font-size:11px; color:#64748B; text-transform:uppercase;"><%= rec.course_mode || 'online' %></div>
+                </td>
+                <td>
+                  <select class="erp-input" style="padding:5px 8px; font-size:12px; font-weight:700; min-width:110px;" onchange="quickUpdateAttendance(<%= rec.id %>, this.value)">
+                    <% ['present', 'absent', 'late', 'leave', 'holiday'].forEach(function(st) { %>
+                      <option value="<%= st %>" <%= rec.status === st ? 'selected' : '' %>><%= st.toUpperCase() %></option>
+                    <% }) %>
+                  </select>
+                </td>
+                <td>
+                  <span class="erp-badge"><%= (rec.method || 'manual').toUpperCase() %></span>
+                  <div style="font-size:11px; color:#64748B; margin-top:2px;"><%= rec.check_in_time || '--' %></div>
+                </td>
+                <td>
+                  <div style="font-size:12px; color:#334155;"><%= rec.remarks || '-' %></div>
+                  <% if (rec.updated_by_admin) { %>
+                    <span style="display:inline-block; margin-top:3px; font-size:10px; font-weight:700; padding:1px 6px; border-radius:999px; background:#DBEAFE; color:#1E40AF;">ADMIN UPDATED</span>
+                  <% } %>
+                </td>
+                <td style="text-align:right; white-space:nowrap;">
+                  <button type="button" class="erp-btn erp-btn-sm erp-btn-secondary"
+                    onclick='openEditAttendance(<%- JSON.stringify(rec) %>)'>Edit</button>
+                  <button type="button" class="erp-btn erp-btn-sm" style="background:#FEE2E2; color:#B91C1C;"
+                    onclick="deleteAttendance(<%= rec.id %>)">Delete</button>
+                </td>
+              </tr>
+            <% }) %>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Single Mark / Edit Modal -->
+<div id="attModal" style="display:none; position:fixed; inset:0; background:rgba(15,23,42,0.55); z-index:2200; align-items:center; justify-content:center; padding:16px;">
+  <div style="background:#fff; border-radius:14px; max-width:520px; width:100%; padding:24px; box-shadow:0 24px 60px rgba(0,0,0,0.2);">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+      <h3 id="attModalTitle" style="margin:0; font-size:17px; font-weight:800;">Mark / Override Attendance</h3>
+      <button type="button" onclick="closeAttendanceModal()" style="border:none; background:transparent; font-size:20px; cursor:pointer;">&times;</button>
+    </div>
+    <form id="attForm" class="space-y-4">
+      <input type="hidden" id="attEditId" value="">
+      <div>
+        <label class="erp-label">Student</label>
+        <select id="attStudentId" class="erp-input" required onchange="syncCourseForStudent()">
+          <option value="">-- Select Student --</option>
+          <% allStudents.forEach(function(s) { %>
+            <option value="<%= s.id %>"><%= s.first_name %> <%= s.last_name %> (<%= s.student_id || s.student_code %>)</option>
+          <% }) %>
+        </select>
+      </div>
+      <div>
+        <label class="erp-label">Course</label>
+        <select id="attCourseId" class="erp-input" required>
+          <option value="">-- Select Course --</option>
+          <% courses.forEach(function(c) { %>
+            <option value="<%= c.id %>"><%= c.title %> (<%= (c.mode || 'online').toUpperCase() %>)</option>
+          <% }) %>
+        </select>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="erp-label">Date</label>
+          <input type="date" id="attDate" class="erp-input" value="<%= filters.date || todayDate %>" required>
+        </div>
+        <div>
+          <label class="erp-label">Status</label>
+          <select id="attStatus" class="erp-input" required>
+            <option value="present">Present</option>
+            <option value="late">Late</option>
+            <option value="leave">Leave</option>
+            <option value="absent">Absent</option>
+            <option value="holiday">Holiday</option>
+          </select>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="erp-label">Method / Mode</label>
+          <select id="attMethod" class="erp-input">
+            <option value="manual">Manual (Admin)</option>
+            <option value="offline">Offline Classroom</option>
+            <option value="online">Online Session</option>
+            <option value="qr">QR Scan</option>
+          </select>
+        </div>
+        <div>
+          <label class="erp-label">Check-in Time (optional)</label>
+          <input type="text" id="attCheckIn" class="erp-input" placeholder="e.g. 10:05 AM">
+        </div>
+      </div>
+      <div>
+        <label class="erp-label">Admin Remarks</label>
+        <input type="text" id="attRemarks" class="erp-input" placeholder="Medical leave approved, offline lab session, etc.">
+      </div>
+      <div style="display:flex; justify-content:flex-end; gap:10px; padding-top:8px;">
+        <button type="button" onclick="closeAttendanceModal()" class="erp-btn erp-btn-secondary">Cancel</button>
+        <button type="submit" class="erp-btn erp-btn-primary">Save Attendance</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Bulk Mark Modal -->
+<div id="bulkModal" style="display:none; position:fixed; inset:0; background:rgba(15,23,42,0.55); z-index:2200; align-items:center; justify-content:center; padding:16px;">
+  <div style="background:#fff; border-radius:14px; max-width:620px; width:100%; padding:24px; max-height:90vh; overflow-y:auto; box-shadow:0 24px 60px rgba(0,0,0,0.2);">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+      <h3 style="margin:0; font-size:17px; font-weight:800;">Bulk Mark Enrolled Students</h3>
+      <button type="button" onclick="closeBulkModal()" style="border:none; background:transparent; font-size:20px; cursor:pointer;">&times;</button>
+    </div>
+    <form id="bulkForm" class="space-y-4">
+      <div class="grid grid-cols-3 gap-3">
+        <div>
+          <label class="erp-label">Date</label>
+          <input type="date" id="bulkDate" class="erp-input" value="<%= filters.date || todayDate %>" required>
+        </div>
+        <div>
+          <label class="erp-label">Status</label>
+          <select id="bulkStatus" class="erp-input" required>
+            <option value="present">Present</option>
+            <option value="absent">Absent</option>
+            <option value="late">Late</option>
+            <option value="leave">Leave</option>
+            <option value="holiday">Holiday</option>
+          </select>
+        </div>
+        <div>
+          <label class="erp-label">Mode</label>
+          <select id="bulkMethod" class="erp-input">
+            <option value="offline">Offline</option>
+            <option value="online">Online</option>
+            <option value="manual">Manual</option>
+          </select>
+        </div>
+      </div>
+      <div>
+        <label class="erp-label">Remarks</label>
+        <input type="text" id="bulkRemarks" class="erp-input" value="Bulk marked by Admin">
+      </div>
+      <div style="border:1px solid #E2E8F0; border-radius:10px; padding:12px; max-height:240px; overflow-y:auto;">
+        <label style="display:flex; align-items:center; gap:8px; font-size:12px; font-weight:700; margin-bottom:8px; padding-bottom:6px; border-bottom:1px solid #F1F5F9;">
+          <input type="checkbox" id="bulkSelectAll" onchange="toggleBulkAll(this)">
+          Select All Enrolled Students (<%= studentEnrollments.length %>)
+        </label>
+        <% studentEnrollments.forEach(function(item) { %>
+          <label style="display:flex; align-items:center; gap:8px; padding:5px 0; font-size:13px; cursor:pointer;">
+            <input type="checkbox" class="bulk-entry-cb" data-student="<%= item.student_id %>" data-course="<%= item.course_id %>">
+            <span><strong><%= item.first_name %> <%= item.last_name %></strong> — <%= item.course_title %> (<%= item.course_mode || 'online' %>)</span>
+          </label>
+        <% }) %>
+      </div>
+      <div style="display:flex; justify-content:flex-end; gap:10px;">
+        <button type="button" onclick="closeBulkModal()" class="erp-btn erp-btn-secondary">Cancel</button>
+        <button type="submit" class="erp-btn erp-btn-primary">Apply Bulk Attendance</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  const ENROLLMENTS = <%- JSON.stringify(studentEnrollments || []) %>;
+
+  function syncCourseForStudent() {
+    const sid = document.getElementById('attStudentId').value;
+    const match = ENROLLMENTS.find(e => String(e.student_id) === String(sid));
+    if (match) {
+      document.getElementById('attCourseId').value = match.course_id;
+    }
+  }
+
+  function openAttendanceModal() {
+    document.getElementById('attEditId').value = '';
+    document.getElementById('attModalTitle').textContent = 'Mark / Override Student Attendance';
+    document.getElementById('attStudentId').disabled = false;
+    document.getElementById('attCourseId').disabled = false;
+    document.getElementById('attForm').reset();
+    document.getElementById('attDate').value = '<%= filters.date || todayDate %>';
+    document.getElementById('attModal').style.display = 'flex';
+  }
+
+  function openEditAttendance(rec) {
+    document.getElementById('attEditId').value = rec.id;
+    document.getElementById('attModalTitle').textContent = 'Update Attendance Record #' + rec.id;
+    document.getElementById('attStudentId').value = rec.student_id;
+    document.getElementById('attCourseId').value = rec.course_id;
+    document.getElementById('attStudentId').disabled = true;
+    document.getElementById('attCourseId').disabled = true;
+    document.getElementById('attDate').value = rec.date;
+    document.getElementById('attStatus').value = rec.status;
+    document.getElementById('attMethod').value = rec.method || 'manual';
+    document.getElementById('attCheckIn').value = rec.check_in_time || '';
+    document.getElementById('attRemarks').value = rec.remarks || '';
+    document.getElementById('attModal').style.display = 'flex';
+  }
+
+  function closeAttendanceModal() {
+    document.getElementById('attModal').style.display = 'none';
+  }
+
+  function openBulkModal() {
+    document.getElementById('bulkModal').style.display = 'flex';
+  }
+  function closeBulkModal() {
+    document.getElementById('bulkModal').style.display = 'none';
+  }
+  function toggleBulkAll(cb) {
+    document.querySelectorAll('.bulk-entry-cb').forEach(el => { el.checked = cb.checked; });
+  }
+
+  document.getElementById('attForm').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    const editId = document.getElementById('attEditId').value;
+    const payload = {
+      student_id: document.getElementById('attStudentId').value,
+      course_id: document.getElementById('attCourseId').value,
+      date: document.getElementById('attDate').value,
+      status: document.getElementById('attStatus').value,
+      method: document.getElementById('attMethod').value,
+      check_in_time: document.getElementById('attCheckIn').value || undefined,
+      remarks: document.getElementById('attRemarks').value
+    };
+    const url = editId ? '/api/admin/attendance/' + editId : '/api/admin/attendance';
+    const method = editId ? 'PUT' : 'POST';
+    const res = await fetch(url, {
+      method,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if (!data.success) return alert(data.message || 'Failed to save attendance');
+    location.reload();
+  });
+
+  async function quickUpdateAttendance(id, status) {
+    const res = await fetch('/api/admin/attendance/' + id, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status })
+    });
+    const data = await res.json();
+    if (!data.success) {
+      alert(data.message || 'Update failed');
+      return;
+    }
+    location.reload();
+  }
+
+  async function deleteAttendance(id) {
+    if (!confirm('Remove this attendance record?')) return;
+    const res = await fetch('/api/admin/attendance/' + id, { method: 'DELETE' });
+    const data = await res.json();
+    if (!data.success) return alert(data.message || 'Delete failed');
+    location.reload();
+  }
+
+  document.getElementById('bulkForm').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    const entries = Array.from(document.querySelectorAll('.bulk-entry-cb:checked')).map(el => ({
+      student_id: parseInt(el.dataset.student, 10),
+      course_id: parseInt(el.dataset.course, 10)
+    }));
+    if (entries.length === 0) return alert('Select at least one student.');
+    const res = await fetch('/api/admin/attendance/bulk', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        date: document.getElementById('bulkDate').value,
+        status: document.getElementById('bulkStatus').value,
+        method: document.getElementById('bulkMethod').value,
+        remarks: document.getElementById('bulkRemarks').value,
+        entries
+      })
+    });
+    const data = await res.json();
+    if (!data.success) return alert(data.message || 'Bulk update failed');
+    location.reload();
+  });
+</script>

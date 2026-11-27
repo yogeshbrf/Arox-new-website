@@ -23,21 +23,26 @@ class Student {
 
   static create(data) {
     const db = getDb();
+    const payload = {
+      ...data,
+      referred_by: data.referred_by || null,
+      referral_code: data.referral_code ? String(data.referral_code).trim().toUpperCase() : null
+    };
     const result = db.prepare(`
       INSERT INTO students (
         user_id, student_id, photo, first_name, last_name, email, phone,
         gender, dob, address, city, state, pincode,
         college, university, degree, department, year_of_study, graduation_year, roll_number,
-        status
+        referred_by, referral_code, status
       ) VALUES (
         @user_id, @student_id, @photo, @first_name, @last_name, @email, @phone,
         @gender, @dob, @address, @city, @state, @pincode,
         @college, @university, @degree, @department, @year_of_study, @graduation_year, @roll_number,
-        'active'
+        @referred_by, @referral_code, 'active'
       )
-    `).run(data);
+    `).run(payload);
 
-    return { id: result.lastInsertRowid, ...data };
+    return { id: result.lastInsertRowid, ...payload };
   }
 
   static update(id, data) {

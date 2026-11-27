@@ -1,8 +1,13 @@
 <div class="erp-h1" style="margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; color: #000000;">
   <div>Payment Verifications & Records</div>
-  <div style="font-size: 13px; color: #64748B; font-weight: 500;">
-    <i data-lucide="shield-check" style="width: 14px; height: 14px; display: inline-block; vertical-align: middle;"></i>
-    Manual UPI & Bank Transfer Verifications
+  <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 10px;">
+    <% const adminPayUpi = (typeof paymentConfig !== 'undefined' && paymentConfig && paymentConfig.upi_id) ? paymentConfig.upi_id : '6379000598@amazonpay'; %>
+    <div style="display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; background: #EFF6FF; border: 1px solid #BFDBFE; border-radius: 8px; font-size: 12px; font-weight: 600; color: #1E40AF;">
+      <i data-lucide="qr-code" style="width: 15px; height: 15px;"></i>
+      <span>UPI: <strong style="font-family: monospace;"><%= adminPayUpi %></strong></span>
+      <a href="/api/payments/qr" target="_blank" style="color: #155EEF; text-decoration: underline; font-weight: 700;">View QR</a>
+    </div>
+    <a href="/admin/settings" style="font-size: 12px; color: #64748B; text-decoration: none; font-weight: 600;">Payment Settings</a>
   </div>
 </div>
 

@@ -61,6 +61,7 @@ exports.show = (req, res) => {
     const registration = db.prepare(`
       SELECT r.*, c.title as course_title, c.slug as course_slug, c.duration as course_duration, 
              c.curriculum, c.projects as course_projects_json, c.trainer_name, c.trainer_title,
+             c.class_timing, c.class_available, c.trainer_available_today, c.trainer_status_note, c.classroom_location,
              c.start_date, c.end_date, c.mode, c.description
       FROM registrations r
       JOIN courses c ON r.course_id = c.id

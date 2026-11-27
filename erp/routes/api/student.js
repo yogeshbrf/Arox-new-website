@@ -271,19 +271,28 @@ router.post('/attendance/mark', attendanceLimiter, async (req, res) => {
     }
 
     const timeStr = localToday.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' });
+    const allowedStatuses = ['present', 'late', 'leave', 'absent'];
+    const allowedMethods = ['online', 'offline', 'manual', 'qr'];
+    const status = (req.body.status && allowedStatuses.includes(String(req.body.status).toLowerCase()))
+      ? String(req.body.status).toLowerCase()
+      : 'present';
+    const method = (req.body.method && allowedMethods.includes(String(req.body.method).toLowerCase()))
+      ? String(req.body.method).toLowerCase()
+      : 'online';
+    const remarks = req.body.remarks ? String(req.body.remarks).trim() : null;
 
     // Mark attendance
     const insertResult = db.prepare(`
-      INSERT INTO attendance (student_id, course_id, date, status, check_in_time, method)
-      VALUES (?, ?, ?, 'present', ?, 'online')
-    `).run(student.id, course_id, todayStr, timeStr);
+      INSERT INTO attendance (student_id, course_id, date, status, check_in_time, method, remarks, marked_by)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    `).run(student.id, course_id, todayStr, status, (status === 'absent' || status === 'leave') ? null : timeStr, method, remarks, req.user.id);
 
     logAudit(req, {
       action: 'MARK_ATTENDANCE',
       module: 'attendance',
       entityType: 'attendance',
       entityId: insertResult.lastInsertRowid,
-      newValues: { student_id: student.id, course_id, date: todayStr, check_in_time: timeStr }
+      newValues: { student_id: student.id, course_id, date: todayStr, status, method, check_in_time: timeStr }
     });
 
     syncService.broadcast('attendance:marked', {
@@ -291,13 +300,104 @@ router.post('/attendance/mark', attendanceLimiter, async (req, res) => {
       studentName: `${student.first_name} ${student.last_name}`,
       courseId: course_id,
       date: todayStr,
+      status,
       time: timeStr,
-      message: `${student.first_name} marked attendance for today (${todayStr}).`
+      message: `${student.first_name} marked ${status} attendance for today (${todayStr}).`
     });
 
-    res.json({ success: true, message: 'Attendance marked successfully!', time: timeStr, date: todayStr });
+    res.json({ success: true, message: 'Attendance marked successfully!', status, method, time: timeStr, date: todayStr });
   } catch (error) {
     logger.error('Mark attendance error:', error);
+    res.status(500).json({ success: false, message: 'Internal server error.' });
+  }
+});
+
+/**
+ * PUT /api/student/attendance/today
+ * Allows a student to mark OR update their own attendance for TODAY
+ */
+router.put('/attendance/today', attendanceLimiter, async (req, res) => {
+  try {
+    const { course_id } = req.body;
+    const db = getDb();
+
+    if (!course_id) {
+      return res.status(400).json({ success: false, message: 'Course ID is required.' });
+    }
+
+    const student = db.prepare('SELECT id, first_name, last_name FROM students WHERE user_id = ?').get(req.user.id);
+    if (!student) {
+      return res.status(404).json({ success: false, message: 'Student profile not found.' });
+    }
+
+    const registration = db.prepare('SELECT start_date, end_date FROM registrations WHERE student_id = ? AND course_id = ?').get(student.id, course_id);
+    if (!registration) {
+      return res.status(400).json({ success: false, message: 'You are not registered for this course.' });
+    }
+
+    const localToday = new Date();
+    const year = localToday.getFullYear();
+    const month = String(localToday.getMonth() + 1).padStart(2, '0');
+    const day = String(localToday.getDate()).padStart(2, '0');
+    const todayStr = `${year}-${month}-${day}`;
+
+    const allowedStatuses = ['present', 'late', 'leave', 'absent'];
+    const allowedMethods = ['online', 'offline', 'manual', 'qr'];
+    const status = (req.body.status && allowedStatuses.includes(String(req.body.status).toLowerCase()))
+      ? String(req.body.status).toLowerCase()
+      : 'present';
+    const method = (req.body.method && allowedMethods.includes(String(req.body.method).toLowerCase()))
+      ? String(req.body.method).toLowerCase()
+      : 'online';
+    const remarks = req.body.remarks !== undefined ? (req.body.remarks ? String(req.body.remarks).trim() : null) : null;
+    const timeStr = localToday.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' });
+
+    const existing = db.prepare('SELECT id, check_in_time FROM attendance WHERE student_id = ? AND course_id = ? AND date = ?').get(student.id, course_id, todayStr);
+    if (existing) {
+      db.prepare(`
+        UPDATE attendance
+        SET status = ?, method = ?, remarks = ?,
+            check_in_time = COALESCE(check_in_time, ?),
+            updated_at = CURRENT_TIMESTAMP
+        WHERE id = ?
+      `).run(status, method, remarks, (status === 'absent' || status === 'leave') ? null : timeStr, existing.id);
+    } else {
+      db.prepare(`
+        INSERT INTO attendance (student_id, course_id, date, status, check_in_time, method, remarks, marked_by)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      `).run(student.id, course_id, todayStr, status, (status === 'absent' || status === 'leave') ? null : timeStr, method, remarks, req.user.id);
+    }
+
+    const saved = db.prepare('SELECT * FROM attendance WHERE student_id = ? AND course_id = ? AND date = ?').get(student.id, course_id, todayStr);
+
+    logAudit(req, {
+      action: existing ? 'STUDENT_UPDATE_TODAY_ATTENDANCE' : 'MARK_ATTENDANCE',
+      module: 'attendance',
+      entityType: 'attendance',
+      entityId: saved ? saved.id : null,
+      newValues: { student_id: student.id, course_id, date: todayStr, status, method, remarks }
+    });
+
+    syncService.broadcast('attendance:marked', {
+      studentId: student.id,
+      studentName: `${student.first_name} ${student.last_name}`,
+      courseId: course_id,
+      date: todayStr,
+      status,
+      method,
+      time: saved ? saved.check_in_time : timeStr,
+      message: `${student.first_name} updated today's attendance (${todayStr}) to ${status.toUpperCase()}.`
+    });
+
+    res.json({
+      success: true,
+      message: existing ? 'Today\'s attendance updated successfully!' : 'Attendance marked successfully!',
+      data: saved,
+      time: saved ? saved.check_in_time : timeStr,
+      date: todayStr
+    });
+  } catch (error) {
+    logger.error('Update today attendance error:', error);
     res.status(500).json({ success: false, message: 'Internal server error.' });
   }
 });

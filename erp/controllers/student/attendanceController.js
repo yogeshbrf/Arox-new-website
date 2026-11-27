@@ -37,6 +37,10 @@ exports.index = (req, res) => {
         c.title as course_title,
         c.duration as course_duration,
         c.mode as course_mode,
+        c.class_timing,
+        c.class_available,
+        c.trainer_available_today,
+        c.trainer_name,
         COALESCE(r.batch_name, c.batch_name) as batch_name
       FROM registrations r
       JOIN courses c ON r.course_id = c.id
@@ -47,7 +51,7 @@ exports.index = (req, res) => {
     // For each course, get attendance list and compute statistics
     const coursesWithAttendance = registeredCourses.map(course => {
       const records = db.prepare(`
-        SELECT id, date, status, check_in_time, check_out_time, method
+        SELECT id, date, status, check_in_time, check_out_time, method, remarks, updated_by_admin
         FROM attendance
         WHERE student_id = ? AND course_id = ?
         ORDER BY date ASC

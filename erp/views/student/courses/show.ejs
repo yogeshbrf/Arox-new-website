@@ -582,19 +582,20 @@
             </div>
 
             <!-- QR Display Card -->
+            <% const courseUpiId = (typeof paymentConfig !== 'undefined' && paymentConfig && paymentConfig.upi_id) ? paymentConfig.upi_id : '6379000598@amazonpay'; %>
             <div style="background: #F8FAFC; border: 1px dashed #CBD5E1; border-radius: 12px; padding: 16px; text-align: center; margin-bottom: 16px;">
-              <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=aroxtechnologies@icici%26pn=AROX%20TECHNOLOGIES%20PVT%20LTD%26cu=INR" alt="AROX UPI QR Code" style="width: 150px; height: 150px; margin: 0 auto; display: block; border-radius: 8px; border: 1px solid #E2E8F0; background: #FFFFFF;">
-              <div style="font-weight: 700; font-size: 13px; color: #000000; margin-top: 10px;">AROX TECHNOLOGIES PVT LTD</div>
-              <p style="font-size: 11px; color: #64748B; margin: 2px 0 0 0;">Scan with GPay, PhonePe, Paytm, BHIM</p>
+              <img src="/api/payments/qr?amount=<%= encodeURIComponent(Number(registration.balance_amount || 0)) %>&note=<%= encodeURIComponent(registration.course_title || 'Course Fee') %>" alt="AROX UPI QR Code" style="width: 155px; height: 155px; margin: 0 auto; display: block; border-radius: 8px; border: 1px solid #E2E8F0; background: #FFFFFF; padding: 4px;">
+              <div style="font-weight: 700; font-size: 13px; color: #000000; margin-top: 10px;"><%= (typeof paymentConfig !== 'undefined' && paymentConfig && paymentConfig.upi_name) ? paymentConfig.upi_name : 'AROX Tech Pvt. Ltd.' %></div>
+              <p style="font-size: 11px; color: #64748B; margin: 2px 0 0 0;">Scan with GPay, PhonePe, Paytm, Amazon Pay</p>
             </div>
 
             <!-- UPI Details with Copy button -->
             <div style="padding: 10px 14px; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
               <div>
                 <span style="display: block; font-size: 10px; font-weight: 700; text-transform: uppercase; color: #64748B;">Official UPI ID</span>
-                <span style="font-family: monospace; font-weight: 700; font-size: 13px; color: #000000;" id="aroxUpiId">aroxtechnologies@icici</span>
+                <span style="font-family: monospace; font-weight: 700; font-size: 13px; color: #000000;" id="aroxUpiId"><%= courseUpiId %></span>
               </div>
-              <button type="button" onclick="copyText('aroxtechnologies@icici', this)" class="erp-btn erp-btn-secondary" style="padding: 4px 10px; font-size: 12px; font-weight: 600; color: #000000; border: 1px solid #CBD5E1;">
+              <button type="button" onclick="copyText('<%= courseUpiId %>', this)" class="erp-btn erp-btn-secondary" style="padding: 4px 10px; font-size: 12px; font-weight: 600; color: #000000; border: 1px solid #CBD5E1;">
                 <i data-lucide="copy" style="width: 12px; height: 12px;"></i> Copy
               </button>
             </div>

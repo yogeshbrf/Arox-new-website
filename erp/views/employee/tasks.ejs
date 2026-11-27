@@ -198,12 +198,18 @@
                 </select>
               </td>
               <td style="padding: 12px 16px; text-align: right; white-space: nowrap;">
-                <button type="button" onclick="openEditTaskById('<%= task.id %>')" class="erp-btn erp-btn-secondary" style="padding: 3px 8px; font-size: 11px; border: 1px solid #CBD5E1; color: #000; border-radius: 6px; cursor: pointer; margin-right: 4px;">
-                  Edit
-                </button>
-                <button type="button" onclick="deleteEmpTask('<%= task.id %>')" class="erp-btn" style="padding: 3px 8px; font-size: 11px; border: 1px solid #FECACA; background: #FEF2F2; color: #DC2626; border-radius: 6px; cursor: pointer;">
-                  Delete
-                </button>
+                <% const isSelfCreated = !task.assigned_by || task.assigned_by === user.id || ['admin','super_admin'].includes((user.role || '').toLowerCase()); %>
+                <% if (isSelfCreated) { %>
+                  <button type="button" onclick="openEditTaskById('<%= task.id %>')" class="erp-btn erp-btn-secondary" style="padding: 3px 8px; font-size: 11px; border: 1px solid #CBD5E1; color: #000; border-radius: 6px; cursor: pointer; margin-right: 4px;">
+                    Edit
+                  </button>
+                  <button type="button" onclick="deleteEmpTask('<%= task.id %>')" class="erp-btn" style="padding: 3px 8px; font-size: 11px; border: 1px solid #FECACA; background: #FEF2F2; color: #DC2626; border-radius: 6px; cursor: pointer;">
+                    Delete
+                  </button>
+                <% } else { %>
+                  <span style="font-size: 10px; font-weight: 700; padding: 3px 7px; border-radius: 99px; background: #FEF3C7; color: #92400E; margin-right: 4px;">Admin Task</span>
+                  <a href="/employee/dashboard#employeeProofForm" style="font-size: 11px; font-weight: 700; color: #155EEF; text-decoration: none;">+ Proof</a>
+                <% } %>
               </td>
             </tr>
           <% }) %>
@@ -283,13 +289,19 @@
               <option value="completed" <%= task.status === 'completed' ? 'selected' : '' %>>Completed</option>
             </select>
           </div>
-          <div style="display: flex; gap: 4px;">
-            <button type="button" onclick="openEditTaskById('<%= task.id %>')" class="erp-btn erp-btn-secondary" style="padding: 4px 8px; font-size: 11px; border: 1px solid #CBD5E1; color: #000; border-radius: 6px; cursor: pointer;">
-              Edit
-            </button>
-            <button type="button" onclick="deleteEmpTask('<%= task.id %>')" class="erp-btn" style="padding: 4px 8px; font-size: 11px; border: 1px solid #FECACA; background: #FEF2F2; color: #DC2626; border-radius: 6px; cursor: pointer;">
-              Delete
-            </button>
+          <div style="display: flex; gap: 4px; align-items: center;">
+            <% const isCardSelfCreated = !task.assigned_by || task.assigned_by === user.id || ['admin','super_admin'].includes((user.role || '').toLowerCase()); %>
+            <% if (isCardSelfCreated) { %>
+              <button type="button" onclick="openEditTaskById('<%= task.id %>')" class="erp-btn erp-btn-secondary" style="padding: 4px 8px; font-size: 11px; border: 1px solid #CBD5E1; color: #000; border-radius: 6px; cursor: pointer;">
+                Edit
+              </button>
+              <button type="button" onclick="deleteEmpTask('<%= task.id %>')" class="erp-btn" style="padding: 4px 8px; font-size: 11px; border: 1px solid #FECACA; background: #FEF2F2; color: #DC2626; border-radius: 6px; cursor: pointer;">
+                Delete
+              </button>
+            <% } else { %>
+              <span style="font-size: 10px; font-weight: 700; padding: 3px 7px; border-radius: 99px; background: #FEF3C7; color: #92400E;">Show Only</span>
+              <a href="/employee/dashboard#employeeProofForm" style="font-size: 11px; font-weight: 700; color: #155EEF; text-decoration: none;">Upload Proof</a>
+            <% } %>
           </div>
         </div>
       </div>

@@ -1,4 +1,5 @@
 const { Client, Lead, FollowUp, EmployeeTask, EmployeeTarget, User, Student, Course } = require('../../models');
+const EmployeeProof = require('../../models/EmployeeProof');
 const logger = require('../../utils/logger');
 const { getDb } = require('../../config/database');
 
@@ -159,6 +160,7 @@ const crmController = {
       const stats = EmployeeTask.getStats(assigned_to);
       const employees = User.findAll().filter(u => [1, 2, 4].includes(u.role_id) || ['admin', 'super_admin', 'trainer', 'staff', 'employee'].includes(u.role_name));
       const allLeads = Lead.findAll();
+      const proofs = EmployeeProof.getAll(assigned_to ? { employee_id: assigned_to } : {});
 
       res.render('admin/tasks/index', {
         layout: 'layouts/admin',
@@ -167,6 +169,7 @@ const crmController = {
         currentPath: '/admin/tasks',
         user: req.user,
         tasks,
+        proofs,
         stats,
         employees,
         leads: allLeads,

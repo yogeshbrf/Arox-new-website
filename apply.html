@@ -1236,20 +1236,9 @@ select:-webkit-autofill {
 
         <div class="form-row" style="margin-top: 10px;">
           <div class="form-group full">
-            <label class="form-label">Referral / Promo Code <span style="font-weight:400;color:var(--text-secondary);">(Optional)</span></label>
+            <label class="form-label">Employee / Promo Referral Code <span style="font-weight:400;color:var(--text-secondary);">(Optional)</span></label>
             <div style="display:flex;gap:10px;">
-              <input type="text" class="form-input" id="apply-referral-code" placeholder="e.g. AROX2026, TECHFEST15" style="text-transform:uppercase;letter-spacing:0.05em;font-weight:600;">
-              <button type="button" class="btn btn-secondary" id="apply-btn-validate-ref" onclick="validateApplyReferral()" style="white-space:nowrap;padding:10px 20px;">Apply Code</button>
-            </div>
-            <div id="apply-referral-status" style="font-size:12px;margin-top:6px;font-weight:600;display:none;"></div>
-          </div>
-        </div>
-
-        <div class="form-row" style="margin-top: 10px;">
-          <div class="form-group full">
-            <label class="form-label">Referral / Promo Code <span style="font-weight:400;color:var(--text-secondary);">(Optional)</span></label>
-            <div style="display:flex;gap:10px;">
-              <input type="text" class="form-input" id="apply-referral-code" placeholder="e.g. AROX2026, TECHFEST15" style="text-transform:uppercase;letter-spacing:0.05em;font-weight:600;">
+              <input type="text" class="form-input" id="apply-referral-code" placeholder="e.g. AROX-EMP01, TECHFEST15" style="text-transform:uppercase;letter-spacing:0.05em;font-weight:600;">
               <button type="button" class="btn btn-secondary" id="apply-btn-validate-ref" onclick="validateApplyReferral()" style="white-space:nowrap;padding:10px 20px;">Apply Code</button>
             </div>
             <div id="apply-referral-status" style="font-size:12px;margin-top:6px;font-weight:600;display:none;"></div>
@@ -1892,8 +1881,9 @@ select:-webkit-autofill {
     }
 
     function copyUPI() {
-      navigator.clipboard.writeText('aroxtech@upi').then(() => {
-        showToast('UPI ID copied!', 'success');
+      const upi = window.aroxActiveUpiId || '6379000598@amazonpay';
+      navigator.clipboard.writeText(upi).then(() => {
+        showToast('UPI ID copied: ' + upi, 'success');
       }).catch(() => {
         showToast('Failed to copy', 'error');
       });
@@ -2253,6 +2243,29 @@ select:-webkit-autofill {
 
     // Initialize Lucide icons
     lucide.createIcons();
+
+    // Auto-apply referral code from ?ref= query parameter & load active UPI config
+    document.addEventListener('DOMContentLoaded', async () => {
+      try {
+        const params = new URLSearchParams(window.location.search);
+        const refParam = (params.get('ref') || params.get('referral') || '').trim().toUpperCase();
+        if (refParam) {
+          const refInput = document.getElementById('apply-referral-code');
+          if (refInput) {
+            refInput.value = refParam;
+            validateApplyReferral();
+          }
+        }
+      } catch (e) {}
+
+      try {
+        const cfgRes = await fetch('/api/payments/config');
+        const cfgJson = await cfgRes.json();
+        if (cfgJson && cfgJson.success && cfgJson.data) {
+          window.aroxActiveUpiId = cfgJson.data.upi_id;
+        }
+      } catch (e) {}
+    });
   </script>
 
 </body>

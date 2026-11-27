@@ -12,7 +12,7 @@ const baseUploadDir = isServerless
   : path.join(__dirname, '..', 'public', 'uploads');
 
 // Ensure upload directories exist safely
-const dirs = ['photos', 'documents', 'submissions', 'certificates', 'qr', 'receipts'];
+const dirs = ['photos', 'documents', 'submissions', 'certificates', 'qr', 'receipts', 'proofs'];
 dirs.forEach(dir => {
   try {
     const dirPath = path.join(baseUploadDir, dir);
@@ -90,5 +90,48 @@ const upload = multer({
     fileSize: appConfig.upload.maxFileSize
   }
 });
+
+const proofStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const dest = path.join(__dirname, '..', 'public', 'uploads', 'proofs');
+    try { require('fs').mkdirSync(dest, { recursive: true }); } catch (e) {}
+    cb(null, dest);
+  },
+  filename: (req, file, cb) => {
+    const ext = path.extname(file.originalname).toLowerCase();
+    const base = path.basename(file.originalname, ext).replace(/[^a-zA-Z0-9_-]/g, '_').slice(0, 40);
+    const uid = req.user ? req.user.id : 'emp';
+    cb(null, `proof_${uid}_${Date.now()}_${base}${ext}`);
+  }
+});
+
+const proofFilter = (req, file, cb) => {
+  const allowedExts = /\.(pdf|pptx|xlsx|docx)$/i;
+  const allowedMimes = [
+    'application/pdf',
+    'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    'application/octet-stream'
+  ];
+  const ext = path.extname(file.originalname || '').toLowerCase();
+  if (allowedExts.test(ext) && (allowedMimes.includes(file.mimetype) || !file.mimetype || file.mimetype.includes('officedocument') || file.mimetype === 'application/pdf')) {
+    cb(null, true);
+  } else {
+    const err = new Error('Only .pdf, .pptx, .xlsx, and .docx files are allowed for work proof upload.');
+    err.statusCode = 400;
+    cb(err, false);
+  }
+};
+
+const uploadProof = multer({
+  storage: proofStorage,
+  fileFilter: proofFilter,
+  limits: {
+    fileSize: 10 * 1024 * 1024
+  }
+});
+
+upload.uploadProof = uploadProof;
 
 module.exports = upload;

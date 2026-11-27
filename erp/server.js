@@ -89,6 +89,7 @@ const settingsService = require('./services/settingsService');
 app.use((req, res, next) => {
   try {
     res.locals.org = settingsService.getOrgSettings();
+    res.locals.paymentConfig = settingsService.getPaymentSettings();
   } catch (e) {
     res.locals.org = appConfig.org;
   }
@@ -104,6 +105,7 @@ app.use('/api/courses', require('./routes/api/courses'));
 app.use('/api/registrations', require('./routes/api/registrations'));
 app.use('/api/payments', require('./routes/api/payments'));
 app.use('/api/student', require('./routes/api/student'));
+app.use('/api/admin', require('./routes/api/admin'));
 app.use('/api/employee', require('./routes/api/employee'));
 app.use('/api/sync', require('./routes/api/sync'));
 app.use('/api/referrals', require('./routes/api/referrals'));

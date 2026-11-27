@@ -290,23 +290,19 @@
   <div style="display: flex; flex-direction: column; gap: 20px;">
 
     <% if (grandTotal <= 0) { %>
-      <!-- Pending Fee Setup Card -->
-      <div class="erp-card" style="background: #FFFBEB; border: 1px solid #FCD34D; padding: 28px 24px; border-radius: 14px; text-align: center;">
-        <div style="width: 52px; height: 52px; border-radius: 50%; background: #FEF3C7; color: #D97706; display: flex; align-items: center; justify-content: center; margin: 0 auto 14px;">
-          <i data-lucide="help-circle" style="width: 28px; height: 28px;"></i>
+      <!-- Pending Fee Setup Notice -->
+      <div class="erp-card" style="background: #FFFBEB; border: 1px solid #FCD34D; padding: 20px 22px; border-radius: 14px; text-align: center;">
+        <div style="width: 44px; height: 44px; border-radius: 50%; background: #FEF3C7; color: #D97706; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px;">
+          <i data-lucide="help-circle" style="width: 24px; height: 24px;"></i>
         </div>
-        <h3 style="margin: 0 0 8px 0; font-size: 17px; font-weight: 700; color: #92400E;">Fee Structure Under Assignment</h3>
-        <p style="margin: 0; font-size: 13px; color: #B45309; line-height: 1.6;">
-          Your registration has been submitted successfully without any upfront fee! The administration or course coordinator will review your application and assign the exact fee structure.
+        <h3 style="margin: 0 0 6px 0; font-size: 16px; font-weight: 700; color: #92400E;">Fee Structure Under Assignment</h3>
+        <p style="margin: 0; font-size: 12.5px; color: #B45309; line-height: 1.55;">
+          Once your exact fee is assigned by an Admin, you can submit your payment proof below or pay immediately using the official UPI QR below.
         </p>
-        <div style="margin-top: 18px; padding: 12px 14px; background: #FFFFFF; border: 1px dashed #FCD34D; border-radius: 8px; font-size: 12px; color: #78350F; font-weight: 600; text-align: left; display: flex; align-items: center; gap: 8px;">
-          <i data-lucide="info" style="width: 16px; height: 16px; color: #D97706; flex-shrink: 0;"></i>
-          <span>Once your fee is assigned by an Admin or Employee, this panel will instantly unlock the official UPI QR code and payment proof submission form.</span>
-        </div>
       </div>
-    <% } else { %>
-    
-    <!-- QR & Bank Details Card -->
+    <% } %>
+
+    <!-- QR & UPI Payment Card (Always visible so UPI QR & ID are accessible anywhere) -->
     <div class="erp-card" style="background: #FFFFFF; border: 1px solid #E2E8F0; padding: 24px; border-radius: 14px;">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
         <h3 class="erp-h3" style="margin: 0; color: #000000; font-size: 16px;">Scan & Pay via UPI</h3>
@@ -314,19 +310,23 @@
       </div>
 
       <!-- QR Code Display -->
+      <% const stuPayUpi = (typeof paymentConfig !== 'undefined' && paymentConfig && paymentConfig.upi_id) ? paymentConfig.upi_id : '6379000598@amazonpay'; %>
       <div style="background: #F8FAFC; border: 1px dashed #CBD5E1; border-radius: 12px; padding: 16px; text-align: center; margin-bottom: 16px;">
-        <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=upi://pay?pa=aroxtechnologies@icici%26pn=AROX%20TECHNOLOGIES%20PVT%20LTD%26cu=INR" alt="AROX UPI QR Code" style="width: 140px; height: 140px; margin: 0 auto; display: block; border-radius: 8px; border: 1px solid #E2E8F0; background: #FFFFFF;">
-        <div style="font-weight: 700; font-size: 13px; color: #000000; margin-top: 10px;">AROX TECHNOLOGIES PVT LTD</div>
-        <div style="font-size: 11px; color: #64748B; margin-top: 2px;">Scan with GPay, PhonePe, Paytm, BHIM</div>
+        <img src="/api/payments/qr?note=<%= encodeURIComponent('AROX Tech Fee Payment') %>" alt="AROX UPI QR Code" style="width: 155px; height: 155px; margin: 0 auto; display: block; border-radius: 8px; border: 1px solid #E2E8F0; background: #FFFFFF; padding: 4px;">
+        <div style="font-weight: 700; font-size: 13px; color: #000000; margin-top: 10px;"><%= (typeof paymentConfig !== 'undefined' && paymentConfig && paymentConfig.upi_name) ? paymentConfig.upi_name : 'AROX Tech Pvt. Ltd.' %></div>
+        <div style="font-size: 11px; color: #64748B; margin-top: 2px;">Scan with GPay, PhonePe, Paytm, Amazon Pay, BHIM</div>
+        <a href="upi://pay?pa=<%= encodeURIComponent(stuPayUpi) %>&pn=<%= encodeURIComponent('AROX Tech') %>&cu=INR" class="erp-btn erp-btn-sm erp-btn-primary" style="margin-top: 10px; display: inline-flex; align-items: center; gap: 6px; text-decoration: none;">
+          <i data-lucide="smartphone" style="width: 13px; height: 13px;"></i> Pay via UPI App
+        </a>
       </div>
 
       <!-- UPI ID Copy Box -->
       <div style="padding: 10px 14px; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
         <div>
           <div style="font-size: 10px; text-transform: uppercase; font-weight: 700; color: #64748B;">UPI ID</div>
-          <div style="font-family: monospace; font-weight: 700; font-size: 13px; color: #000000;">aroxtechnologies@icici</div>
+          <div style="font-family: monospace; font-weight: 700; font-size: 13px; color: #000000;"><%= stuPayUpi %></div>
         </div>
-        <button type="button" onclick="copyUpiText('aroxtechnologies@icici', this)" class="erp-btn erp-btn-secondary" style="padding: 4px 10px; font-size: 12px; font-weight: 600; color: #000000; border: 1px solid #CBD5E1; cursor: pointer;">
+        <button type="button" onclick="copyUpiText('<%= stuPayUpi %>', this)" class="erp-btn erp-btn-secondary" style="padding: 4px 10px; font-size: 12px; font-weight: 600; color: #000000; border: 1px solid #CBD5E1; cursor: pointer;">
           <i data-lucide="copy" style="width: 12px; height: 12px;"></i> Copy
         </button>
       </div>
@@ -400,7 +400,6 @@
           </button>
         </form>
       </div>
-    <% } %>
     <% } %>
   </div>
 

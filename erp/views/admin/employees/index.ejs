@@ -132,6 +132,7 @@
             <th style="color: #000;">Employee</th>
             <th style="color: #000;">Designation & Dept</th>
             <th style="color: #000;">Contact</th>
+            <th style="color: #000;">Referral Code</th>
             <th style="color: #000;">Role</th>
             <th style="color: #000;">Status</th>
             <th style="text-align: right; color: #000;">Actions</th>
@@ -163,6 +164,18 @@
                 <td>
                   <div style="font-size: 13px; color: #000;"><%= emp.email %></div>
                   <div style="font-size: 11px; color: #64748B;"><%= emp.phone || 'No phone set' %></div>
+                </td>
+                <td>
+                  <% if (emp.referral_code) { %>
+                    <span style="font-family: monospace; font-size: 12px; font-weight: 800; padding: 3px 8px; border-radius: 6px; background: #EFF6FF; color: #1E40AF; border: 1px solid #BFDBFE; display: inline-block;">
+                      <%= emp.referral_code %>
+                    </span>
+                    <div style="font-size: 11px; color: #64748B; margin-top: 2px;">
+                      <%= Number(emp.referred_students_count || 0) %> referred
+                    </div>
+                  <% } else { %>
+                    <span style="font-size: 11px; color: #94A3B8;">Admin / N/A</span>
+                  <% } %>
                 </td>
                 <td>
                   <span style="display: inline-block; padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; text-transform: uppercase; background: #F1F5F9; color: #000; border: 1px solid #CBD5E1;">

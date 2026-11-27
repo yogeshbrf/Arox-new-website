@@ -53,6 +53,7 @@ exports.create = async (req, res) => {
       success: true, 
       message: 'User created successfully',
       id: newId.id || newId,
+      referral_code: newId.referral_code || null,
       tempPassword: defaultPassword
     });
   } catch (error) {
@@ -87,8 +88,18 @@ exports.updateStatus = (req, res) => {
 exports.employeesIndex = (req, res) => {
   try {
     const db = getDb();
+    const missingCodeEmps = db.prepare(`
+      SELECT u.id, u.first_name, u.last_name, u.email
+      FROM users u
+      WHERE u.role_id = 4 AND (u.referral_code IS NULL OR TRIM(u.referral_code) = '') AND u.deleted_at IS NULL
+    `).all();
+    for (const emp of missingCodeEmps) {
+      User.ensureEmployeeReferralCode(emp.id, emp.first_name, emp.last_name, emp.email);
+    }
+
     const employees = db.prepare(`
-      SELECT u.*, r.name as role_name 
+      SELECT u.*, r.name as role_name,
+        (SELECT COUNT(*) FROM students s WHERE (s.referred_by = u.id OR (u.referral_code IS NOT NULL AND UPPER(s.referral_code) = UPPER(u.referral_code))) AND s.deleted_at IS NULL) AS referred_students_count
       FROM users u 
       JOIN roles r ON u.role_id = r.id 
       WHERE u.role_id IN (1, 2, 4) AND u.deleted_at IS NULL
@@ -149,6 +160,10 @@ exports.update = async (req, res) => {
       status || null,
       id
     );
+
+    if (role_id === 4) {
+      User.ensureEmployeeReferralCode(parseInt(id, 10), first_name, last_name, email, req.body.referral_code);
+    }
 
     res.json({ success: true, message: 'Employee updated successfully.' });
   } catch (error) {

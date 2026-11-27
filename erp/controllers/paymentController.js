@@ -2,10 +2,78 @@ const { getDb } = require('../config/database');
 const Payment = require('../models/Payment');
 const Registration = require('../models/Registration');
 const paymentService = require('../services/paymentService');
+const settingsService = require('../services/settingsService');
+const QRCode = require('qrcode');
 const { generatePaymentId, generateInvoiceNumber, calculateGST } = require('../utils/helpers');
 const logger = require('../utils/logger');
 
 const paymentController = {
+  /**
+   * GET /api/payments/config
+   * Returns active UPI ID, payee name, and dynamic QR endpoint URL
+   */
+  getConfig(req, res) {
+    try {
+      const cfg = settingsService.getPaymentSettings();
+      const upiId = cfg.upi_id || '6379000598@amazonpay';
+      const upiName = cfg.upi_name || 'AROX Tech Pvt. Ltd.';
+      const amount = parseFloat(req.query.amount) || 0;
+      const note = (req.query.note || 'AROX Tech Course Fee').toString().slice(0, 60);
+      let upiUri = `upi://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent(upiName)}&cu=INR&tn=${encodeURIComponent(note)}`;
+      if (amount > 0) upiUri += `&am=${amount.toFixed(2)}`;
+      const qrUrl = `/api/payments/qr?${amount > 0 ? 'amount=' + encodeURIComponent(amount.toFixed(2)) + '&' : ''}note=${encodeURIComponent(note)}`;
+      res.json({
+        success: true,
+        data: {
+          ...cfg,
+          upi_id: upiId,
+          upi_name: upiName,
+          upi_uri: upiUri,
+          qr_url: qrUrl
+        }
+      });
+    } catch (err) {
+      logger.error('Payment config error:', err);
+      res.status(500).json({ success: false, message: 'Failed to load payment configuration.' });
+    }
+  },
+
+  /**
+   * GET /api/payments/qr
+   * Dynamically renders a crisp scannable UPI QR PNG for 6379000598@amazonpay
+   */
+  async generateQrPng(req, res) {
+    try {
+      const cfg = settingsService.getPaymentSettings();
+      const upiId = cfg.upi_id || '6379000598@amazonpay';
+      const upiName = cfg.upi_name || 'AROX Tech Pvt. Ltd.';
+      const amount = parseFloat(req.query.amount) || 0;
+      const note = (req.query.note || 'AROX Tech Fee Payment').toString().slice(0, 60);
+
+      let upiUri = `upi://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent(upiName)}&cu=INR&tn=${encodeURIComponent(note)}`;
+      if (amount > 0) {
+        upiUri += `&am=${amount.toFixed(2)}`;
+      }
+
+      const buffer = await QRCode.toBuffer(upiUri, {
+        type: 'png',
+        width: 320,
+        margin: 2,
+        errorCorrectionLevel: 'M',
+        color: {
+          dark: '#0B1F3A',
+          light: '#FFFFFF'
+        }
+      });
+
+      res.set('Content-Type', 'image/png');
+      res.set('Cache-Control', 'no-cache, max-age=0');
+      res.send(buffer);
+    } catch (err) {
+      logger.error('QR generation error:', err);
+      res.status(500).json({ success: false, message: 'Failed to generate UPI QR.' });
+    }
+  },
   /**
    * POST /api/payments
    * Process a mock payment
@@ -109,6 +177,14 @@ const paymentController = {
 
       if (!reg) {
         return res.status(404).json({ success: false, message: 'Registration record not found.' });
+      }
+
+      // If logged-in student submits proof, verify ownership of registration (IDOR protection)
+      if (req.user && req.user.role === 'student') {
+        const ownStudent = db.prepare('SELECT id FROM students WHERE user_id = ?').get(req.user.id);
+        if (!ownStudent || reg.student_id !== ownStudent.id) {
+          return res.status(403).json({ success: false, message: 'Access denied. You can only submit proof for your own registration.' });
+        }
       }
 
       const receiptPath = req.file ? `/uploads/receipts/${req.file.filename}` : null;
@@ -453,6 +529,109 @@ const paymentController = {
     } catch (error) {
       logger.error('Payment verification error:', error);
       res.status(500).json({ success: false, message: 'Failed to verify payment: ' + error.message });
+    }
+  },
+
+  /**
+   * POST /api/payments/admin-record
+   * Admin records a direct / offline / UPI payment on behalf of a student
+   */
+  async adminRecordPayment(req, res) {
+    try {
+      const { registration_id, amount, payment_method, transaction_id, status, notes } = req.body;
+      const db = getDb();
+      const syncService = require('../services/syncService');
+      const { logAudit } = require('../services/auditService');
+
+      const parsedAmount = parseFloat(amount);
+      if (!registration_id || isNaN(parsedAmount) || parsedAmount <= 0) {
+        return res.status(400).json({ success: false, message: 'Valid registration and positive amount are required.' });
+      }
+
+      let reg = null;
+      if (!isNaN(registration_id) && Number.isInteger(Number(registration_id))) {
+        reg = db.prepare('SELECT * FROM registrations WHERE id = ?').get(parseInt(registration_id, 10));
+      } else {
+        reg = db.prepare('SELECT * FROM registrations WHERE registration_id = ?').get(String(registration_id));
+      }
+      if (!reg) {
+        return res.status(404).json({ success: false, message: 'Registration record not found.' });
+      }
+
+      const finalStatus = ['completed', 'pending'].includes(status) ? status : 'completed';
+      const verifierName = `${req.user.first_name || ''} ${req.user.last_name || ''}`.trim() || req.user.email;
+      const paymentId = generatePaymentId();
+      const invoiceNumber = generateInvoiceNumber();
+      const gstInfo = calculateGST(parsedAmount);
+      const txnId = (transaction_id && String(transaction_id).trim()) || `UPI-${Date.now().toString().slice(-6)}`;
+
+      const tx = db.transaction(() => {
+        db.prepare(`
+          INSERT INTO payments (
+            payment_id, registration_id, student_id, amount, gst_amount, total_amount,
+            payment_method, payment_type, transaction_id, status, invoice_number, notes,
+            verified_by, verified_by_name, verified_at, paid_at, created_at
+          ) VALUES (
+            @payment_id, @registration_id, @student_id, @amount, @gst_amount, @total_amount,
+            @payment_method, @payment_type, @transaction_id, @status, @invoice_number, @notes,
+            @verified_by, @verified_by_name, CURRENT_TIMESTAMP,
+            CASE WHEN @status = 'completed' THEN CURRENT_TIMESTAMP ELSE NULL END,
+            CURRENT_TIMESTAMP
+          )
+        `).run({
+          payment_id: paymentId,
+          registration_id: reg.id,
+          student_id: reg.student_id,
+          amount: gstInfo.baseAmount,
+          gst_amount: gstInfo.gstAmount,
+          total_amount: parsedAmount,
+          payment_method: payment_method || 'upi',
+          payment_type: parsedAmount >= (reg.total_amount || 0) ? 'full' : 'partial',
+          transaction_id: txnId,
+          status: finalStatus,
+          invoice_number: invoiceNumber,
+          notes: notes || `Recorded by ${verifierName} (${settingsService.getPaymentSettings().upi_id})`,
+          verified_by: finalStatus === 'completed' ? req.user.id : null,
+          verified_by_name: finalStatus === 'completed' ? verifierName : null
+        });
+
+        const completedSum = db.prepare(`
+          SELECT COALESCE(SUM(total_amount), 0) AS total_paid
+          FROM payments WHERE registration_id = ? AND status IN ('completed', 'verified')
+        `).get(reg.id);
+
+        const totalPaid = completedSum ? completedSum.total_paid : 0;
+        const newBalance = Math.max(0, (reg.total_amount || 0) - totalPaid);
+        const regStatus = (totalPaid > 0 && newBalance <= 0) ? 'confirmed' : reg.status;
+
+        db.prepare(`
+          UPDATE registrations SET paid_amount = ?, balance_amount = ?, status = ? WHERE id = ?
+        `).run(totalPaid, newBalance, regStatus, reg.id);
+      });
+
+      tx();
+
+      logAudit(req, {
+        action: 'ADMIN_RECORD_PAYMENT',
+        module: 'payments',
+        entityType: 'payment',
+        entityId: paymentId,
+        newValues: { registration_id: reg.id, amount: parsedAmount, status: finalStatus, payment_method: payment_method || 'upi' }
+      });
+
+      syncService.broadcast('payment:verified', {
+        paymentId,
+        studentId: reg.student_id,
+        amount: parsedAmount,
+        status: finalStatus,
+        verifiedBy: verifierName,
+        message: `Payment of ₹${parsedAmount.toLocaleString('en-IN')} (${finalStatus}) recorded by ${verifierName}.`
+      });
+
+      res.json({ success: true, message: 'Payment recorded and student ledger updated.', data: { paymentId, transactionId: txnId, status: finalStatus } });
+    } catch (error) {
+      logger.error('Admin record payment error:', error);
+      res.status(500).json({ success: false, message: 'Failed to record payment: ' + error.message });
     }
   },
 

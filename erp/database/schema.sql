@@ -36,6 +36,7 @@ CREATE TABLE IF NOT EXISTS users (
   first_name TEXT,
   last_name TEXT,
   phone TEXT,
+  referral_code TEXT,
   status TEXT NOT NULL DEFAULT 'active' CHECK(status IN ('active','inactive','suspended','pending')),
   email_verified INTEGER DEFAULT 0,
   verification_token TEXT,
@@ -71,6 +72,8 @@ CREATE TABLE IF NOT EXISTS students (
   year_of_study TEXT,
   graduation_year TEXT,
   roll_number TEXT,
+  referred_by INTEGER,
+  referral_code TEXT,
   -- Status
   status TEXT DEFAULT 'active' CHECK(status IN ('active','inactive','completed','dropped')),
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -108,6 +111,11 @@ CREATE TABLE IF NOT EXISTS courses (
   trainer_title TEXT,
   trainer_bio TEXT,
   trainer_photo TEXT,
+  class_timing TEXT,
+  class_available INTEGER DEFAULT 1,
+  trainer_available_today INTEGER DEFAULT 1,
+  trainer_status_note TEXT,
+  classroom_location TEXT,
   is_active INTEGER DEFAULT 1,
   is_featured INTEGER DEFAULT 0,
   sort_order INTEGER DEFAULT 0,
@@ -204,9 +212,11 @@ CREATE TABLE IF NOT EXISTS attendance (
   status TEXT DEFAULT 'present' CHECK(status IN ('present','absent','late','leave','holiday')),
   check_in_time TEXT,
   check_out_time TEXT,
-  method TEXT DEFAULT 'manual' CHECK(method IN ('manual','qr','online','gps')),
+  method TEXT DEFAULT 'manual' CHECK(method IN ('manual','qr','online','offline','gps')),
   remarks TEXT,
   marked_by INTEGER,
+  updated_by_admin INTEGER DEFAULT 0,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE,
   FOREIGN KEY (course_id) REFERENCES courses(id),
@@ -493,6 +503,8 @@ CREATE TABLE IF NOT EXISTS employee_tasks (
   description TEXT,
   assigned_to INTEGER NOT NULL,
   assigned_by INTEGER,
+  batch_group_id TEXT,
+  assigned_by_name TEXT,
   lead_id INTEGER,
   priority TEXT DEFAULT 'medium' CHECK(priority IN ('high','medium','low')),
   status TEXT DEFAULT 'todo' CHECK(status IN ('todo','in_progress','review','completed')),
@@ -529,4 +541,28 @@ CREATE INDEX IF NOT EXISTS idx_leads_assigned ON leads(assigned_to);
 CREATE INDEX IF NOT EXISTS idx_followups_employee ON follow_ups(employee_id);
 CREATE INDEX IF NOT EXISTS idx_followups_scheduled ON follow_ups(scheduled_at);
 CREATE INDEX IF NOT EXISTS idx_employee_tasks_assigned ON employee_tasks(assigned_to);
+
+-- Employee Work Proofs
+CREATE TABLE IF NOT EXISTS employee_proofs (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  employee_id INTEGER NOT NULL,
+  task_id INTEGER,
+  category TEXT NOT NULL,
+  title TEXT,
+  remarks TEXT,
+  file_name TEXT NOT NULL,
+  original_name TEXT NOT NULL,
+  file_path TEXT NOT NULL,
+  file_ext TEXT NOT NULL,
+  file_size INTEGER DEFAULT 0,
+  status TEXT DEFAULT 'submitted' CHECK(status IN ('submitted','approved','needs_revision','rejected')),
+  reviewed_by INTEGER,
+  review_notes TEXT,
+  reviewed_at DATETIME,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (employee_id) REFERENCES users(id) ON DELETE CASCADE,
+  FOREIGN KEY (task_id) REFERENCES employee_tasks(id) ON DELETE SET NULL,
+  FOREIGN KEY (reviewed_by) REFERENCES users(id) ON DELETE SET NULL
+);
+CREATE INDEX IF NOT EXISTS idx_employee_proofs_emp ON employee_proofs(employee_id);
 

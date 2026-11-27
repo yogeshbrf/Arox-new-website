@@ -13,7 +13,7 @@ const reviewsController = require('../../controllers/student/reviewsController')
 
 // Secure all student routes
 router.use(authenticate);
-router.use(roleGuard('student', 'admin', 'super_admin', 'employee', 'trainer', 'staff'));
+router.use(roleGuard('student', 'admin', 'super_admin'));
 
 // 0. Overview Dashboard
 router.get('/', (req, res) => res.redirect('/student/dashboard'));

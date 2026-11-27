@@ -64,16 +64,18 @@ class EmployeeTask {
 
   static create(data) {
     const db = getDb();
-    const assignedTo = data.assigned_to || data.employee_id || 1;
+    const assignedTo = parseInt(data.assigned_to || data.employee_id || 1, 10);
     const res = db.prepare(`
       INSERT INTO employee_tasks (
-        title, description, assigned_to, assigned_by, lead_id, priority, status, category, due_date
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        title, description, assigned_to, assigned_by, batch_group_id, assigned_by_name, lead_id, priority, status, category, due_date
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `).run(
       data.title || 'Untitled Task',
       data.description || '',
       assignedTo,
       data.assigned_by || null,
+      data.batch_group_id || null,
+      data.assigned_by_name || null,
       data.lead_id || null,
       data.priority || 'medium',
       data.status || 'todo',
@@ -82,6 +84,39 @@ class EmployeeTask {
     );
 
     return { id: res.lastInsertRowid, ...data, assigned_to: assignedTo };
+  }
+
+  static createMany(assigneeIds = [], data = {}) {
+    const db = getDb();
+    const ids = [...new Set((Array.isArray(assigneeIds) ? assigneeIds : [assigneeIds]).map(v => parseInt(v, 10)).filter(v => Number.isInteger(v) && v > 0))];
+    if (ids.length === 0) return [];
+    const batchGroupId = ids.length > 1 ? `GRP-${Date.now()}-${Math.random().toString(36).slice(2, 6).toUpperCase()}` : null;
+    const stmt = db.prepare(`
+      INSERT INTO employee_tasks (
+        title, description, assigned_to, assigned_by, batch_group_id, assigned_by_name, lead_id, priority, status, category, due_date
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `);
+    const created = [];
+    const tx = db.transaction(() => {
+      for (const empId of ids) {
+        const res = stmt.run(
+          data.title || 'Untitled Task',
+          data.description || '',
+          empId,
+          data.assigned_by || null,
+          batchGroupId,
+          data.assigned_by_name || null,
+          data.lead_id || null,
+          data.priority || 'medium',
+          data.status || 'todo',
+          data.category || 'client_outreach',
+          data.due_date || null
+        );
+        created.push({ id: res.lastInsertRowid, ...data, assigned_to: empId, batch_group_id: batchGroupId });
+      }
+    });
+    tx();
+    return created;
   }
 
   static updateStatus(id, status) {

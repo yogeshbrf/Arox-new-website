@@ -745,6 +745,12 @@
               <svg class="ec" style="display:none" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.2 6.8C2.9 8.4 2.2 10.1 2.2 12c0 0 3.6 6.5 9.8 6.5 1.9 0 3.6-.5 5-1.3"/><path d="M19.8 14.9C21.1 13.4 21.8 12 21.8 12s-3.6-6.5-9.8-6.5c-1.1 0-2.1.2-3 .5"/><circle cx="12" cy="12" r="2.7" fill="currentColor" fill-opacity="0.2"/><path d="m3 3 18 18"/></svg>
             </button>
           </div>
+          <label for="drg-ref" class="sr-only">Referral code (optional)</label>
+          <div class="pill-wrap">
+            <span class="pill-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4V9Z" fill="currentColor" fill-opacity="0.14"/><path d="M13 7v2m0 6v2m0-5v0"/></svg></span>
+            <span class="pill-div"></span>
+            <input type="text" id="drg-ref" name="reg_referral_code" class="pill-input" placeholder="Employee referral code (optional)" style="text-transform:uppercase;" autocomplete="off" readonly />
+          </div>
           <button type="submit" class="btn-submit" style="margin-top:8px">Register</button>
         </form>
       </div>
@@ -884,6 +890,12 @@
               <svg class="eo" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 12s3.5-6.5 9.5-6.5S21.5 12 21.5 12s-3.5 6.5-9.5 6.5S2.5 12 2.5 12Z" fill="currentColor" fill-opacity="0.14"/><circle cx="12" cy="12" r="3.1" fill="currentColor" fill-opacity="0.34"/></svg>
               <svg class="ec" style="display:none" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.2 6.8C2.9 8.4 2.2 10.1 2.2 12c0 0 3.6 6.5 9.8 6.5 1.9 0 3.6-.5 5-1.3"/><path d="M19.8 14.9C21.1 13.4 21.8 12 21.8 12s-3.6-6.5-9.8-6.5c-1.1 0-2.1.2-3 .5"/><circle cx="12" cy="12" r="2.7" fill="currentColor" fill-opacity="0.2"/><path d="m3 3 18 18"/></svg>
             </button>
+          </div>
+          <label for="mrg-ref" class="sr-only">Referral code (optional)</label>
+          <div class="pill-wrap">
+            <span class="pill-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4V9Z" fill="currentColor" fill-opacity="0.14"/><path d="M13 7v2m0 6v2m0-5v0"/></svg></span>
+            <span class="pill-div"></span>
+            <input type="text" id="mrg-ref" name="m_reg_referral_code" class="pill-input" placeholder="Referral code (optional)" style="text-transform:uppercase;" autocomplete="off" readonly />
           </div>
           <button type="submit" class="btn-submit">Register</button>
         </form>
@@ -1257,6 +1269,7 @@
       const emailInput = form.querySelector('input[type="email"]');
       const phoneInput = form.querySelector('input[type="tel"]');
       const passInput = form.querySelector('input[name*="pass"]');
+      const refInput = form.querySelector('input[name*="referral_code"]');
       const submitBtn = form.querySelector('.btn-submit');
       const origText = submitBtn ? submitBtn.textContent : 'Register';
 
@@ -1264,6 +1277,7 @@
       const email = (emailInput ? emailInput.value : '').trim().toLowerCase();
       const phone = (phoneInput ? phoneInput.value : '').trim();
       const password = passInput ? passInput.value : '';
+      const referral_code = (refInput ? refInput.value : '').trim().toUpperCase();
 
       if (!name || !email || !password) {
         showAuthAlert(form, 'Please fill in all mandatory fields.', 'error');
@@ -1286,7 +1300,7 @@
         const res = await fetch('/api/auth/register', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name, email, phone, password, role: registerRole })
+          body: JSON.stringify({ name, email, phone, password, role: registerRole, referral_code: referral_code || undefined })
         });
 
         const result = await res.json();
@@ -1374,8 +1388,19 @@
       } catch(e){}
 
       // Extra clear after browsers autofill post-DOMContentLoaded
-      setTimeout(clearForms, 100);
-      setTimeout(clearForms, 500);
+      const applyUrlRef = () => {
+        try {
+          const refParam = (new URLSearchParams(window.location.search).get('ref') || '').trim().toUpperCase();
+          if (refParam) {
+            const dRef = document.getElementById('drg-ref');
+            const mRef = document.getElementById('mrg-ref');
+            if (dRef) { dRef.removeAttribute('readonly'); dRef.value = refParam; }
+            if (mRef) { mRef.removeAttribute('readonly'); mRef.value = refParam; }
+          }
+        } catch (e) {}
+      };
+      setTimeout(() => { clearForms(); applyUrlRef(); }, 100);
+      setTimeout(() => { clearForms(); applyUrlRef(); }, 550);
     });
 
     /* ── BROWSER BACK / FORWARD (BFCache reset) ── */

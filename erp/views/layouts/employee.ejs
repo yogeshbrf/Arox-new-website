@@ -63,16 +63,14 @@
   </script>
 
   <!-- Custom CSS -->
-  <link rel="stylesheet" href="/erp-assets/css/erp-theme.css?v=3.1">
+  <link rel="stylesheet" href="/erp-assets/css/erp-theme.css?v=4.0">
 
   <style>
     @media (max-width: 768px) {
-      /* Mobile Header: Hide Live Sync and circular letter avatar in header */
       .sync-status-capsule,
       #employee-sync-capsule,
       .erp-topbar-right .sync-status-capsule,
-      .erp-topbar-right .erp-profile,
-      .erp-topbar-right .erp-avatar {
+      .erp-topbar-right .erp-quick-add {
         display: none !important;
       }
     }
@@ -95,68 +93,77 @@
   <div class="erp-sidebar-overlay" id="employee-sidebar-overlay" aria-hidden="true"></div>
 
   <div class="erp-layout">
+    <% const activePath = typeof currentPath !== 'undefined' ? currentPath : ''; %>
     <!-- Sidebar -->
     <aside class="erp-sidebar" id="employee-sidebar">
       <script>
-        if (window.innerWidth > 768 && localStorage.getItem('employee-sidebar-collapsed') === 'true') {
-          document.getElementById('employee-sidebar').classList.add('collapsed');
-        }
+        (function () {
+          if (window.innerWidth > 768 && localStorage.getItem('arox-sidebar-pinned') === 'true') {
+            var sb = document.currentScript.parentElement;
+            sb.classList.add('sidebar-pinned');
+            if (sb.parentElement) sb.parentElement.classList.add('sidebar-pinned');
+          }
+        })();
       </script>
       <div class="erp-sidebar-header">
         <div class="sidebar-logo-container">
-          <img src="/erp-assets/assets/logo/logo-dark.png" alt="AROX Logo" class="sidebar-logo-large" style="height: 60px; max-height: 64px; width: auto; max-width: 200px; object-fit: contain;">
+          <img src="/erp-assets/assets/logo/logo-dark.png" alt="AROX Logo" class="sidebar-logo-large" style="height: 52px; max-height: 56px; width: auto; max-width: 185px; object-fit: contain;">
         </div>
-        <button id="employee-sidebar-toggle-btn" class="sidebar-toggle-btn" title="Toggle Sidebar">
-          <i id="employee-sidebar-toggle-icon" data-lucide="panel-left-close" style="width: 18px; height: 18px;"></i>
+        <button id="employee-sidebar-toggle-btn" class="sidebar-toggle-btn" title="Pin Sidebar Open">
+          <i id="employee-sidebar-toggle-icon" data-lucide="pin"></i>
         </button>
       </div>
 
       <nav class="erp-sidebar-nav">
         <!-- 0. Overview Dashboard -->
-        <a href="/employee/dashboard" class="erp-nav-item <%= currentPath === '/employee/dashboard' ? 'active' : '' %>">
+        <a href="/employee/dashboard" class="erp-nav-item <%= activePath === '/employee/dashboard' ? 'active' : '' %>">
           <i data-lucide="layout-dashboard"></i>
           <span>Overview</span>
         </a>
 
-        <!-- 1. LEADS (Submenu: Internships, Clients) -->
+        <!-- 1. LEADS & REFERRED STUDENTS -->
         <div class="erp-nav-section" style="display: flex; align-items: center; justify-content: space-between;">
-          <span>Leads</span>
+          <span>Leads &amp; Referrals</span>
           <span style="font-size: 10px; font-weight: 700; padding: 1px 6px; background: #000; color: #fff; border-radius: 4px; letter-spacing: 0.05em;">CRM</span>
         </div>
-        <a href="/employee/internships" class="erp-nav-item <%= (currentPath.startsWith('/employee/internships') || currentPath.startsWith('/employee/leads/internships')) ? 'active' : '' %>">
-          <i data-lucide="graduation-cap"></i>
-          <span>Internships</span>
+        <a href="/employee/students" class="erp-nav-item <%= activePath.startsWith('/employee/students') ? 'active' : '' %>">
+          <i data-lucide="users"></i>
+          <span>Referred Students</span>
         </a>
-        <a href="/employee/clients" class="erp-nav-item <%= (currentPath.startsWith('/employee/clients') || currentPath.startsWith('/employee/leads/clients')) ? 'active' : '' %>">
+        <a href="/employee/internships" class="erp-nav-item <%= (activePath.startsWith('/employee/internships') || activePath.startsWith('/employee/leads/internships')) ? 'active' : '' %>">
+          <i data-lucide="graduation-cap"></i>
+          <span>Referred Internships</span>
+        </a>
+        <a href="/employee/clients" class="erp-nav-item <%= (activePath.startsWith('/employee/clients') || activePath.startsWith('/employee/leads/clients')) ? 'active' : '' %>">
           <i data-lucide="building-2"></i>
           <span>Clients</span>
         </a>
-        <a href="/employee/leads" class="erp-nav-item <%= (currentPath === '/employee/leads') ? 'active' : '' %>">
+        <a href="/employee/leads" class="erp-nav-item <%= (activePath === '/employee/leads') ? 'active' : '' %>">
           <i data-lucide="target"></i>
           <span>Sales Pipeline</span>
         </a>
-        <a href="/employee/tasks" class="erp-nav-item <%= currentPath.startsWith('/employee/tasks') ? 'active' : '' %>">
+        <a href="/employee/tasks" class="erp-nav-item <%= activePath.startsWith('/employee/tasks') ? 'active' : '' %>">
           <i data-lucide="check-square"></i>
-          <span>My Tasks</span>
+          <span>Tasks &amp; Proofs</span>
         </a>
 
         <!-- 2. CALL REPORTS -->
         <div class="erp-nav-section">Communication</div>
-        <a href="/employee/call-reports" class="erp-nav-item <%= currentPath.startsWith('/employee/call-reports') ? 'active' : '' %>">
+        <a href="/employee/call-reports" class="erp-nav-item <%= activePath.startsWith('/employee/call-reports') ? 'active' : '' %>">
           <i data-lucide="phone-call"></i>
           <span>Call Reports</span>
         </a>
 
         <!-- 3. CONTACTS -->
-        <a href="/employee/contacts" class="erp-nav-item <%= currentPath.startsWith('/employee/contacts') ? 'active' : '' %>">
+        <a href="/employee/contacts" class="erp-nav-item <%= activePath.startsWith('/employee/contacts') ? 'active' : '' %>">
           <i data-lucide="contact-2"></i>
           <span>Contacts Directory</span>
         </a>
 
         <!-- 4. REVIEWS AND RATING -->
-        <a href="/employee/reviews" class="erp-nav-item <%= currentPath.startsWith('/employee/reviews') ? 'active' : '' %>">
+        <a href="/employee/reviews" class="erp-nav-item <%= activePath.startsWith('/employee/reviews') ? 'active' : '' %>">
           <i data-lucide="star"></i>
-          <span>Reviews & Ratings</span>
+          <span>Reviews &amp; Ratings</span>
         </a>
 
         <% 
@@ -165,9 +172,9 @@
 
         <!-- 5. SETTINGS -->
         <div class="erp-nav-section">Account</div>
-        <a href="/employee/settings" class="erp-nav-item <%= (currentPath.startsWith('/employee/settings') || currentPath.startsWith('/employee/profile')) ? 'active' : '' %>">
+        <a href="/employee/settings" class="erp-nav-item <%= (activePath.startsWith('/employee/settings') || activePath.startsWith('/employee/profile')) ? 'active' : '' %>">
           <i data-lucide="settings"></i>
-          <span>Settings</span>
+          <span>Settings &amp; Profile</span>
         </a>
 
         <% if (['admin', 'super_admin'].includes(empUser.role)) { %>
@@ -179,9 +186,9 @@
         <% } %>
       </nav>
 
-      <div style="padding: 20px 14px; border-top: 1px solid #E2E8F0;">
+      <div style="padding: 16px 14px; border-top: 1px solid #E2E8F0;">
         <form action="/api/auth/logout" method="POST">
-          <button type="submit" class="erp-nav-item" style="width: 100%; border: none; background: transparent; cursor: pointer; text-align: left;">
+          <button type="submit" class="erp-nav-item" style="width: 100%; border: none; background: transparent; cursor: pointer; text-align: left; color: #DC2626;" title="Logout">
             <i data-lucide="log-out"></i>
             <span>Logout</span>
           </button>
@@ -193,10 +200,17 @@
     <main class="erp-main" id="employee-main-content" role="main" aria-label="Employee portal content">
       <!-- Topbar -->
       <header class="erp-topbar">
-        <div style="display: flex; align-items: center; gap: 8px;">
+        <div style="display: flex; align-items: center; gap: 10px; min-width: 0;">
           <button class="erp-mobile-toggle" id="employee-mobile-toggle" aria-label="Open menu">
             <i data-lucide="menu" style="width: 22px; height: 22px;"></i>
           </button>
+          <div class="erp-mobile-nav-brand">
+            <a href="/employee/dashboard" class="erp-mobile-logo-link" title="AROX Employee Dashboard">
+              <img src="/erp-assets/assets/logo/logo-dark.png" alt="AROX Logo">
+            </a>
+            <span class="erp-mobile-nav-sep">/</span>
+            <span class="erp-mobile-current-page"><%= typeof pageTitle !== 'undefined' ? pageTitle : 'Dashboard' %></span>
+          </div>
           <div class="erp-breadcrumb">
             <span style="color: var(--erp-text-secondary);">Employee</span>
             <i data-lucide="chevron-right" style="width: 14px; height: 14px; color: var(--erp-text-secondary);"></i>
@@ -212,20 +226,42 @@
           </div>
 
           <!-- Quick Add Button -->
-          <div class="hidden sm:flex items-center gap-2">
+          <div class="erp-quick-add hidden sm:flex items-center gap-2">
             <a href="/employee/leads" class="erp-btn erp-btn-sm erp-btn-primary" style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; font-size: 12px; font-weight: 600; border-radius: 6px; background: #000; color: #fff;">
               <i data-lucide="plus" style="width: 14px; height: 14px;"></i>
               <span>New Lead</span>
             </a>
           </div>
 
-          <div class="erp-profile hidden md:flex">
-            <div class="erp-profile-info">
-              <span style="font-size: 13px; font-weight: 600;"><%= empUser.first_name || 'Staff' %> <%= empUser.last_name || '' %></span>
-              <span style="font-size: 11px; color: var(--erp-text-secondary); text-transform: capitalize;"><%= empUser.role || 'Employee' %></span>
-            </div>
-            <div class="erp-avatar" style="background: #000000; color: #ffffff;">
-              <%= (empUser.first_name || 'E').charAt(0).toUpperCase() %>
+          <div class="erp-profile-wrapper">
+            <button type="button" class="erp-profile erp-profile-trigger" aria-haspopup="true" aria-expanded="false" title="Account Menu">
+              <div class="erp-profile-info">
+                <span style="font-size: 13px; font-weight: 600;"><%= empUser.first_name || 'Staff' %> <%= empUser.last_name || '' %></span>
+                <span style="font-size: 11px; color: var(--erp-text-secondary); text-transform: capitalize;"><%= empUser.role || 'Employee' %></span>
+              </div>
+              <div class="erp-avatar" style="background: #000000; color: #ffffff;">
+                <%= (empUser.first_name || 'E').charAt(0).toUpperCase() %>
+              </div>
+            </button>
+            <div class="erp-profile-dropdown">
+              <div class="erp-profile-dropdown-header">
+                <div style="font-size: 13px; font-weight: 700; color: #0F172A;"><%= empUser.first_name || 'Staff' %> <%= empUser.last_name || '' %></div>
+                <div style="font-size: 11px; color: #64748B; text-transform: uppercase; letter-spacing: 0.04em;"><%= empUser.role || 'Employee' %> Portal</div>
+              </div>
+              <a href="/employee/profile" class="erp-profile-dropdown-item">
+                <i data-lucide="user-circle" style="width: 16px; height: 16px;"></i>
+                <span>My Profile &amp; Code</span>
+              </a>
+              <a href="/employee/settings" class="erp-profile-dropdown-item">
+                <i data-lucide="settings" style="width: 16px; height: 16px;"></i>
+                <span>Settings</span>
+              </a>
+              <form action="/api/auth/logout" method="POST" style="margin-top: 4px;">
+                <button type="submit" class="erp-profile-dropdown-item danger">
+                  <i data-lucide="log-out" style="width: 16px; height: 16px;"></i>
+                  <span>Logout</span>
+                </button>
+              </form>
             </div>
           </div>
         </div>
@@ -240,41 +276,7 @@
     </main>
   </div>
 
-  <script>
-    // Lucide Icons initialization
-    lucide.createIcons();
-
-    // Sidebar Collapse
-    const sidebar = document.getElementById('employee-sidebar');
-    const toggleBtn = document.getElementById('employee-sidebar-toggle-btn');
-    const toggleIcon = document.getElementById('employee-sidebar-toggle-icon');
-    const overlay = document.getElementById('employee-sidebar-overlay');
-    const mobileToggle = document.getElementById('employee-mobile-toggle');
-    const bottomMenuBtn = document.getElementById('employee-bottom-menu-btn');
-
-    function openMobileSidebar() {
-      sidebar.classList.remove('collapsed');
-      sidebar.classList.add('mobile-open');
-      overlay.classList.add('active');
-      document.body.style.overflow = 'hidden';
-    }
-
-    function closeMobileSidebar() {
-      sidebar.classList.remove('mobile-open');
-      overlay.classList.remove('active');
-      document.body.style.overflow = '';
-    }
-
-    if (mobileToggle) {
-      mobileToggle.addEventListener('click', openMobileSidebar);
-    }
-    if (bottomMenuBtn) {
-      bottomMenuBtn.addEventListener('click', openMobileSidebar);
-    }
-    if (overlay) {
-      overlay.addEventListener('click', closeMobileSidebar);
-    }
-  </script>
+  <script src="/erp-assets/js/erp-shell.js?v=1"></script>
 
   <!-- Triangular Sync Client -->
   <script src="/erp-assets/js/sync-client.js"></script>

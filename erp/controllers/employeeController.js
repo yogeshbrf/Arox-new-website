@@ -1,6 +1,47 @@
 const { Client, Lead, FollowUp, EmployeeTask, EmployeeTarget, User, Student, Course } = require('../models');
+const EmployeeProof = require('../models/EmployeeProof');
 const logger = require('../utils/logger');
 const { getDb } = require('../config/database');
+const fs = require('fs');
+const path = require('path');
+
+/**
+ * Resolve the employee's unique referral code and build a SQL scope filter
+ * so employees only ever see students referred by their own code.
+ */
+function getEmployeeReferralScope(db, reqUser) {
+  const roleLower = String((reqUser && reqUser.role) || '').toLowerCase();
+  const isAdmin = ['admin', 'super_admin'].includes(roleLower);
+  const empRow = db.prepare('SELECT id, first_name, last_name, email, referral_code FROM users WHERE id = ?').get(reqUser.id);
+  let referralCode = empRow && empRow.referral_code ? empRow.referral_code.trim().toUpperCase() : null;
+
+  if (!referralCode && empRow && !isAdmin) {
+    referralCode = User.ensureEmployeeReferralCode(empRow.id, empRow.first_name, empRow.last_name, empRow.email);
+  }
+
+  const refParam = referralCode || '';
+  return {
+    isAdmin,
+    employeeId: reqUser.id,
+    referralCode,
+    whereClause: isAdmin
+      ? 's.deleted_at IS NULL'
+      : `s.deleted_at IS NULL AND (
+           s.referred_by = @empId
+           ${refParam ? "OR UPPER(COALESCE(s.referral_code, '')) = UPPER(@empRefCode)" : ''}
+           OR EXISTS (
+             SELECT 1 FROM registrations rx
+             LEFT JOIN referrals rf ON LOWER(rx.referral_code) = LOWER(rf.code)
+             WHERE rx.student_id = s.id
+               AND (
+                 rf.employee_id = @empId
+                 ${refParam ? "OR UPPER(COALESCE(rx.referral_code, '')) = UPPER(@empRefCode)" : ''}
+               )
+           )
+         )`,
+    params: { empId: reqUser.id, empRefCode: refParam }
+  };
+}
 
 const employeeController = {
   /**
@@ -8,9 +49,11 @@ const employeeController = {
    */
   async dashboard(req, res) {
     try {
+      const db = getDb();
       const employeeId = req.user.id;
       const todayDate = new Date().toISOString().split('T')[0];
       const CallReport = require('../models/CallReport');
+      const scope = getEmployeeReferralScope(db, req.user);
 
       // KPI data
       const clientStats = Client.getStats(employeeId);
@@ -20,6 +63,22 @@ const employeeController = {
       const callStats = CallReport.getPerformanceSummary({ employee_id: employeeId });
       const performance = EmployeeTarget.getPerformanceMetrics(employeeId);
 
+      // Strictly only students referred by this employee's unique referral code
+      const referredStudents = db.prepare(`
+        SELECT s.id, s.student_id, s.first_name, s.last_name, s.email, s.phone, s.college,
+               s.referral_code, s.created_at,
+               (SELECT c.title FROM registrations r JOIN courses c ON r.course_id = c.id WHERE r.student_id = s.id ORDER BY r.created_at DESC LIMIT 1) as course_title,
+               (SELECT r.status FROM registrations r WHERE r.student_id = s.id ORDER BY r.created_at DESC LIMIT 1) as reg_status
+        FROM students s
+        WHERE ${scope.whereClause}
+        ORDER BY s.created_at DESC
+        LIMIT 20
+      `).all(scope.params);
+
+      // Uploaded work proofs + assigned tasks for proof dropdown
+      const myTasks = EmployeeTask.findAll({ assigned_to: employeeId });
+      const uploadedProofs = EmployeeProof.getByEmployee(employeeId);
+
       // Today's Follow-ups
       const todayFollowUps = FollowUp.findAll({
         employee_id: employeeId,
@@ -27,10 +86,7 @@ const employeeController = {
       });
 
       // Priority Tasks
-      const pendingTasks = EmployeeTask.findAll({
-        assigned_to: employeeId,
-        status: 'todo'
-      }).slice(0, 5);
+      const pendingTasks = myTasks.filter(t => t.status !== 'completed').slice(0, 6);
 
       // Recent Leads
       const recentLeads = Lead.findAll({
@@ -48,6 +104,11 @@ const employeeController = {
         pageTitle: 'Dashboard Overview',
         currentPath: '/employee/dashboard',
         user: req.user,
+        referralCode: scope.referralCode,
+        referredStudents,
+        referredStudentsCount: referredStudents.length,
+        myTasks,
+        uploadedProofs,
         clientStats,
         pipelineStats,
         followUpStats,
@@ -223,6 +284,7 @@ const employeeController = {
 
       const stats = EmployeeTask.getStats(employeeId);
       const myLeads = Lead.findAll({ assigned_to: employeeId });
+      const uploadedProofs = EmployeeProof.getByEmployee(employeeId);
 
       res.render('employee/tasks', {
         layout: 'layouts/employee',
@@ -233,6 +295,7 @@ const employeeController = {
         tasks,
         stats,
         leads: myLeads,
+        uploadedProofs,
         activeStatus: status,
         filters: { priority, category, search }
       });
@@ -298,24 +361,40 @@ const employeeController = {
   async students(req, res) {
     try {
       const db = getDb();
+      const scope = getEmployeeReferralScope(db, req.user);
+      const search = (req.query.search || '').trim();
+      let extraWhere = '';
+      const params = { ...scope.params };
+      if (search) {
+        extraWhere = ' AND (s.first_name LIKE @q OR s.last_name LIKE @q OR s.email LIKE @q OR s.student_id LIKE @q OR s.college LIKE @q)';
+        params.q = `%${search}%`;
+      }
+
       const students = db.prepare(`
         SELECT 
           s.id, s.student_id, s.first_name, s.last_name, s.email, s.phone,
-          s.college, s.department, s.year_of_study, s.status,
-          c.title as course_title, c.batch_name
+          s.college, s.department, s.year_of_study, s.status, s.referral_code, s.created_at,
+          (SELECT c.title FROM registrations r JOIN courses c ON r.course_id = c.id WHERE r.student_id = s.id ORDER BY r.created_at DESC LIMIT 1) as course_title,
+          (SELECT COALESCE(r.batch_name, c.batch_name) FROM registrations r JOIN courses c ON r.course_id = c.id WHERE r.student_id = s.id ORDER BY r.created_at DESC LIMIT 1) as batch_name,
+          (SELECT r.status FROM registrations r WHERE r.student_id = s.id ORDER BY r.created_at DESC LIMIT 1) as reg_status,
+          (SELECT r.total_amount FROM registrations r WHERE r.student_id = s.id ORDER BY r.created_at DESC LIMIT 1) as total_amount,
+          (SELECT r.paid_amount FROM registrations r WHERE r.student_id = s.id ORDER BY r.created_at DESC LIMIT 1) as paid_amount,
+          (SELECT r.balance_amount FROM registrations r WHERE r.student_id = s.id ORDER BY r.created_at DESC LIMIT 1) as balance_amount
         FROM students s
-        LEFT JOIN registrations r ON r.student_id = s.id
-        LEFT JOIN courses c ON r.course_id = c.id
-        ORDER BY s.first_name ASC
-      `).all() || [];
+        WHERE ${scope.whereClause}${extraWhere}
+        ORDER BY s.created_at DESC
+      `).all(params) || [];
 
       res.render('employee/students', {
         layout: 'layouts/employee',
-        title: 'Students & Batches - AROX ERP',
-        pageTitle: 'Students Directory',
+        title: 'Referred Students - AROX ERP',
+        pageTitle: 'My Referred Students',
         currentPath: '/employee/students',
         user: req.user,
-        students
+        referralCode: scope.referralCode,
+        isAdminView: scope.isAdmin,
+        students,
+        search
       });
     } catch (error) {
       logger.error('Employee students error:', error);
@@ -334,8 +413,10 @@ const employeeController = {
    */
   async profile(req, res) {
     try {
+      const db = getDb();
       const employeeId = req.user.id;
       const user = User.findById(employeeId);
+      const scope = getEmployeeReferralScope(db, req.user);
       const metrics = EmployeeTarget.getPerformanceMetrics(employeeId);
 
       res.render('employee/profile', {
@@ -345,6 +426,7 @@ const employeeController = {
         currentPath: '/employee/profile',
         user: req.user,
         profile: user,
+        referralCode: scope.referralCode || (user && user.referral_code) || null,
         metrics
       });
     } catch (error) {
@@ -405,8 +487,15 @@ const employeeController = {
     try {
       const syncService = require('../services/syncService');
       const { logAudit } = require('../services/auditService');
+      const roleLower = String((req.user && req.user.role) || '').toLowerCase();
+      const isAdmin = ['admin', 'super_admin'].includes(roleLower);
 
       const oldClient = Client.findById(req.params.id);
+      if (!oldClient) return res.status(404).json({ success: false, message: 'Client not found.' });
+      if (!isAdmin && oldClient.assigned_to && oldClient.assigned_to !== req.user.id) {
+        return res.status(403).json({ success: false, message: 'You can only update clients assigned to you.' });
+      }
+
       const client = Client.update(req.params.id, req.body);
 
       logAudit(req, {
@@ -438,9 +527,14 @@ const employeeController = {
     try {
       const syncService = require('../services/syncService');
       const { logAudit } = require('../services/auditService');
+      const roleLower = String((req.user && req.user.role) || '').toLowerCase();
+      const isAdmin = ['admin', 'super_admin'].includes(roleLower);
 
       const oldClient = Client.findById(req.params.id);
       if (!oldClient) return res.status(404).json({ success: false, message: 'Client not found.' });
+      if (!isAdmin && oldClient.assigned_to && oldClient.assigned_to !== req.user.id) {
+        return res.status(403).json({ success: false, message: 'Only Admin or assigned owner can delete this client.' });
+      }
 
       Client.delete(req.params.id);
 
@@ -470,9 +564,11 @@ const employeeController = {
    */
   async createLead(req, res) {
     try {
+      const roleLower = String((req.user && req.user.role) || '').toLowerCase();
+      const isAdmin = ['admin', 'super_admin'].includes(roleLower);
       const data = {
         ...req.body,
-        assigned_to: req.body.assigned_to || req.user.id
+        assigned_to: isAdmin ? (req.body.assigned_to || req.user.id) : req.user.id
       };
       const lead = Lead.create(data);
       res.json({ success: true, message: 'Lead added to pipeline!', lead });
@@ -488,6 +584,13 @@ const employeeController = {
   async updateLeadStage(req, res) {
     try {
       const { stage } = req.body;
+      const roleLower = String((req.user && req.user.role) || '').toLowerCase();
+      const isAdmin = ['admin', 'super_admin'].includes(roleLower);
+      const existing = Lead.findById(req.params.id);
+      if (!existing) return res.status(404).json({ success: false, message: 'Lead not found.' });
+      if (!isAdmin && existing.assigned_to && existing.assigned_to !== req.user.id) {
+        return res.status(403).json({ success: false, message: 'You can only move your own leads.' });
+      }
       const lead = Lead.updateStage(req.params.id, stage);
       res.json({ success: true, message: `Lead moved to ${stage}`, lead });
     } catch (e) {
@@ -501,6 +604,13 @@ const employeeController = {
    */
   async updateLead(req, res) {
     try {
+      const roleLower = String((req.user && req.user.role) || '').toLowerCase();
+      const isAdmin = ['admin', 'super_admin'].includes(roleLower);
+      const existing = Lead.findById(req.params.id);
+      if (!existing) return res.status(404).json({ success: false, message: 'Lead not found.' });
+      if (!isAdmin && existing.assigned_to && existing.assigned_to !== req.user.id) {
+        return res.status(403).json({ success: false, message: 'You can only update your own leads.' });
+      }
       const lead = Lead.update(req.params.id, req.body);
       res.json({ success: true, message: 'Lead updated successfully!', lead });
     } catch (e) {
@@ -514,6 +624,13 @@ const employeeController = {
    */
   async deleteLead(req, res) {
     try {
+      const roleLower = String((req.user && req.user.role) || '').toLowerCase();
+      const isAdmin = ['admin', 'super_admin'].includes(roleLower);
+      const existing = Lead.findById(req.params.id);
+      if (!existing) return res.status(404).json({ success: false, message: 'Lead not found.' });
+      if (!isAdmin && existing.assigned_to && existing.assigned_to !== req.user.id) {
+        return res.status(403).json({ success: false, message: 'Only Admin or assigned owner can delete this lead.' });
+      }
       Lead.delete(req.params.id);
       res.json({ success: true, message: 'Lead deleted successfully!' });
     } catch (e) {
@@ -527,9 +644,11 @@ const employeeController = {
    */
   async createFollowUp(req, res) {
     try {
+      const roleLower = String((req.user && req.user.role) || '').toLowerCase();
+      const isAdmin = ['admin', 'super_admin'].includes(roleLower);
       const data = {
         ...req.body,
-        employee_id: req.body.employee_id || req.user.id
+        employee_id: isAdmin ? (req.body.employee_id || req.user.id) : req.user.id
       };
       const followUp = FollowUp.create(data);
       res.json({ success: true, message: 'Follow-up scheduled successfully!', followUp });
@@ -545,6 +664,12 @@ const employeeController = {
   async completeFollowUp(req, res) {
     try {
       const { outcome, notes } = req.body;
+      const roleLower = String((req.user && req.user.role) || '').toLowerCase();
+      const isAdmin = ['admin', 'super_admin'].includes(roleLower);
+      const existing = FollowUp.findById ? FollowUp.findById(req.params.id) : null;
+      if (existing && !isAdmin && existing.employee_id && existing.employee_id !== req.user.id) {
+        return res.status(403).json({ success: false, message: 'You can only complete your own follow-ups.' });
+      }
       const followUp = FollowUp.complete(req.params.id, outcome, notes);
       res.json({ success: true, message: 'Follow-up logged as completed!', followUp });
     } catch (e) {
@@ -558,6 +683,12 @@ const employeeController = {
    */
   async deleteFollowUp(req, res) {
     try {
+      const roleLower = String((req.user && req.user.role) || '').toLowerCase();
+      const isAdmin = ['admin', 'super_admin'].includes(roleLower);
+      const existing = FollowUp.findById ? FollowUp.findById(req.params.id) : null;
+      if (existing && !isAdmin && existing.employee_id && existing.employee_id !== req.user.id) {
+        return res.status(403).json({ success: false, message: 'You can only delete your own follow-ups.' });
+      }
       FollowUp.delete(req.params.id);
       res.json({ success: true, message: 'Follow-up removed successfully!' });
     } catch (e) {
@@ -568,29 +699,61 @@ const employeeController = {
 
   /**
    * POST /api/employee/tasks
+   * Admin can assign the same task to multiple employees; regular employees can only create self-tasks.
    */
   async createTask(req, res) {
     try {
       const syncService = require('../services/syncService');
       const { logAudit } = require('../services/auditService');
+      const roleLower = String((req.user && req.user.role) || '').toLowerCase();
+      const isAdmin = ['admin', 'super_admin'].includes(roleLower);
+      const assignerName = `${req.user.first_name || ''} ${req.user.last_name || ''}`.trim() || req.user.email;
 
-      const data = {
+      // Support single or multiple employee assignment
+      let assigneeIds = [];
+      if (Array.isArray(req.body.assigned_to_ids)) {
+        assigneeIds = req.body.assigned_to_ids.map(v => parseInt(v, 10)).filter(v => Number.isInteger(v) && v > 0);
+      } else if (typeof req.body.assigned_to_ids === 'string' && req.body.assigned_to_ids.trim()) {
+        assigneeIds = req.body.assigned_to_ids.split(',').map(v => parseInt(v.trim(), 10)).filter(v => Number.isInteger(v) && v > 0);
+      } else if (Array.isArray(req.body.assigned_to)) {
+        assigneeIds = req.body.assigned_to.map(v => parseInt(v, 10)).filter(v => Number.isInteger(v) && v > 0);
+      } else if (req.body.assigned_to) {
+        const single = parseInt(req.body.assigned_to, 10);
+        if (Number.isInteger(single) && single > 0) assigneeIds = [single];
+      }
+
+      if (assigneeIds.length === 0) {
+        assigneeIds = [req.user.id];
+      }
+
+      if (!isAdmin) {
+        if (assigneeIds.length > 1 || assigneeIds[0] !== req.user.id) {
+          return res.status(403).json({
+            success: false,
+            message: 'Only Admins can assign tasks to other or multiple employees.'
+          });
+        }
+      }
+
+      const taskPayload = {
         ...req.body,
-        assigned_to: req.body.assigned_to || req.user.id,
-        assigned_by: req.user.id
+        assigned_by: req.user.id,
+        assigned_by_name: assignerName
       };
-      const task = EmployeeTask.create(data);
+
+      const createdTasks = assigneeIds.length > 1
+        ? EmployeeTask.createMany(assigneeIds, taskPayload)
+        : [EmployeeTask.create({ ...taskPayload, assigned_to: assigneeIds[0] })];
+      const task = createdTasks[0];
 
       try {
-        logAudit({
-          user_id: req.user.id,
-          user_role: req.user.role,
+        logAudit(req, {
           action: 'CREATE',
-          entity: 'employee_tasks',
-          entity_id: String(task.id),
-          old_value: null,
-          new_value: { title: task.title, assigned_to: task.assigned_to, priority: task.priority },
-          ip_address: req.ip || req.connection.remoteAddress
+          module: 'tasks',
+          entityType: 'employee_tasks',
+          entityId: String(task.id),
+          oldValues: null,
+          newValues: { title: task.title, assigned_to_ids: assigneeIds, priority: task.priority }
         });
       } catch (logErr) {
         logger.warn('Failed to log audit for createTask:', logErr.message);
@@ -598,14 +761,25 @@ const employeeController = {
 
       syncService.broadcast('task:created', {
         id: task.id,
+        count: createdTasks.length,
         title: task.title,
-        assignedTo: task.assigned_to,
+        assignedTo: assigneeIds,
         priority: task.priority,
-        updatedBy: req.user.full_name || req.user.email,
-        timestamp: new Date().toISOString()
+        updatedBy: assignerName,
+        timestamp: new Date().toISOString(),
+        message: createdTasks.length > 1
+          ? `Task "${task.title}" assigned to ${createdTasks.length} employees.`
+          : `New task "${task.title}" created.`
       });
 
-      res.json({ success: true, message: 'Task created successfully!', task });
+      res.json({
+        success: true,
+        message: createdTasks.length > 1
+          ? `Task assigned to ${createdTasks.length} employees successfully!`
+          : 'Task created successfully!',
+        task,
+        tasks: createdTasks
+      });
     } catch (e) {
       logger.error('createTask error:', e);
       res.status(500).json({ success: false, message: e.message });
@@ -619,21 +793,28 @@ const employeeController = {
     try {
       const syncService = require('../services/syncService');
       const { logAudit } = require('../services/auditService');
+      const roleLower = String((req.user && req.user.role) || '').toLowerCase();
+      const isAdmin = ['admin', 'super_admin'].includes(roleLower);
 
       const { status } = req.body;
       const oldTask = EmployeeTask.findById(req.params.id);
+      if (!oldTask) {
+        return res.status(404).json({ success: false, message: 'Task not found.' });
+      }
+      if (!isAdmin && oldTask.assigned_to !== req.user.id && oldTask.assigned_by !== req.user.id) {
+        return res.status(403).json({ success: false, message: 'You can only update status of your own tasks.' });
+      }
+
       const task = EmployeeTask.updateStatus(req.params.id, status);
 
       try {
-        logAudit({
-          user_id: req.user.id,
-          user_role: req.user.role,
+        logAudit(req, {
           action: 'UPDATE',
-          entity: 'employee_tasks',
-          entity_id: String(req.params.id),
-          old_value: { status: oldTask ? oldTask.status : null },
-          new_value: { status },
-          ip_address: req.ip || req.connection.remoteAddress
+          module: 'tasks',
+          entityType: 'employee_tasks',
+          entityId: String(req.params.id),
+          oldValues: { status: oldTask.status },
+          newValues: { status }
         });
       } catch (logErr) {
         logger.warn('Failed to log audit for updateTaskStatus:', logErr.message);
@@ -661,20 +842,36 @@ const employeeController = {
     try {
       const syncService = require('../services/syncService');
       const { logAudit } = require('../services/auditService');
+      const roleLower = String((req.user && req.user.role) || '').toLowerCase();
+      const isAdmin = ['admin', 'super_admin'].includes(roleLower);
 
       const oldTask = EmployeeTask.findById(req.params.id);
+      if (!oldTask) {
+        return res.status(404).json({ success: false, message: 'Task not found.' });
+      }
+      if (!isAdmin) {
+        if (oldTask.assigned_to !== req.user.id && oldTask.assigned_by !== req.user.id) {
+          return res.status(403).json({ success: false, message: 'Access denied.' });
+        }
+        // Admin-assigned tasks are Show-Only for employees except status updates
+        if (oldTask.assigned_by && oldTask.assigned_by !== req.user.id) {
+          return res.status(403).json({
+            success: false,
+            message: 'Admin-assigned tasks cannot be edited by employees. Use status update or upload work proof instead.'
+          });
+        }
+      }
+
       const task = EmployeeTask.update(req.params.id, req.body);
 
       try {
-        logAudit({
-          user_id: req.user.id,
-          user_role: req.user.role,
+        logAudit(req, {
           action: 'UPDATE',
-          entity: 'employee_tasks',
-          entity_id: String(req.params.id),
-          old_value: oldTask,
-          new_value: req.body,
-          ip_address: req.ip || req.connection.remoteAddress
+          module: 'tasks',
+          entityType: 'employee_tasks',
+          entityId: String(req.params.id),
+          oldValues: oldTask,
+          newValues: req.body
         });
       } catch (logErr) {
         logger.warn('Failed to log audit for updateTask:', logErr.message);
@@ -702,20 +899,30 @@ const employeeController = {
     try {
       const syncService = require('../services/syncService');
       const { logAudit } = require('../services/auditService');
+      const roleLower = String((req.user && req.user.role) || '').toLowerCase();
+      const isAdmin = ['admin', 'super_admin'].includes(roleLower);
 
       const oldTask = EmployeeTask.findById(req.params.id);
+      if (!oldTask) {
+        return res.status(404).json({ success: false, message: 'Task not found.' });
+      }
+      if (!isAdmin && oldTask.assigned_by !== req.user.id) {
+        return res.status(403).json({
+          success: false,
+          message: 'Admin-assigned tasks can only be deleted by an Admin.'
+        });
+      }
+
       EmployeeTask.delete(req.params.id);
 
       try {
-        logAudit({
-          user_id: req.user.id,
-          user_role: req.user.role,
+        logAudit(req, {
           action: 'DELETE',
-          entity: 'employee_tasks',
-          entity_id: String(req.params.id),
-          old_value: oldTask,
-          new_value: null,
-          ip_address: req.ip || req.connection.remoteAddress
+          module: 'tasks',
+          entityType: 'employee_tasks',
+          entityId: String(req.params.id),
+          oldValues: oldTask,
+          newValues: null
         });
       } catch (logErr) {
         logger.warn('Failed to log audit for deleteTask:', logErr.message);
@@ -742,6 +949,7 @@ const employeeController = {
   async internships(req, res) {
     try {
       const db = getDb();
+      const scope = getEmployeeReferralScope(db, req.user);
       const internships = db.prepare(`
         SELECT 
           r.*,
@@ -751,18 +959,20 @@ const employeeController = {
         FROM registrations r
         JOIN students s ON r.student_id = s.id
         JOIN courses c ON r.course_id = c.id
-        WHERE r.deleted_at IS NULL
+        WHERE r.deleted_at IS NULL AND (${scope.whereClause})
         ORDER BY r.created_at DESC
-      `).all() || [];
+      `).all(scope.params) || [];
 
       const courses = db.prepare('SELECT id, title, duration, mode, batch_name, price FROM courses WHERE is_active = 1').all() || [];
 
       res.render('employee/internships', {
         layout: 'layouts/employee',
-        title: 'Leads: Internships - Employee Portal',
-        pageTitle: 'Internships Pipeline',
+        title: 'Referred Internships - Employee Portal',
+        pageTitle: 'Referred Student Internships',
         currentPath: '/employee/internships',
         user: req.user,
+        referralCode: scope.referralCode,
+        isAdminView: scope.isAdmin,
         internships,
         courses
       });
@@ -780,20 +990,23 @@ const employeeController = {
 
   /**
    * GET /employee/call-reports
-   * Employee logs and views student and client contact call reports
+   * Employee logs and views their call reports (student dropdown scoped to referred students)
    */
   async callReports(req, res) {
     try {
       const db = getDb();
       const CallReport = require('../models/CallReport');
       const employeeId = req.user.id;
+      const scope = getEmployeeReferralScope(db, req.user);
 
       const reports = CallReport.findAll({ employee_id: employeeId });
       const stats = CallReport.getPerformanceSummary({ employee_id: employeeId });
 
-      // Load contacts for dropdown selection
-      const students = db.prepare('SELECT id, (first_name || \' \' || last_name) as name, email, phone FROM students WHERE deleted_at IS NULL ORDER BY first_name ASC').all() || [];
-      const clients = db.prepare('SELECT id, company_name as name, contact_person, email, phone FROM clients WHERE deleted_at IS NULL ORDER BY company_name ASC').all() || [];
+      // Load only this employee's referred students + assigned/active clients
+      const students = db.prepare(`SELECT s.id, (s.first_name || ' ' || s.last_name) as name, s.email, s.phone FROM students s WHERE ${scope.whereClause} ORDER BY s.first_name ASC`).all(scope.params) || [];
+      const clients = scope.isAdmin
+        ? db.prepare('SELECT id, company_name as name, contact_person, email, phone FROM clients WHERE deleted_at IS NULL ORDER BY company_name ASC').all() || []
+        : db.prepare('SELECT id, company_name as name, contact_person, email, phone FROM clients WHERE deleted_at IS NULL AND (assigned_to = ? OR assigned_to IS NULL) ORDER BY company_name ASC').all(employeeId) || [];
 
       res.render('employee/call-reports', {
         layout: 'layouts/employee',
@@ -826,10 +1039,11 @@ const employeeController = {
     try {
       const db = getDb();
       const { type = 'all', search = '' } = req.query;
+      const scope = getEmployeeReferralScope(db, req.user);
 
       let contacts = [];
 
-      // Query Students Contacts
+      // Query Referred Students Contacts ONLY
       if (type === 'all' || type === 'student') {
         let stuSql = `
           SELECT 
@@ -839,18 +1053,17 @@ const employeeController = {
             s.phone,
             COALESCE(s.phone, '') as whatsapp,
             'student' as contact_type,
-            COALESCE(s.college, 'College Student') as affiliation,
-            s.department as details
+            COALESCE(s.college, 'Referred Student') as affiliation,
+            COALESCE(s.referral_code, 'Referred') as details
           FROM students s
-          WHERE s.deleted_at IS NULL
+          WHERE ${scope.whereClause}
         `;
-        const stuParams = [];
+        const stuParams = { ...scope.params };
         if (search) {
-          stuSql += ' AND (s.first_name LIKE ? OR s.last_name LIKE ? OR s.phone LIKE ? OR s.email LIKE ?)';
-          const term = `%${search}%`;
-          stuParams.push(term, term, term, term);
+          stuSql += ' AND (s.first_name LIKE @search OR s.last_name LIKE @search OR s.phone LIKE @search OR s.email LIKE @search)';
+          stuParams.search = `%${search}%`;
         }
-        const stuRows = db.prepare(stuSql).all(...stuParams);
+        const stuRows = db.prepare(stuSql).all(stuParams);
         contacts.push(...stuRows);
       }
 
@@ -957,6 +1170,107 @@ const employeeController = {
         message: 'Failed to load settings.',
         user: req.user
       });
+    }
+  },
+  // ============================================
+  // EMPLOYEE WORK PROOFS (.pdf, .pptx, .xlsx, .docx up to 10MB)
+  // ============================================
+
+  async listProofs(req, res) {
+    try {
+      const proofs = EmployeeProof.getByEmployee(req.user.id, {
+        category: req.query.category,
+        status: req.query.status
+      });
+      res.json({ success: true, data: proofs });
+    } catch (error) {
+      logger.error('List employee proofs error:', error);
+      res.status(500).json({ success: false, message: 'Failed to load uploaded proofs.' });
+    }
+  },
+
+  async uploadProof(req, res) {
+    try {
+      if (!req.file) {
+        return res.status(400).json({
+          success: false,
+          message: 'Please attach a valid proof document (.pdf, .pptx, .xlsx, or .docx up to 10MB).'
+        });
+      }
+
+      const category = (req.body.category || 'Daily Work Report').trim();
+      const title = (req.body.title || req.file.originalname).trim();
+      const remarks = req.body.remarks ? String(req.body.remarks).trim() : null;
+      const taskId = req.body.task_id ? parseInt(req.body.task_id, 10) : null;
+      const ext = path.extname(req.file.originalname || '').toLowerCase().replace('.', '');
+
+      if (taskId) {
+        const task = EmployeeTask.findById(taskId);
+        if (!task || (task.assigned_to !== req.user.id && !['admin', 'super_admin'].includes((req.user.role || '').toLowerCase()))) {
+          try { fs.unlinkSync(req.file.path); } catch (e) {}
+          return res.status(403).json({ success: false, message: 'You can only attach proof to your own tasks.' });
+        }
+      }
+
+      const created = EmployeeProof.create({
+        employee_id: req.user.id,
+        task_id: taskId || null,
+        category,
+        title,
+        remarks,
+        file_name: req.file.filename,
+        original_name: req.file.originalname,
+        file_path: `/uploads/proofs/${req.file.filename}`,
+        file_ext: ext,
+        file_size: req.file.size || 0
+      });
+
+      const syncService = require('../services/syncService');
+      const empName = `${req.user.first_name || ''} ${req.user.last_name || ''}`.trim() || req.user.email;
+      syncService.broadcast('proof:uploaded', {
+        proofId: created.id,
+        employeeId: req.user.id,
+        category,
+        title,
+        message: `${empName} uploaded work proof "${title}" (${ext.toUpperCase()}).`
+      });
+
+      res.status(201).json({
+        success: true,
+        message: 'Work proof uploaded successfully!',
+        data: created
+      });
+    } catch (error) {
+      logger.error('Upload proof error:', error);
+      res.status(500).json({ success: false, message: 'Failed to upload work proof: ' + error.message });
+    }
+  },
+
+  async deleteProof(req, res) {
+    try {
+      const id = parseInt(req.params.id, 10);
+      const existing = EmployeeProof.findById(id);
+      if (!existing) {
+        return res.status(404).json({ success: false, message: 'Proof not found.' });
+      }
+      const isAdmin = ['admin', 'super_admin'].includes((req.user.role || '').toLowerCase());
+      if (existing.employee_id !== req.user.id && !isAdmin) {
+        return res.status(403).json({ success: false, message: 'You can only delete your own work proofs.' });
+      }
+      if (!isAdmin && existing.status === 'approved') {
+        return res.status(403).json({ success: false, message: 'Approved proofs cannot be deleted by employee.' });
+      }
+
+      EmployeeProof.deleteById(id);
+      if (existing.file_name) {
+        const diskPath = path.join(__dirname, '..', 'public', 'uploads', 'proofs', existing.file_name);
+        try { if (fs.existsSync(diskPath)) fs.unlinkSync(diskPath); } catch (e) {}
+      }
+
+      res.json({ success: true, message: 'Proof removed successfully.' });
+    } catch (error) {
+      logger.error('Delete proof error:', error);
+      res.status(500).json({ success: false, message: 'Failed to remove proof.' });
     }
   }
 };
