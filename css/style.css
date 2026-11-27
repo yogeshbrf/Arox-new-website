@@ -10080,22 +10080,30 @@ html.dark .magic-bento-card__arrow {
   position: relative !important;
   flex-shrink: 0 !important;
 }
-/* ─── Animated Person & Door Auth Buttons (Login & Log Out) ─── */
+/* ─── Animated Stickman & Door Auth Buttons (6-Frame Sequence: Login & Log Out) ─── */
+.mobile-auth-wrap,
+.mobile-profile-dropdown,
+.mobile-profile-menu {
+  overflow: visible !important;
+}
+
 .arox-door-btn {
-  --door-frame: #E0F2FE;
-  --door-bg: rgba(0, 210, 255, 0.16);
-  --door-leaf: #00D2FF;
+  --door-frame: #38BDF8;
+  --door-bg: rgba(0, 102, 255, 0.16);
+  --door-stop-start: #00D2FF;
+  --door-stop-end: #0057FF;
   --door-knob: #FFFFFF;
-  --walker-color: #FFFFFF;
-  --door-glow: rgba(0, 210, 255, 0.36);
+  --walker-color: #38BDF8;
+  --door-glow: rgba(0, 210, 255, 0.25);
 
   display: inline-flex !important;
   align-items: center !important;
   justify-content: space-between !important;
   gap: 10px !important;
   height: 38px !important;
-  padding: 0 13px 0 15px !important;
-  border-radius: 10px !important;
+  min-height: 38px !important;
+  padding: 0 12px 0 15px !important;
+  border-radius: 11px !important;
   font-family: var(--font-display, 'Montserrat', sans-serif) !important;
   font-size: 13.5px !important;
   font-weight: 700 !important;
@@ -10107,38 +10115,50 @@ html.dark .magic-bento-card__arrow {
   user-select: none !important;
   -webkit-tap-highlight-color: transparent !important;
   position: relative !important;
-  overflow: hidden !important;
-  transition: transform 0.18s ease, box-shadow 0.22s ease, border-color 0.22s ease, background 0.22s ease !important;
+  overflow: visible !important;
+  box-sizing: border-box !important;
+  transform-origin: center center;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease, background 0.2s ease !important;
 }
 .arox-door-btn:focus-visible {
   outline: 2px solid var(--accent, #00D2FF) !important;
   outline-offset: 2px !important;
 }
-.arox-door-btn:active {
-  transform: scale(0.97) !important;
+.arox-btn-sheen {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+.arox-btn-sheen::after {
+  content: '';
+  position: absolute;
+  right: -4px;
+  bottom: -6px;
+  width: 65%;
+  height: 18px;
+  background: radial-gradient(ellipse at 65% 85%, rgba(0, 174, 255, 0.22) 0%, transparent 72%);
 }
 .arox-door-label {
   display: inline-block;
   flex-shrink: 0;
+  position: relative;
+  z-index: 2;
 }
 
-/* Dark Theme (default): Deep Navy / Electric Blue + Cyan accents */
+/* Dark Theme defaults */
 .arox-login-btn {
-  background: linear-gradient(135deg, #09204F 0%, #0052CC 100%) !important;
+  background: linear-gradient(135deg, #071636 0%, #0D2659 100%) !important;
   color: #FFFFFF !important;
-  border: 1px solid rgba(56, 189, 248, 0.48) !important;
-  box-shadow: 0 4px 12px rgba(0, 24, 72, 0.42) !important;
-  --door-frame: #E0F2FE;
-  --door-bg: rgba(0, 210, 255, 0.18);
-  --door-leaf: #00D2FF;
-  --door-knob: #FFFFFF;
-  --walker-color: #FFFFFF;
-  --door-glow: rgba(0, 210, 255, 0.35);
+  border: 1px solid rgba(56, 189, 248, 0.45) !important;
+  box-shadow: 0 4px 12px rgba(0, 16, 54, 0.4) !important;
 }
 .arox-login-btn:hover {
-  border-color: rgba(0, 210, 255, 0.85) !important;
-  box-shadow: 0 6px 16px rgba(0, 102, 255, 0.36) !important;
-  transform: translateY(-1px) !important;
+  background: linear-gradient(135deg, #0A1D47 0%, #10306F 100%) !important;
+  border-color: rgba(56, 189, 248, 0.78) !important;
+  box-shadow: 0 5px 16px rgba(0, 102, 255, 0.28) !important;
 }
 
 .arox-logout-btn {
@@ -10148,73 +10168,51 @@ html.dark .magic-bento-card__arrow {
   color: #FFFFFF !important;
   border: 1px solid rgba(56, 189, 248, 0.42) !important;
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.32) !important;
-  --door-frame: #38BDF8;
-  --door-bg: rgba(0, 210, 255, 0.14);
-  --door-leaf: #00D2FF;
-  --door-knob: #071636;
-  --walker-color: #38BDF8;
-  --door-glow: rgba(0, 210, 255, 0.32);
 }
 .arox-logout-btn:hover {
-  border-color: rgba(0, 210, 255, 0.8) !important;
-  box-shadow: 0 4px 14px rgba(0, 102, 255, 0.25) !important;
+  background: linear-gradient(135deg, #091B42 0%, #102B5E 100%) !important;
+  border-color: rgba(56, 189, 248, 0.75) !important;
+  box-shadow: 0 4px 14px rgba(0, 102, 255, 0.24) !important;
 }
 
-/* Light Theme: Blue-to-Cyan Gradient Login, Soft Blue + Dark Navy Log Out */
-.theme-light .arox-login-btn,
-html:not(.dark) .arox-login-btn,
-[data-theme="light"] .arox-login-btn {
-  background: linear-gradient(135deg, #0066FF 0%, #0EA5E9 100%) !important;
-  color: #FFFFFF !important;
-  border: 1px solid rgba(255, 255, 255, 0.28) !important;
-  box-shadow: 0 4px 14px rgba(0, 102, 255, 0.28) !important;
-  --door-frame: #FFFFFF;
-  --door-bg: rgba(15, 23, 42, 0.18);
-  --door-leaf: #BAE6FD;
-  --door-knob: #0066FF;
-  --walker-color: #FFFFFF;
-  --door-glow: rgba(255, 255, 255, 0.45);
-}
-.theme-light .arox-login-btn:hover,
-html:not(.dark) .arox-login-btn:hover,
-[data-theme="light"] .arox-login-btn:hover {
-  box-shadow: 0 6px 18px rgba(0, 102, 255, 0.38) !important;
-}
-
-.theme-light .arox-logout-btn,
-html:not(.dark) .arox-logout-btn,
-[data-theme="light"] .arox-logout-btn {
-  background: linear-gradient(135deg, #F0F7FF 0%, #E0F2FE 100%) !important;
-  color: var(--heading, #0F172A) !important;
-  border: 1px solid rgba(0, 102, 255, 0.24) !important;
-  box-shadow: 0 2px 10px rgba(0, 102, 255, 0.1) !important;
-  --door-frame: #0066FF;
-  --door-bg: rgba(0, 102, 255, 0.12);
-  --door-leaf: #0284C7;
+/* Light Theme (follows 6-frame reference exact colors for both buttons) */
+.theme-light .arox-door-btn,
+html:not(.dark) .arox-door-btn,
+[data-theme="light"] .arox-door-btn {
+  background: linear-gradient(135deg, #FFFFFF 0%, #EFF6FF 55%, #DFEEFF 100%) !important;
+  color: var(--heading, #0A224E) !important;
+  border: 1px solid #93C5FD !important;
+  box-shadow: 0 3px 12px rgba(0, 102, 255, 0.14) !important;
+  --door-frame: #0057FF;
+  --door-bg: rgba(255, 255, 255, 0.85);
+  --door-stop-start: #00B4FF;
+  --door-stop-end: #004EEB;
   --door-knob: #FFFFFF;
-  --walker-color: #0066FF;
-  --door-glow: rgba(0, 102, 255, 0.24);
+  --walker-color: #0057FF;
+  --door-glow: rgba(56, 189, 248, 0.3);
 }
-.theme-light .arox-logout-btn:hover,
-html:not(.dark) .arox-logout-btn:hover,
-[data-theme="light"] .arox-logout-btn:hover {
-  border-color: rgba(0, 102, 255, 0.5) !important;
-  box-shadow: 0 4px 14px rgba(0, 102, 255, 0.16) !important;
+.theme-light .arox-door-btn:hover,
+html:not(.dark) .arox-door-btn:hover,
+[data-theme="light"] .arox-door-btn:hover {
+  background: linear-gradient(135deg, #FFFFFF 0%, #E7F2FF 55%, #D3E8FF 100%) !important;
+  border-color: #60A5FA !important;
+  box-shadow: 0 5px 16px rgba(0, 102, 255, 0.2) !important;
 }
 
-/* Fixed-size SVG stage (zero layout shift during animation) */
+/* Fixed-size SVG stage with overflow visible for Frame 05-06 drop */
 .arox-door-stage {
   position: relative;
-  width: 28px;
-  height: 22px;
+  width: 34px;
+  height: 24px;
   flex-shrink: 0;
-  perspective: 90px;
-  overflow: hidden;
+  perspective: 75px;
+  overflow: visible !important;
   display: inline-block;
+  z-index: 2;
 }
 .arox-doorway,
-.arox-door-leaf,
-.arox-walker {
+.arox-runner-svg,
+.arox-door-leaf {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -10223,147 +10221,257 @@ html:not(.dark) .arox-logout-btn:hover,
   overflow: visible;
 }
 .arox-doorway { z-index: 1; }
-.arox-walker {
-  z-index: 2;
-  transform-origin: 30% 60%;
-  transition: transform 0.34s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.25s ease;
-}
+.arox-runner-svg { z-index: 2; }
 .arox-door-leaf {
   z-index: 3;
-  transform-origin: 87.5% 50%;
+  transform-origin: 90.79% 50%;
   transform-style: preserve-3d;
-  transition: transform 0.34s cubic-bezier(0.22, 1, 0.36, 1);
+  transform: rotateY(-46deg);
 }
 
-.door-glow-floor { fill: var(--door-glow); opacity: 0.45; }
+.arox-faller-svg {
+  position: absolute;
+  left: 0;
+  top: 100%;
+  width: 100%;
+  height: 44px;
+  pointer-events: none;
+  overflow: visible;
+  z-index: 12;
+  opacity: 0;
+}
+
+.door-floor-glow { fill: var(--door-glow); }
 .door-frame-path {
   fill: var(--door-bg);
   stroke: var(--door-frame);
-  stroke-width: 1.8;
+  stroke-width: 1.75;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
-.door-panel-rect { fill: var(--door-leaf); }
-.door-knob-dot { fill: var(--door-knob); }
+.door-stop-start { stop-color: var(--door-stop-start); }
+.door-stop-end   { stop-color: var(--door-stop-end); }
+.door-knob-dot   { fill: var(--door-knob); }
 
-.walker-fill { fill: var(--walker-color); }
-.walker-stroke-torso {
+.stick-head { fill: var(--walker-color); }
+.stick-torso {
   stroke: var(--walker-color);
-  stroke-width: 2.3;
+  stroke-width: 2.8;
   stroke-linecap: round;
 }
-.walker-stroke {
+.stick-limb {
   stroke: var(--walker-color);
-  stroke-width: 1.9;
+  stroke-width: 1.85;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
-.walker-speed {
+.stick-limb-thick {
+  stroke: var(--walker-color);
+  stroke-width: 2.05;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.arox-run-lines,
+.arox-close-lines,
+.arox-fall-lines {
   stroke: var(--walker-color);
   stroke-width: 1.35;
   stroke-linecap: round;
   opacity: 0;
-  transition: opacity 0.2s ease, transform 0.28s ease;
-}
-.walker-arm-b,
-.walker-arm-f { transform-origin: 9.5px 9.8px; }
-.walker-leg-b,
-.walker-leg-f { transform-origin: 8.9px 15px; }
-
-/* Resting states */
-.arox-login-btn .arox-door-leaf { transform: rotateY(-18deg); }
-.arox-logout-btn .arox-door-leaf { transform: rotateY(-56deg); }
-.arox-logout-btn .walker-speed { opacity: 0.65; }
-
-/* Hover / Focus preview */
-.arox-login-btn:hover .arox-door-leaf,
-.arox-login-btn:focus-visible .arox-door-leaf {
-  transform: rotateY(-64deg);
-}
-.arox-login-btn:hover .arox-walker,
-.arox-login-btn:focus-visible .arox-walker {
-  transform: translateX(4px);
-}
-.arox-login-btn:hover .walker-speed,
-.arox-login-btn:focus-visible .walker-speed,
-.arox-login-btn.is-animating .walker-speed {
-  opacity: 0.75;
-}
-.arox-logout-btn:hover .arox-door-leaf,
-.arox-logout-btn:focus-visible .arox-door-leaf {
-  transform: rotateY(-66deg);
-}
-.arox-logout-btn:hover .arox-walker,
-.arox-logout-btn:focus-visible .arox-walker {
-  transform: translateX(3px);
 }
 
-/* Stride keyframes on hover & active animation */
-.arox-door-btn:hover .walker-leg-f,
-.arox-door-btn:focus-visible .walker-leg-f,
-.arox-door-btn.is-animating .walker-leg-f {
-  animation: aroxStrideF 0.34s ease-in-out infinite alternate;
+/* Individual transform origins per body segment */
+.arox-walker-group { transform-origin: 12.2px 15.3px; }
+.stick-arm-b,
+.stick-arm-f       { transform-origin: 12.2px 9.9px; }
+.stick-forearm-b   { transform-origin: 10.8px 12.5px; }
+.stick-forearm-f   { transform-origin: 13.6px 12.5px; }
+.stick-leg-b,
+.stick-leg-f       { transform-origin: 12.2px 15.3px; }
+.stick-calf-b      { transform-origin: 11.2px 18.9px; }
+.stick-calf-f      { transform-origin: 13.2px 18.9px; }
+.arox-close-lines  { transform-origin: 20px 13.4px; }
+.arox-fall-body    { transform-origin: 28px 16px; }
+
+/* Trigger 6-frame animation ONLY on click/tap (.is-animating) */
+.arox-door-btn.is-animating {
+  animation: aroxBtnPress 1.8s cubic-bezier(0.22, 1, 0.36, 1) forwards !important;
 }
-.arox-door-btn:hover .walker-leg-b,
-.arox-door-btn:focus-visible .walker-leg-b,
-.arox-door-btn.is-animating .walker-leg-b {
-  animation: aroxStrideB 0.34s ease-in-out infinite alternate;
+.arox-door-btn.is-animating .arox-walker-group {
+  animation: aroxWalkerEnter 1.8s linear forwards;
 }
-.arox-door-btn:hover .walker-arm-f,
-.arox-door-btn:focus-visible .walker-arm-f,
-.arox-door-btn.is-animating .walker-arm-f {
-  animation: aroxStrideB 0.34s ease-in-out infinite alternate;
+.arox-door-btn.is-animating .stick-arm-f {
+  animation: aroxArmF 1.8s linear forwards;
 }
-.arox-door-btn:hover .walker-arm-b,
-.arox-door-btn:focus-visible .walker-arm-b,
-.arox-door-btn.is-animating .walker-arm-b {
-  animation: aroxStrideF 0.34s ease-in-out infinite alternate;
+.arox-door-btn.is-animating .stick-forearm-f {
+  animation: aroxForearmBend 1.8s linear forwards;
+}
+.arox-door-btn.is-animating .stick-arm-b {
+  animation: aroxArmB 1.8s linear forwards;
+}
+.arox-door-btn.is-animating .stick-forearm-b {
+  animation: aroxForearmBend 1.8s linear forwards;
+}
+.arox-door-btn.is-animating .stick-leg-f {
+  animation: aroxLegF 1.8s linear forwards;
+}
+.arox-door-btn.is-animating .stick-calf-f {
+  animation: aroxCalfF 1.8s linear forwards;
+}
+.arox-door-btn.is-animating .stick-leg-b {
+  animation: aroxLegB 1.8s linear forwards;
+}
+.arox-door-btn.is-animating .stick-calf-b {
+  animation: aroxCalfB 1.8s linear forwards;
+}
+.arox-door-btn.is-animating .arox-run-lines {
+  animation: aroxRunLines 1.8s linear forwards;
+}
+.arox-door-btn.is-animating .arox-door-leaf {
+  animation: aroxDoorShut 1.8s ease-in-out forwards;
+}
+.arox-door-btn.is-animating .arox-close-lines {
+  animation: aroxCloseImpact 1.8s ease-out forwards;
+}
+.arox-door-btn.is-animating .arox-faller-svg {
+  animation: aroxFallWrap 1.8s linear forwards;
+}
+.arox-door-btn.is-animating .arox-fall-body {
+  animation: aroxFallRotate 1.8s linear forwards;
+}
+.arox-door-btn.is-animating .arox-fall-lines {
+  animation: aroxFallLines 1.8s linear forwards;
 }
 
-/* Click animations */
-.arox-login-btn.is-animating .arox-door-leaf {
-  transform: rotateY(-68deg);
-}
-.arox-login-btn.is-animating .arox-walker {
-  animation: aroxWalkEnter 0.48s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-}
-
-.arox-logout-btn.is-animating .arox-walker {
-  animation: aroxWalkOut 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-}
-.arox-logout-btn.is-animating .arox-door-leaf {
-  animation: aroxDoorClose 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+/* Frame 02 click feedback (no resize / no shift) */
+@keyframes aroxBtnPress {
+  0%   { transform: scale(1); }
+  5%   { transform: scale(0.965); }
+  14%  { transform: scale(1); }
+  100% { transform: scale(1); }
 }
 
-@keyframes aroxStrideF {
-  0%   { transform: rotate(-14deg); }
-  100% { transform: rotate(16deg); }
+/* Frames 01 -> 02 (0-300ms) -> 03 (300-700ms) -> 04+ hidden */
+@keyframes aroxWalkerEnter {
+  0%     { transform: translateX(0px) rotate(0deg); opacity: 1; }
+  6%     { transform: translateX(1.5px) rotate(9deg); opacity: 1; }
+  16.7%  { transform: translateX(6.5px) rotate(11deg); opacity: 1; }
+  28%    { transform: translateX(12.5px) rotate(9deg); opacity: 1; }
+  37.5%  { transform: translateX(17.5px) rotate(5deg); opacity: 1; }
+  40%    { transform: translateX(19px) rotate(2deg); opacity: 0; }
+  100%   { transform: translateX(19px) rotate(2deg); opacity: 0; }
 }
-@keyframes aroxStrideB {
-  0%   { transform: rotate(14deg); }
-  100% { transform: rotate(-16deg); }
+
+@keyframes aroxArmF {
+  0%    { transform: rotate(0deg); }
+  8%    { transform: rotate(-42deg); }
+  16.7% { transform: rotate(34deg); }
+  26%   { transform: rotate(-44deg); }
+  36%   { transform: rotate(30deg); }
+  100%  { transform: rotate(0deg); }
 }
-@keyframes aroxWalkEnter {
-  0%   { transform: translateX(0) scale(1); opacity: 1; }
-  65%  { transform: translateX(9.5px) scale(0.94); opacity: 1; }
-  100% { transform: translateX(12px) scale(0.86); opacity: 0; }
+@keyframes aroxArmB {
+  0%    { transform: rotate(0deg); }
+  8%    { transform: rotate(42deg); }
+  16.7% { transform: rotate(-34deg); }
+  26%   { transform: rotate(44deg); }
+  36%   { transform: rotate(-30deg); }
+  100%  { transform: rotate(0deg); }
 }
-@keyframes aroxWalkOut {
-  0%   { transform: translateX(0) scale(1); opacity: 1; }
-  45%  { transform: translateX(9.5px) scale(0.93); opacity: 1; }
-  65%  { transform: translateX(12px) scale(0.85); opacity: 0; }
-  100% { transform: translateX(12px) scale(0.85); opacity: 0; }
+@keyframes aroxForearmBend {
+  0%    { transform: rotate(0deg); }
+  7%    { transform: rotate(-48deg); }
+  38%   { transform: rotate(-48deg); }
+  100%  { transform: rotate(0deg); }
 }
-@keyframes aroxDoorClose {
-  0%   { transform: rotateY(-56deg); }
-  42%  { transform: rotateY(-66deg); }
-  100% { transform: rotateY(0deg); }
+@keyframes aroxLegF {
+  0%    { transform: rotate(0deg); }
+  8%    { transform: rotate(-44deg); }
+  16.7% { transform: rotate(36deg); }
+  26%   { transform: rotate(-46deg); }
+  36%   { transform: rotate(34deg); }
+  100%  { transform: rotate(0deg); }
+}
+@keyframes aroxLegB {
+  0%    { transform: rotate(0deg); }
+  8%    { transform: rotate(38deg); }
+  16.7% { transform: rotate(-44deg); }
+  26%   { transform: rotate(40deg); }
+  36%   { transform: rotate(-42deg); }
+  100%  { transform: rotate(0deg); }
+}
+@keyframes aroxCalfF {
+  0%    { transform: rotate(0deg); }
+  8%    { transform: rotate(42deg); }
+  16.7% { transform: rotate(14deg); }
+  26%   { transform: rotate(46deg); }
+  36%   { transform: rotate(16deg); }
+  100%  { transform: rotate(0deg); }
+}
+@keyframes aroxCalfB {
+  0%    { transform: rotate(0deg); }
+  8%    { transform: rotate(16deg); }
+  16.7% { transform: rotate(48deg); }
+  26%   { transform: rotate(18deg); }
+  36%   { transform: rotate(44deg); }
+  100%  { transform: rotate(0deg); }
+}
+
+/* Horizontal blue speed lines during Frame 02 & 03 */
+@keyframes aroxRunLines {
+  0%    { opacity: 0; transform: translateX(0px); }
+  5%    { opacity: 0.9; transform: translateX(1px); }
+  16.7% { opacity: 0.95; transform: translateX(5px); }
+  32%   { opacity: 0.85; transform: translateX(10px); }
+  38.5% { opacity: 0; transform: translateX(12px); }
+  100%  { opacity: 0; }
+}
+
+/* Frame 04 Door Closing around right vertical hinge (700-1000ms) */
+@keyframes aroxDoorShut {
+  0%, 38.9% { transform: rotateY(-46deg); }
+  53.5%     { transform: rotateY(0deg); }
+  100%      { transform: rotateY(0deg); }
+}
+
+/* Frame 04 3 short closing impact lines */
+@keyframes aroxCloseImpact {
+  0%, 49% { opacity: 0; transform: scale(0.7); }
+  53%     { opacity: 1; transform: scale(1); }
+  58%     { opacity: 0.85; transform: scale(1.06); }
+  64%     { opacity: 0; transform: scale(1.12); }
+  100%    { opacity: 0; }
+}
+
+/* Frames 05 (1000-1400ms) -> 06 (1400-1800ms) gravity acceleration drop below button */
+@keyframes aroxFallWrap {
+  0%, 55.5% { opacity: 0; transform: translateY(-2px); }
+  58.5%     { opacity: 1; transform: translateY(1px); }
+  67%       { opacity: 1; transform: translateY(5px); }
+  77.8%     { opacity: 1; transform: translateY(14px); }
+  88.5%     { opacity: 0.92; transform: translateY(27px); }
+  95.5%     { opacity: 0.35; transform: translateY(37px); }
+  100%      { opacity: 0; transform: translateY(42px); }
+}
+@keyframes aroxFallRotate {
+  0%, 55.5% { transform: rotate(-28deg); }
+  67%       { transform: rotate(-38deg); }
+  77.8%     { transform: rotate(-48deg); }
+  89%       { transform: rotate(-64deg); }
+  100%      { transform: rotate(-78deg); }
+}
+@keyframes aroxFallLines {
+  0%, 55.5% { opacity: 0; }
+  60%       { opacity: 0.95; }
+  88%       { opacity: 0.9; }
+  96%       { opacity: 0; }
+  100%      { opacity: 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .arox-door-btn,
   .arox-door-btn *,
-  .arox-door-btn:hover *,
+  .arox-door-btn.is-animating,
   .arox-door-btn.is-animating * {
     animation: none !important;
     transition: none !important;
@@ -10708,14 +10816,18 @@ html:not(.dark) .mobile-profile-logout,
 
   /* Mobile size tweaks for Login/Profile */
   .arox-door-btn.arox-login-btn {
-    height: 34px !important;
-    padding: 0 11px 0 13px !important;
+    height: 36px !important;
+    min-height: 36px !important;
+    padding: 0 10px 0 13px !important;
     font-size: 13px !important;
     gap: 8px !important;
   }
   .arox-door-stage {
-    width: 26px !important;
-    height: 20px !important;
+    width: 31px !important;
+    height: 21px !important;
+  }
+  .arox-faller-svg {
+    height: 39px;
   }
   .mobile-profile-btn {
     width: 36px !important;

@@ -284,29 +284,84 @@
 
   function renderMobileAuth(user) {
     if (!mobileAuthWrap) return;
-    const doorSceneHTML = `
+    const createDoorSceneHTML = (variant) => {
+      const gradId = `arox-door-grad-${variant}`;
+      const clipId = `arox-door-clip-${variant}`;
+      return `
       <span class="arox-door-stage" aria-hidden="true">
-        <svg class="arox-doorway" viewBox="0 0 32 26" fill="none">
-          <ellipse class="door-glow-floor" cx="19" cy="23.5" rx="8.5" ry="1.5"/>
-          <path class="door-frame-path" d="M16 23V4.4A1.4 1.4 0 0 1 17.4 3h9.2A1.4 1.4 0 0 1 28 4.4V23"/>
+        <svg class="arox-doorway" viewBox="0 0 38 26" fill="none">
+          <ellipse class="door-floor-glow" cx="22.5" cy="24" rx="14.5" ry="1.6"/>
+          <path class="door-frame-path" d="M22.2 23.4V4.5A1.3 1.3 0 0 1 23.5 3.2h9.9a1.3 1.3 0 0 1 1.3 1.3v18.9"/>
         </svg>
-        <svg class="arox-door-leaf" viewBox="0 0 32 26" fill="none">
-          <rect class="door-panel-rect" x="17" y="4" width="10" height="19" rx="0.8"/>
-          <circle class="door-knob-dot" cx="19.2" cy="13.5" r="1.1"/>
+        <svg class="arox-runner-svg" viewBox="0 0 38 26" fill="none">
+          <defs>
+            <clipPath id="${clipId}">
+              <rect x="0" y="0" width="27.2" height="26"/>
+            </clipPath>
+          </defs>
+          <g class="arox-run-lines">
+            <path d="M2.2 9.4h4.4M1 12.6h5.8M2.8 15.8h4"/>
+          </g>
+          <g class="arox-close-lines">
+            <path d="M19.8 10.6 16.5 9.1M19.4 13.4H15.6M19.8 16.2 16.5 17.7"/>
+          </g>
+          <g clip-path="url(#${clipId})">
+            <g class="arox-walker-group">
+              <circle class="stick-head" cx="12.2" cy="6.6" r="2.05"/>
+              <path class="stick-torso" d="M12.2 9.1v6.2"/>
+              <g class="stick-arm-b">
+                <path class="stick-limb" d="M12.2 9.9 10.8 12.5"/>
+                <g class="stick-forearm-b">
+                  <path class="stick-limb" d="M10.8 12.5 10.2 15"/>
+                </g>
+              </g>
+              <g class="stick-arm-f">
+                <path class="stick-limb" d="M12.2 9.9 13.6 12.5"/>
+                <g class="stick-forearm-f">
+                  <path class="stick-limb" d="M13.6 12.5 14.2 15"/>
+                </g>
+              </g>
+              <g class="stick-leg-b">
+                <path class="stick-limb-thick" d="M12.2 15.3 11.2 18.9"/>
+                <g class="stick-calf-b">
+                  <path class="stick-limb-thick" d="M11.2 18.9 11 22.8"/>
+                </g>
+              </g>
+              <g class="stick-leg-f">
+                <path class="stick-limb-thick" d="M12.2 15.3 13.2 18.9"/>
+                <g class="stick-calf-f">
+                  <path class="stick-limb-thick" d="M13.2 18.9 13.4 22.8"/>
+                </g>
+              </g>
+            </g>
+          </g>
         </svg>
-        <svg class="arox-walker" viewBox="0 0 32 26" fill="none">
-          <path class="walker-speed" d="M1.5 9.5h3.2M1 12.5h4M2 15.5h3"/>
-          <g class="walker-body">
-            <circle cx="9.8" cy="6.2" r="2.1" class="walker-fill"/>
-            <path d="M9.6 8.8 8.9 15" class="walker-stroke-torso"/>
-            <path d="M9.5 9.8 6.9 13.5" class="walker-stroke walker-arm-b"/>
-            <path d="M9.5 9.8 12.6 12.3" class="walker-stroke walker-arm-f"/>
-            <path d="M8.9 15 6.4 19.3 5.6 22.2" class="walker-stroke walker-leg-b"/>
-            <path d="M8.9 15 11.6 18.4 12.1 22.2" class="walker-stroke walker-leg-f"/>
+        <svg class="arox-door-leaf" viewBox="0 0 38 26" fill="none">
+          <defs>
+            <linearGradient id="${gradId}" x1="22.2" y1="3.3" x2="34.7" y2="23.4" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" class="door-stop-start"/>
+              <stop offset="100%" class="door-stop-end"/>
+            </linearGradient>
+          </defs>
+          <rect class="door-panel-rect" x="22.2" y="3.3" width="12.5" height="20.1" rx="0.9" fill="url(#${gradId})"/>
+          <circle class="door-knob-dot" cx="24.5" cy="13.4" r="1.15"/>
+        </svg>
+        <svg class="arox-faller-svg" viewBox="0 0 38 48" fill="none">
+          <g class="arox-fall-lines">
+            <path d="M25.2 2v5.8M28.2 0.8v6.8M31 2.4v5"/>
+          </g>
+          <g class="arox-fall-body">
+            <circle class="stick-head" cx="28" cy="10.2" r="2.05"/>
+            <path class="stick-torso" d="M28 12.6v6"/>
+            <path class="stick-limb" d="M28 13.4 24.4 11.8 22.6 13.4"/>
+            <path class="stick-limb" d="M28 13.4 31.3 11.4 33.4 12.7"/>
+            <path class="stick-limb-thick" d="M28 18.6 25.1 21.8 24.2 25.2"/>
+            <path class="stick-limb-thick" d="M28 18.6 31.3 20.6 33.8 23.1"/>
           </g>
         </svg>
       </span>
     `;
+    };
 
     const prefersReducedMotion = () =>
       typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -314,8 +369,9 @@
     if (!user) {
       mobileAuthWrap.innerHTML = `
         <a href="/login" class="arox-door-btn arox-login-btn" id="mobile-top-login-btn" aria-label="Login">
+          <span class="arox-btn-sheen" aria-hidden="true"></span>
           <span class="arox-door-label">Login</span>
-          ${doorSceneHTML}
+          ${createDoorSceneHTML('login')}
         </a>
       `;
       const loginBtn = document.getElementById('mobile-top-login-btn');
@@ -332,7 +388,7 @@
           loginBtn.classList.add('is-animating');
           setTimeout(() => {
             window.location.href = loginBtn.getAttribute('href') || '/login';
-          }, 480);
+          }, 1820);
         });
       }
       return;
@@ -378,8 +434,9 @@
             </svg>
           </a>
           <button type="button" class="arox-door-btn arox-logout-btn" id="mobile-profile-logout" aria-label="Log Out">
+            <span class="arox-btn-sheen" aria-hidden="true"></span>
             <span class="arox-door-label">Log Out</span>
-            ${doorSceneHTML}
+            ${createDoorSceneHTML('logout')}
           </button>
         </div>
       </div>
@@ -392,6 +449,7 @@
     if (profileBtn && dropdown) {
       profileBtn.addEventListener('click', (e) => {
         e.stopPropagation();
+        if (logoutBtn && logoutBtn.dataset.animating === '1') return;
         const willOpen = !dropdown.classList.contains('open');
         dropdown.classList.toggle('open', willOpen);
         profileBtn.setAttribute('aria-expanded', String(willOpen));
@@ -419,20 +477,24 @@
           return;
         }
         logoutBtn.classList.add('is-animating');
-        setTimeout(performLogout, 620);
+        setTimeout(performLogout, 1820);
       });
     }
   }
 
   window.addEventListener('pageshow', () => {
-    const loginBtn = document.getElementById('mobile-top-login-btn');
-    if (loginBtn) {
-      loginBtn.dataset.animating = '0';
-      loginBtn.classList.remove('is-animating');
-    }
+    ['mobile-top-login-btn', 'mobile-profile-logout'].forEach((id) => {
+      const btn = document.getElementById(id);
+      if (btn) {
+        btn.dataset.animating = '0';
+        btn.classList.remove('is-animating');
+      }
+    });
   });
 
   document.addEventListener('click', (e) => {
+    const logoutBtn = document.getElementById('mobile-profile-logout');
+    if (logoutBtn && logoutBtn.dataset.animating === '1') return;
     if (mobileAuthWrap && !mobileAuthWrap.contains(e.target)) {
       closeProfileDropdown();
     }
