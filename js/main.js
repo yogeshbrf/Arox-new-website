@@ -229,23 +229,23 @@
     nav.setAttribute('aria-label', 'Mobile bottom navigation');
     nav.innerHTML = `
       <a href="index.html" class="mob-bnav-item${isHome ? ' active' : ''}">
-        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10.4 12 3.8l8 6.6V19a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-8.6Z" fill="currentColor" fill-opacity="0.16"/><path d="M2.5 11 12 3.2 21.5 11"/><rect x="9.5" y="13.5" width="5" height="7.5" rx="1.2" fill="currentColor" stroke="none"/></svg>
         <span>Home</span>
       </a>
       <a href="about.html" class="mob-bnav-item${isAbout ? ' active' : ''}">
-        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5" fill="currentColor" fill-opacity="0.16"/><path d="M12 11.2v5.2" stroke-width="2.2"/><circle cx="12" cy="7.7" r="1.25" fill="currentColor" stroke="none"/></svg>
         <span>About</span>
       </a>
       <a href="services.html" class="mob-bnav-item${isServices ? ' active' : ''}">
-        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.2 20.5 7.7 12 12.2 3.5 7.7 12 3.2Z" fill="currentColor" fill-opacity="0.32"/><path d="M3.5 12 12 16.5 20.5 12"/><path d="M3.5 16.3 12 20.8 20.5 16.3"/></svg>
         <span>Services</span>
       </a>
       <a href="courses.html" class="mob-bnav-item${isTraining ? ' active' : ''}">
-        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 9.2 12 4.5l9.5 4.7L12 13.9 2.5 9.2Z" fill="currentColor" fill-opacity="0.34"/><path d="M6.5 11.5v4.3c0 1.8 2.5 3.2 5.5 3.2s5.5-1.4 5.5-3.2v-4.3" fill="currentColor" fill-opacity="0.16"/><path d="M20.5 9.8v5.6"/><circle cx="20.5" cy="16.4" r="1.1" fill="currentColor" stroke="none"/></svg>
         <span>Training</span>
       </a>
       <a href="contact.html" class="mob-bnav-item${isContact ? ' active' : ''}">
-        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M6.8 3.2h2.7a1.8 1.8 0 0 1 1.8 1.5l.4 2.4a1.8 1.8 0 0 1-.5 1.6l-1.3 1.3a13.2 13.2 0 0 0 4.1 4.1l1.3-1.3a1.8 1.8 0 0 1 1.6-.5l2.4.4a1.8 1.8 0 0 1 1.5 1.8v2.7a1.8 1.8 0 0 1-2 1.8A16.8 16.8 0 0 1 3 5.2a1.8 1.8 0 0 1 1.8-2Z" fill="currentColor" fill-opacity="0.28"/></svg>
         <span>Contact</span>
       </a>
     `;
@@ -288,8 +288,8 @@
       mobileAuthWrap.innerHTML = `
         <a href="/login" class="mobile-top-login-btn" id="mobile-top-login-btn">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-            <circle cx="12" cy="7" r="4"></circle>
+            <circle cx="12" cy="8" r="3.8" fill="currentColor" fill-opacity="0.24"/>
+            <path d="M4.8 20a7.2 7.2 0 0 1 14.4 0" fill="currentColor" fill-opacity="0.16"/>
           </svg>
           <span>Login</span>
         </a>
@@ -304,14 +304,14 @@
     mobileAuthWrap.innerHTML = `
       <button type="button" class="mobile-profile-btn" id="mobile-profile-btn" aria-label="User Profile" aria-expanded="false">
         <svg viewBox="0 0 24 24" fill="currentColor">
-          <path d="M12 12c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm0 2c-3.33 0-10 1.67-10 5v2h20v-2c0-3.33-6.67-5-10-5z"/>
+          <path d="M12 2.5a9.5 9.5 0 1 0 0 19 9.5 9.5 0 0 0 0-19Zm0 4a3 3 0 1 1 0 6 3 3 0 0 1 0-6Zm0 13a7.2 7.2 0 0 1-5.4-2.4c.7-2.1 2.9-3.4 5.4-3.4s4.7 1.3 5.4 3.4A7.2 7.2 0 0 1 12 19.5Z"/>
         </svg>
       </button>
       <div class="mobile-profile-dropdown" id="mobile-profile-dropdown" role="menu">
         <div class="mobile-profile-header">
           <div class="mobile-profile-avatar">
             <svg viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 12c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm0 2c-3.33 0-10 1.67-10 5v2h20v-2c0-3.33-6.67-5-10-5z"/>
+              <path d="M12 2.5a9.5 9.5 0 1 0 0 19 9.5 9.5 0 0 0 0-19Zm0 4a3 3 0 1 1 0 6 3 3 0 0 1 0-6Zm0 13a7.2 7.2 0 0 1-5.4-2.4c.7-2.1 2.9-3.4 5.4-3.4s4.7 1.3 5.4 3.4A7.2 7.2 0 0 1 12 19.5Z"/>
             </svg>
           </div>
           <div class="mobile-profile-info">
@@ -323,22 +323,22 @@
           <a href="${dashUrl}" class="mobile-profile-link" id="mobile-profile-dashboard">
             <span class="mobile-profile-link-left">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="3" y="3" width="7" height="7" rx="1"></rect>
-                <rect x="14" y="3" width="7" height="7" rx="1"></rect>
-                <rect x="14" y="14" width="7" height="7" rx="1"></rect>
-                <rect x="3" y="14" width="7" height="7" rx="1"></rect>
+                <rect x="3.5" y="3.5" width="7" height="7" rx="2" fill="currentColor" fill-opacity="0.28"/>
+                <rect x="13.5" y="3.5" width="7" height="7" rx="2" fill="currentColor" fill-opacity="0.14"/>
+                <rect x="3.5" y="13.5" width="7" height="7" rx="2" fill="currentColor" fill-opacity="0.14"/>
+                <rect x="13.5" y="13.5" width="7" height="7" rx="2" fill="currentColor" fill-opacity="0.28"/>
               </svg>
               <span>Go to Dashboard</span>
             </span>
-            <svg class="mobile-profile-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="9 18 15 12 9 6"></polyline>
+            <svg class="mobile-profile-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m9.5 6.5 5.5 5.5-5.5 5.5"/>
             </svg>
           </a>
           <button type="button" class="mobile-profile-logout" id="mobile-profile-logout">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-              <polyline points="16 17 21 12 16 7"></polyline>
-              <line x1="21" y1="12" x2="9" y2="12"></line>
+              <path d="M10 4H6.5A2.5 2.5 0 0 0 4 6.5v11A2.5 2.5 0 0 0 6.5 20H10" fill="currentColor" fill-opacity="0.12"/>
+              <path d="M10 4H6.5A2.5 2.5 0 0 0 4 6.5v11A2.5 2.5 0 0 0 6.5 20H10"/>
+              <path d="m16 16 4.2-4L16 8"/><path d="M20 12H9.5"/>
             </svg>
             <span>Logout</span>
           </button>
@@ -1083,7 +1083,7 @@
         label: 'For Business',
         isWide: true,
         image: 'assets/our service/web development.png',
-        icon: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>'
+        icon: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.2" width="18" height="15.6" rx="2.8" fill="currentColor" fill-opacity="0.14"/><path d="M3 7A2.8 2.8 0 0 1 5.8 4.2h12.4A2.8 2.8 0 0 1 21 7v2H3V7Z" fill="currentColor" fill-opacity="0.32" stroke="none"/><path d="M3 9h18"/><path d="m9.6 12.2-2.2 2.2 2.2 2.2"/><path d="m14.4 12.2 2.2 2.2-2.2 2.2"/><path d="m12.8 11.6-1.6 5.6"/></svg>'
       },
       {
         title: 'App Development',
@@ -1091,7 +1091,7 @@
         label: 'Mobile',
         isWide: false,
         image: 'assets/our service/app development.png',
-        icon: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>'
+        icon: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2.5" width="12" height="19" rx="2.8" fill="currentColor" fill-opacity="0.16"/><path d="M10.5 5.5h3"/><circle cx="12" cy="18" r="1.1" fill="currentColor" stroke="none"/></svg>'
       },
       {
         title: 'Software Development',
@@ -1099,7 +1099,7 @@
         label: 'Extended Team',
         isWide: false,
         image: 'assets/our service/software development.png',
-        icon: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>'
+        icon: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.2 20.5 7.7 12 12.2 3.5 7.7 12 3.2Z" fill="currentColor" fill-opacity="0.32"/><path d="M3.5 12 12 16.5 20.5 12"/><path d="M3.5 16.3 12 20.8 20.5 16.3"/></svg>'
       },
       {
         title: 'Digital Marketing',
@@ -1107,7 +1107,7 @@
         label: 'Marketing',
         isWide: false,
         image: 'assets/our service/digital marketing.png',
-        icon: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 11 18-5v12L3 13v-2z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></svg>'
+        icon: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.2 10.2 18.5 5.5v13L4.2 13.8a1.2 1.2 0 0 1-.8-1.1v-1.4a1.2 1.2 0 0 1 .8-1.1Z" fill="currentColor" fill-opacity="0.2"/><path d="M7.5 14.8v4.2a1.5 1.5 0 0 0 3 0v-3.5"/></svg>'
       },
       {
         title: 'BPO Services',
@@ -1115,7 +1115,7 @@
         label: 'Operations',
         isWide: true,
         image: 'assets/our service/bpo services.png',
-        icon: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg>'
+        icon: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14v-2a8 8 0 0 1 16 0v2"/><rect x="3.2" y="13.2" width="4" height="6.2" rx="1.6" fill="currentColor" fill-opacity="0.26"/><rect x="16.8" y="13.2" width="4" height="6.2" rx="1.6" fill="currentColor" fill-opacity="0.26"/></svg>'
       },
       {
         title: 'Branding & Designing',
@@ -1123,7 +1123,7 @@
         label: 'Creative',
         isWide: false,
         image: 'assets/our service/branding and designing.png',
-        icon: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>'
+        icon: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a9 9 0 0 0 0 18c1.1 0 1.9-.8 1.9-1.8 0-.5-.2-.9-.5-1.2-.3-.4-.5-.8-.5-1.2 0-.7.6-1.2 1.3-1.2h2c2.7 0 4.8-2.2 4.8-4.9C21 6.7 17 3 12 3Z" fill="currentColor" fill-opacity="0.18"/><circle cx="7.8" cy="10.8" r="1.25" fill="currentColor" stroke="none"/><circle cx="10.5" cy="7.3" r="1.25" fill="currentColor" stroke="none"/><circle cx="14.5" cy="7.5" r="1.25" fill="currentColor" stroke="none"/><circle cx="16.8" cy="10.8" r="1.25" fill="currentColor" stroke="none"/></svg>'
       },
       {
         title: 'Industry Training',
@@ -1131,7 +1131,7 @@
         label: 'Education',
         isWide: true,
         image: 'assets/our service/industry training.png',
-        icon: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>'
+        icon: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 9.2 12 4.5l9.5 4.7L12 13.9 2.5 9.2Z" fill="currentColor" fill-opacity="0.34"/><path d="M6.5 11.5v4.3c0 1.8 2.5 3.2 5.5 3.2s5.5-1.4 5.5-3.2v-4.3" fill="currentColor" fill-opacity="0.16"/><path d="M20.5 9.8v5.6"/><circle cx="20.5" cy="16.4" r="1.1" fill="currentColor" stroke="none"/></svg>'
       },
       {
         title: 'Internships',
@@ -1139,10 +1139,10 @@
         label: 'Career',
         isWide: true,
         image: 'assets/our service/internships.png',
-        icon: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>'
+        icon: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 7V5.2A1.7 1.7 0 0 1 10.2 3.5h3.6a1.7 1.7 0 0 1 1.7 1.7V7"/><rect x="3" y="7" width="18" height="13.5" rx="3" fill="currentColor" fill-opacity="0.15"/><path d="M3 12.4h18v5.1a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3v-5.1Z" fill="currentColor" fill-opacity="0.22" stroke="none"/><path d="M3 12.3h18"/><rect x="10.4" y="10.8" width="3.2" height="3" rx="0.9" fill="currentColor" stroke="none"/></svg>'
       }
     ];
-    const arrowSVG = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>';
+    const arrowSVG = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>';
 
     bentoGrid.innerHTML = '';
     bentoData.forEach((card, idx) => {
@@ -1254,9 +1254,9 @@
           </div>
           <div class="meta-right">
             <div class="verified-badge">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                <polyline points="9 11 11 13 15 9"/>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 2.8 4.5 6v5.5c0 4.8 3.2 8.7 7.5 9.8 4.3-1.1 7.5-5 7.5-9.8V6L12 2.8Z" fill="currentColor" fill-opacity="0.22"/>
+                <path d="m9 12 2.1 2.1 4-4.2"/>
               </svg>
               <span>VERIFIED CLIENT</span>
             </div>
@@ -1327,9 +1327,10 @@
           <div class="stack-card-overlay">
             <div class="client-badge">
               <div class="badge-icon-circle">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <rect x="2" y="10" width="20" height="12" rx="2" ry="2"></rect>
-                  <path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18"></path>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="4" y="3.5" width="10" height="17" rx="2" fill="currentColor" fill-opacity="0.18"/>
+                  <path d="M14 9.5h4.2A1.8 1.8 0 0 1 20 11.3v9.2h-6" fill="currentColor" fill-opacity="0.12"/>
+                  <path d="M7.5 7.8h3M7.5 11.4h3M7.5 15h3"/>
                 </svg>
               </div>
               <div class="badge-text-group">

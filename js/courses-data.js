@@ -528,7 +528,7 @@
 
       const highlightsHTML = course.highlights.slice(0, 4).map(h => `
         <div class="syllabus-item-tick">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5" fill="currentColor" fill-opacity="0.16"/><path d="m8.6 12.3 2.3 2.3 4.8-4.8"/></svg>
           <span>${h}</span>
         </div>
       `).join('');

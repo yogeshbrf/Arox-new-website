@@ -10,6 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="js/arox-icons.js?v=1"></script>
   <style>
     /* ============================================
        AROX APPLICATION FORM — Premium Monochrome
@@ -1643,7 +1644,7 @@ select:-webkit-autofill {
           <span class="${selectedValue ? '' : 'placeholder'}">${selectedValue || placeholder}</span>
           <div class="ss-icons">
             <span class="ss-clear hidden" role="button" aria-label="Clear selection">&times;</span>
-            <span class="ss-chevron"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></span>
+            <span class="ss-chevron"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="m6.5 9.5 5.5 5.5 5.5-5.5"/></svg></span>
           </div>
         </div>
         <div class="searchable-select-dropdown" role="listbox">
@@ -1671,7 +1672,7 @@ select:-webkit-autofill {
           `<div class="ss-option ${opt === selectedValue ? 'selected' : ''} ${i === highlightedIndex ? 'highlighted' : ''}"
                 data-value="${opt}" role="option" aria-selected="${opt === selectedValue}">
             <span>${opt}</span>
-            <span class="ss-check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg></span>
+            <span class="ss-check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5 9.5-9.5"/></svg></span>
           </div>`
         ).join('');
       }
@@ -2003,7 +2004,7 @@ select:-webkit-autofill {
         const circle = stepEl.querySelector('.stepper-circle');
         if (i < currentStep) {
           stepEl.classList.add('completed', 'clickable');
-          circle.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>';
+          circle.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5 9.5-9.5"/></svg>';
           stepEl.onclick = () => goToStep(i);
         } else if (i === currentStep) {
           stepEl.classList.add('active');

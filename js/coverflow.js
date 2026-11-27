@@ -512,10 +512,10 @@
         </div>
         <div class="coverflow-arrows">
           <button class="coverflow-arrow" id="cf-prev-btn" aria-label="Previous Project">
-            <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m14.5 6.5-5.5 5.5 5.5 5.5"/></svg>
           </button>
           <button class="coverflow-arrow" id="cf-next-btn" aria-label="Next Project">
-            <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9.5 6.5 5.5 5.5-5.5 5.5"/></svg>
           </button>
         </div>
       </div>
