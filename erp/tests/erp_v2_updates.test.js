@@ -114,11 +114,18 @@ async function runSuite() {
     assert(stuToken, 'Seeded student login token retrieved');
 
     // ---------------------------------------------------------
-    // CHECK 1 & 8: Sidebar Hover/Pin + Mobile Topbar Logo/Page/Profile Icon
+    // CHECK 1 & 8: Sidebar Hover/Pin/Thin-Scrollbar, Duotone Icons & Mobile Bottom Nav
     // ---------------------------------------------------------
-    const cssRes = await request(server, { path: '/erp-assets/css/erp-theme.css' });
-    assert(cssRes.status === 200, 'erp-theme.css served');
+    const [cssRes, shellJsRes] = await Promise.all([
+      request(server, { path: '/erp-assets/css/erp-theme.css' }),
+      request(server, { path: '/erp-assets/js/erp-shell.js' })
+    ]);
+    assert.strictEqual(cssRes.status, 200, 'erp-theme.css served');
+    assert.strictEqual(shellJsRes.status, 200, 'erp-shell.js served');
     assert(cssRes.text.includes('.erp-sidebar:hover') && cssRes.text.includes('.erp-sidebar.sidebar-pinned'), 'CSS has hover-open and click-pin sidebar rules');
+    assert(cssRes.text.includes('.force-collapse') && shellJsRes.text.includes('force-collapse'), 'Sidebar immediate-hide on unpin implemented in CSS and JS');
+    assert(cssRes.text.includes('scrollbar-width: none') && cssRes.text.includes('scrollbar-width: thin'), 'CSS hides scrollbar when collapsed and shows thin scrollbar on hover/pin');
+    assert(/\.erp-mobile-toggle\s*\{\s*display:\s*none\s*!important;/.test(cssRes.text), 'CSS enforces hidden hamburger toggle on mobile');
     assert(cssRes.text.includes('.erp-mobile-nav-brand') && cssRes.text.includes('.erp-profile-wrapper'), 'CSS has mobile topbar brand and profile styles');
 
     const [adminDash, empDash, stuDash] = await Promise.all([
@@ -129,11 +136,14 @@ async function runSuite() {
 
     for (const [label, page] of [['Admin', adminDash], ['Employee', empDash], ['Student', stuDash]]) {
       assert.strictEqual(page.status, 200, `${label} dashboard loads HTTP 200`);
+      assert(!page.text.includes('erp-mobile-toggle'), `${label} topbar has NO mobile hamburger button`);
+      assert(page.text.includes('erp-bottom-nav') && page.text.includes('nav-pill-box'), `${label} renders app-style mobile bottom navigation`);
+      assert(page.text.includes('erp-duotone-icon') && page.text.includes('sidebar-layers'), `${label} renders unified duotone sidebar icons`);
       assert(page.text.includes('erp-mobile-nav-brand'), `${label} topbar has mobile logo / current page`);
       assert(page.text.includes('erp-profile-wrapper') && !page.text.includes('erp-profile hidden md:flex'), `${label} topbar profile icon is unhidden on mobile`);
       assert(page.text.includes('/erp-assets/js/erp-shell.js'), `${label} includes unified erp-shell.js`);
     }
-    console.log('✅ CHECK 1 & 8 PASS: Sidebar hover/pin & mobile topbar (logo / page / profile icon) verified across all 3 panels');
+    console.log('✅ CHECK 1 & 8 PASS: Sidebar unpin/thin-scrollbar, duotone icons, mobile bottom nav & topbar verified across all 3 panels');
 
     // ---------------------------------------------------------
     // CHECK 2: Payment UPI ID (6379000598@amazonpay) & Live QR PNG

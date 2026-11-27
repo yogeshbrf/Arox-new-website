@@ -154,6 +154,7 @@ app.use(['/api', '/admin', '/employee', '/student'], async (req, res, next) => {
 
 // Organization settings & view locals for ERP Views
 app.use(['/admin', '/employee', '/student'], (req, res, next) => {
+  res.locals.erpIcon = require('./erp/utils/erpIcons').getIcon;
   try {
     res.locals.org = settingsService.getOrgSettings();
     res.locals.paymentConfig = settingsService.getPaymentSettings();

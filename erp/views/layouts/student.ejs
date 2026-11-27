@@ -73,7 +73,7 @@
   </script>
 
   <!-- Custom CSS -->
-  <link rel="stylesheet" href="/erp-assets/css/erp-theme.css?v=4.0">
+  <link rel="stylesheet" href="/erp-assets/css/erp-theme.css?v=4.1">
 
   <style>
     @media (max-width: 768px) {
@@ -117,57 +117,58 @@
         })();
       </script>
       <div class="erp-sidebar-header">
+        <% const icon = typeof erpIcon === 'function' ? erpIcon : ((n) => `<i data-lucide="${n}"></i>`); %>
         <div class="sidebar-logo-container">
           <img src="/erp-assets/assets/logo/logo-dark.png" alt="AROX Logo" class="sidebar-logo-large" style="height: 52px; max-height: 56px; width: auto; max-width: 185px; object-fit: contain;">
         </div>
         <button id="sidebar-toggle-btn" class="sidebar-toggle-btn" title="Pin Sidebar Open">
-          <i id="sidebar-toggle-icon" data-lucide="pin"></i>
+          <%- icon('sidebar-layers') %>
         </button>
       </div>
 
       <nav class="erp-sidebar-nav">
         <!-- 0. Overview Dashboard -->
         <a href="/student/dashboard" class="erp-nav-item <%= activePath === '/student/dashboard' ? 'active' : '' %>">
-          <i data-lucide="layout-dashboard"></i>
+          <%- icon('layout-dashboard') %>
           <span>Overview</span>
         </a>
 
         <!-- 1. My Course -->
         <a href="/student/courses" class="erp-nav-item <%= activePath.startsWith('/student/courses') ? 'active' : '' %>">
-          <i data-lucide="book-open"></i>
+          <%- icon('book-open') %>
           <span>My Course</span>
         </a>
 
         <!-- 2. Payment -->
         <a href="/student/payments" class="erp-nav-item <%= activePath.startsWith('/student/payments') ? 'active' : '' %>">
-          <i data-lucide="wallet"></i>
+          <%- icon('wallet') %>
           <span>Payment</span>
         </a>
 
         <!-- 3. Attendance -->
         <a href="/student/attendance" class="erp-nav-item <%= activePath.startsWith('/student/attendance') ? 'active' : '' %>">
-          <i data-lucide="calendar-check-2"></i>
+          <%- icon('calendar-check-2') %>
           <span>Attendance</span>
         </a>
 
         <!-- 4. Reviews and Rating -->
         <a href="/student/reviews" class="erp-nav-item <%= activePath.startsWith('/student/reviews') ? 'active' : '' %>">
-          <i data-lucide="star"></i>
+          <%- icon('star') %>
           <span>Reviews &amp; Rating</span>
         </a>
         
         <!-- 5. Settings -->
         <div class="erp-nav-section">Account</div>
         <a href="/student/settings" class="erp-nav-item <%= (activePath.startsWith('/student/settings') || activePath.startsWith('/student/profile')) ? 'active' : '' %>">
-          <i data-lucide="settings"></i>
+          <%- icon('settings') %>
           <span>Settings</span>
         </a>
       </nav>
 
-      <div style="padding: 16px 14px; border-top: 1px solid #E2E8F0;">
+      <div style="padding: 14px 10px; border-top: 1px solid #E2E8F0;">
         <form action="/api/auth/logout" method="POST" id="logoutForm">
           <button type="submit" class="erp-nav-item" style="width: 100%; border: none; background: transparent; cursor: pointer; text-align: left; color: #DC2626;" title="Logout">
-            <i data-lucide="log-out"></i>
+            <%- icon('log-out') %>
             <span>Logout</span>
           </button>
         </form>
@@ -177,12 +178,9 @@
     <!-- Main Content -->
     <main class="erp-main" id="student-main-content" role="main" aria-label="Student portal content">
       <% const stuDisplayName = (typeof student !== 'undefined' && student) ? `${student.first_name} ${student.last_name}` : ((typeof user !== 'undefined' && user && user.email) ? user.email.split('@')[0] : 'Student'); %>
-      <!-- Topbar -->
+      <!-- Topbar (Desktop: Breadcrumb; Mobile: Logo / Current Page + Profile Icon, No Hamburger) -->
       <header class="erp-topbar">
         <div style="display: flex; align-items: center; gap: 10px; min-width: 0;">
-          <button class="erp-mobile-toggle" id="student-mobile-toggle" aria-label="Open menu">
-            <i data-lucide="menu" style="width: 22px; height: 22px;"></i>
-          </button>
           <div class="erp-mobile-nav-brand">
             <a href="/student/dashboard" class="erp-mobile-logo-link" title="AROX Student Dashboard">
               <img src="/erp-assets/assets/logo/logo-dark.png" alt="AROX Logo">
@@ -228,16 +226,16 @@
                 <div style="font-size: 11px; color: #64748B; text-transform: uppercase; letter-spacing: 0.04em;">Student Portal</div>
               </div>
               <a href="/student/settings" class="erp-profile-dropdown-item">
-                <i data-lucide="settings" style="width: 16px; height: 16px;"></i>
+                <%- icon('settings') %>
                 <span>Profile &amp; Settings</span>
               </a>
               <a href="/student/payments" class="erp-profile-dropdown-item">
-                <i data-lucide="wallet" style="width: 16px; height: 16px;"></i>
+                <%- icon('wallet') %>
                 <span>Payments &amp; UPI QR</span>
               </a>
               <form action="/api/auth/logout" method="POST" style="margin-top: 4px;">
                 <button type="submit" class="erp-profile-dropdown-item danger">
-                  <i data-lucide="log-out" style="width: 16px; height: 16px;"></i>
+                  <%- icon('log-out') %>
                   <span>Logout</span>
                 </button>
               </form>
@@ -251,11 +249,33 @@
         <%- body %>
       </div>
 
-      
+      <!-- Mobile App Bottom Navigation -->
+      <nav class="erp-bottom-nav" aria-label="Student Mobile Navigation">
+        <a href="/student/dashboard" class="erp-bottom-nav-item <%= activePath === '/student/dashboard' ? 'active' : '' %>">
+          <div class="nav-pill-box"><%- icon('layout-dashboard') %></div>
+          <span>Home</span>
+        </a>
+        <a href="/student/courses" class="erp-bottom-nav-item <%= activePath.startsWith('/student/courses') ? 'active' : '' %>">
+          <div class="nav-pill-box"><%- icon('book-open') %></div>
+          <span>Course</span>
+        </a>
+        <a href="/student/payments" class="erp-bottom-nav-item <%= activePath.startsWith('/student/payments') ? 'active' : '' %>">
+          <div class="nav-pill-box"><%- icon('wallet') %></div>
+          <span>Pay</span>
+        </a>
+        <a href="/student/attendance" class="erp-bottom-nav-item <%= activePath.startsWith('/student/attendance') ? 'active' : '' %>">
+          <div class="nav-pill-box"><%- icon('calendar-check-2') %></div>
+          <span>Attend</span>
+        </a>
+        <button type="button" id="student-bottom-menu-btn" class="erp-bottom-nav-item" aria-label="All Student Modules">
+          <div class="nav-pill-box"><%- icon('menu-more') %></div>
+          <span>More</span>
+        </button>
+      </nav>
     </main>
   </div>
 
-  <script src="/erp-assets/js/erp-shell.js?v=1"></script>
+  <script src="/erp-assets/js/erp-shell.js?v=2"></script>
 
   <!-- Triangular Sync Client -->
   <script src="/erp-assets/js/sync-client.js"></script>

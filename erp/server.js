@@ -87,6 +87,7 @@ serveGeneratorFolder('/project', 'project');
 // ----- Make org config available to all views -----
 const settingsService = require('./services/settingsService');
 app.use((req, res, next) => {
+  res.locals.erpIcon = require('./utils/erpIcons').getIcon;
   try {
     res.locals.org = settingsService.getOrgSettings();
     res.locals.paymentConfig = settingsService.getPaymentSettings();

@@ -63,7 +63,7 @@
   </script>
 
   <!-- Custom CSS -->
-  <link rel="stylesheet" href="/erp-assets/css/erp-theme.css?v=4.0">
+  <link rel="stylesheet" href="/erp-assets/css/erp-theme.css?v=4.1">
 
   <style>
     @media (max-width: 768px) {
@@ -106,18 +106,19 @@
         })();
       </script>
       <div class="erp-sidebar-header">
+        <% const icon = typeof erpIcon === 'function' ? erpIcon : ((n) => `<i data-lucide="${n}"></i>`); %>
         <div class="sidebar-logo-container">
           <img src="/erp-assets/assets/logo/logo-dark.png" alt="AROX Logo" class="sidebar-logo-large" style="height: 52px; max-height: 56px; width: auto; max-width: 185px; object-fit: contain;">
         </div>
         <button id="employee-sidebar-toggle-btn" class="sidebar-toggle-btn" title="Pin Sidebar Open">
-          <i id="employee-sidebar-toggle-icon" data-lucide="pin"></i>
+          <%- icon('sidebar-layers') %>
         </button>
       </div>
 
       <nav class="erp-sidebar-nav">
         <!-- 0. Overview Dashboard -->
         <a href="/employee/dashboard" class="erp-nav-item <%= activePath === '/employee/dashboard' ? 'active' : '' %>">
-          <i data-lucide="layout-dashboard"></i>
+          <%- icon('layout-dashboard') %>
           <span>Overview</span>
         </a>
 
@@ -127,42 +128,42 @@
           <span style="font-size: 10px; font-weight: 700; padding: 1px 6px; background: #000; color: #fff; border-radius: 4px; letter-spacing: 0.05em;">CRM</span>
         </div>
         <a href="/employee/students" class="erp-nav-item <%= activePath.startsWith('/employee/students') ? 'active' : '' %>">
-          <i data-lucide="users"></i>
+          <%- icon('users') %>
           <span>Referred Students</span>
         </a>
         <a href="/employee/internships" class="erp-nav-item <%= (activePath.startsWith('/employee/internships') || activePath.startsWith('/employee/leads/internships')) ? 'active' : '' %>">
-          <i data-lucide="graduation-cap"></i>
+          <%- icon('graduation-cap') %>
           <span>Referred Internships</span>
         </a>
         <a href="/employee/clients" class="erp-nav-item <%= (activePath.startsWith('/employee/clients') || activePath.startsWith('/employee/leads/clients')) ? 'active' : '' %>">
-          <i data-lucide="building-2"></i>
+          <%- icon('building-2') %>
           <span>Clients</span>
         </a>
         <a href="/employee/leads" class="erp-nav-item <%= (activePath === '/employee/leads') ? 'active' : '' %>">
-          <i data-lucide="target"></i>
+          <%- icon('target') %>
           <span>Sales Pipeline</span>
         </a>
         <a href="/employee/tasks" class="erp-nav-item <%= activePath.startsWith('/employee/tasks') ? 'active' : '' %>">
-          <i data-lucide="check-square"></i>
+          <%- icon('check-square') %>
           <span>Tasks &amp; Proofs</span>
         </a>
 
         <!-- 2. CALL REPORTS -->
         <div class="erp-nav-section">Communication</div>
         <a href="/employee/call-reports" class="erp-nav-item <%= activePath.startsWith('/employee/call-reports') ? 'active' : '' %>">
-          <i data-lucide="phone-call"></i>
+          <%- icon('phone-call') %>
           <span>Call Reports</span>
         </a>
 
         <!-- 3. CONTACTS -->
         <a href="/employee/contacts" class="erp-nav-item <%= activePath.startsWith('/employee/contacts') ? 'active' : '' %>">
-          <i data-lucide="contact-2"></i>
+          <%- icon('contact-2') %>
           <span>Contacts Directory</span>
         </a>
 
         <!-- 4. REVIEWS AND RATING -->
         <a href="/employee/reviews" class="erp-nav-item <%= activePath.startsWith('/employee/reviews') ? 'active' : '' %>">
-          <i data-lucide="star"></i>
+          <%- icon('star') %>
           <span>Reviews &amp; Ratings</span>
         </a>
 
@@ -173,23 +174,23 @@
         <!-- 5. SETTINGS -->
         <div class="erp-nav-section">Account</div>
         <a href="/employee/settings" class="erp-nav-item <%= (activePath.startsWith('/employee/settings') || activePath.startsWith('/employee/profile')) ? 'active' : '' %>">
-          <i data-lucide="settings"></i>
+          <%- icon('settings') %>
           <span>Settings &amp; Profile</span>
         </a>
 
         <% if (['admin', 'super_admin'].includes(empUser.role)) { %>
           <div class="erp-nav-section">Admin Switcher</div>
           <a href="/admin/dashboard" class="erp-nav-item" style="color: #2563EB;">
-            <i data-lucide="shield"></i>
+            <%- icon('shield') %>
             <span>Switch to Admin ERP</span>
           </a>
         <% } %>
       </nav>
 
-      <div style="padding: 16px 14px; border-top: 1px solid #E2E8F0;">
+      <div style="padding: 14px 10px; border-top: 1px solid #E2E8F0;">
         <form action="/api/auth/logout" method="POST">
           <button type="submit" class="erp-nav-item" style="width: 100%; border: none; background: transparent; cursor: pointer; text-align: left; color: #DC2626;" title="Logout">
-            <i data-lucide="log-out"></i>
+            <%- icon('log-out') %>
             <span>Logout</span>
           </button>
         </form>
@@ -198,12 +199,9 @@
 
     <!-- Main Content -->
     <main class="erp-main" id="employee-main-content" role="main" aria-label="Employee portal content">
-      <!-- Topbar -->
+      <!-- Topbar (Desktop: Breadcrumb; Mobile: Logo / Current Page + Profile Icon, No Hamburger) -->
       <header class="erp-topbar">
         <div style="display: flex; align-items: center; gap: 10px; min-width: 0;">
-          <button class="erp-mobile-toggle" id="employee-mobile-toggle" aria-label="Open menu">
-            <i data-lucide="menu" style="width: 22px; height: 22px;"></i>
-          </button>
           <div class="erp-mobile-nav-brand">
             <a href="/employee/dashboard" class="erp-mobile-logo-link" title="AROX Employee Dashboard">
               <img src="/erp-assets/assets/logo/logo-dark.png" alt="AROX Logo">
@@ -249,16 +247,16 @@
                 <div style="font-size: 11px; color: #64748B; text-transform: uppercase; letter-spacing: 0.04em;"><%= empUser.role || 'Employee' %> Portal</div>
               </div>
               <a href="/employee/profile" class="erp-profile-dropdown-item">
-                <i data-lucide="user-circle" style="width: 16px; height: 16px;"></i>
+                <%- icon('user-circle') %>
                 <span>My Profile &amp; Code</span>
               </a>
               <a href="/employee/settings" class="erp-profile-dropdown-item">
-                <i data-lucide="settings" style="width: 16px; height: 16px;"></i>
+                <%- icon('settings') %>
                 <span>Settings</span>
               </a>
               <form action="/api/auth/logout" method="POST" style="margin-top: 4px;">
                 <button type="submit" class="erp-profile-dropdown-item danger">
-                  <i data-lucide="log-out" style="width: 16px; height: 16px;"></i>
+                  <%- icon('log-out') %>
                   <span>Logout</span>
                 </button>
               </form>
@@ -272,11 +270,33 @@
         <%- body %>
       </div>
 
-      
+      <!-- Mobile App Bottom Navigation -->
+      <nav class="erp-bottom-nav" aria-label="Employee Mobile Navigation">
+        <a href="/employee/dashboard" class="erp-bottom-nav-item <%= activePath === '/employee/dashboard' ? 'active' : '' %>">
+          <div class="nav-pill-box"><%- icon('layout-dashboard') %></div>
+          <span>Home</span>
+        </a>
+        <a href="/employee/students" class="erp-bottom-nav-item <%= activePath.startsWith('/employee/students') ? 'active' : '' %>">
+          <div class="nav-pill-box"><%- icon('users') %></div>
+          <span>Referred</span>
+        </a>
+        <a href="/employee/leads" class="erp-bottom-nav-item <%= activePath === '/employee/leads' ? 'active' : '' %>">
+          <div class="nav-pill-box"><%- icon('target') %></div>
+          <span>Pipeline</span>
+        </a>
+        <a href="/employee/tasks" class="erp-bottom-nav-item <%= activePath.startsWith('/employee/tasks') ? 'active' : '' %>">
+          <div class="nav-pill-box"><%- icon('check-square') %></div>
+          <span>Tasks</span>
+        </a>
+        <button type="button" id="employee-bottom-menu-btn" class="erp-bottom-nav-item" aria-label="All Employee Modules">
+          <div class="nav-pill-box"><%- icon('menu-more') %></div>
+          <span>More</span>
+        </button>
+      </nav>
     </main>
   </div>
 
-  <script src="/erp-assets/js/erp-shell.js?v=1"></script>
+  <script src="/erp-assets/js/erp-shell.js?v=2"></script>
 
   <!-- Triangular Sync Client -->
   <script src="/erp-assets/js/sync-client.js"></script>
