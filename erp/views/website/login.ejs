@@ -20,9 +20,9 @@
       --input-border: #E2E8F0;
       --font-display: 'Montserrat', sans-serif;
       --font-body: 'Inter', sans-serif;
-      --sweep: 1.8s;
-      --swap-delay: 1.2s;
-      --fade: 0.6s;
+      --sweep: 0.55s;
+      --swap-delay: 0.24s;
+      --fade: 0.22s;
     }
     @media (prefers-reduced-motion: reduce) {
       :root { --sweep: 0.01s; --swap-delay: 0.01s; --fade: 0.01s; }
@@ -248,9 +248,9 @@
       color: #fff; background: rgba(255,255,255,0.15);
       border: 1.5px solid rgba(255,255,255,0.65);
       backdrop-filter: blur(8px);
-      transition: color 0.3s ease 0.7s, background 0.3s ease 0.7s,
-                  border-color 0.3s ease 0.7s, box-shadow 0.3s ease 0.7s,
-                  backdrop-filter 0.3s ease 0.7s;
+      transition: color 0.22s ease 0.24s, background 0.22s ease 0.24s,
+                  border-color 0.22s ease 0.24s, box-shadow 0.22s ease 0.24s,
+                  backdrop-filter 0.22s ease 0.24s;
     }
     .auth-back svg { width:16px; height:16px; stroke:currentColor; stroke-width:2.2; }
     .auth-back:hover { transform: translateX(-3px); }
@@ -260,7 +260,7 @@
       color: #1E293B; background: #fff;
       border-color: #E2E8F0; backdrop-filter: none;
       box-shadow: 0 4px 14px rgba(0,0,0,0.05);
-      transition-delay: 0.7s;
+      transition-delay: 0.24s;
     }
 
     /* ── PANEL CONTENT (on top of blue) ── */
@@ -361,181 +361,229 @@
 
     /* ══════════════════════════════════════════
        MOBILE LAYOUT  (≤768px)
-       Consistent order: Back→Tabs→Title→Fields→Button→SwitchStrip
-       Blue sweep curtain rises from bottom during transition
+       Login: Blue Curved Top Banner (Back + Welcome + Portal Access) -> Centered Form + Demo Logins
+       Register: Clean Form Top (Back + Create Account + 4 Fields + Register) -> Blue Curved Bottom Banner
        ══════════════════════════════════════════ */
     @media (max-width: 768px) {
       .auth-card { display: none !important; }
       .auth-mobile {
-        display: flex !important; flex-direction: column;
-        width: 100%; min-height: 100vh; min-height: 100dvh;
-        position: relative; overflow: hidden;
-        padding: env(safe-area-inset-top) env(safe-area-inset-right)
-                 env(safe-area-inset-bottom) env(safe-area-inset-left);
+        display: flex !important;
+        flex-direction: column;
+        width: 100%;
+        min-height: 100vh;
+        min-height: 100dvh;
+        position: relative;
+        overflow-x: hidden;
+        background: #fff;
       }
 
-      /* ── MOBILE SWEEP (blue curtain, rises from bottom) ── */
+      /* ── MOBILE SWEEP (fast blue curtain transition) ── */
       .mob-sweep {
-        position: absolute; bottom: 0; left: 0;
-        width: 100%; height: 0;
+        position: fixed;
+        inset: 0;
         background: var(--primary-blue-gradient);
-        border-radius: 60px 60px 0 0;
-        z-index: 50; pointer-events: none;
+        z-index: 90;
+        pointer-events: none;
+        opacity: 0;
+        transform: translateY(100%);
       }
       .auth-mobile.mob-sweeping .mob-sweep {
-        animation: mobSweep var(--sweep) ease-in-out forwards;
+        animation: mobSweep var(--sweep) cubic-bezier(0.22, 1, 0.36, 1) forwards;
       }
       @keyframes mobSweep {
-        0%   { height: 0;    border-radius: 60px 60px 0 0; }
-        35%  { height: 110%; border-radius: 0; }
-        65%  { height: 110%; border-radius: 0; }
-        100% { height: 0;    border-radius: 60px 60px 0 0; }
+        0%   { opacity: 0.95; transform: translateY(100%); border-radius: 48px 48px 0 0; }
+        40%  { opacity: 1;    transform: translateY(0%);   border-radius: 0; }
+        60%  { opacity: 1;    transform: translateY(0%);   border-radius: 0; }
+        100% { opacity: 0;    transform: translateY(-100%); border-radius: 0 0 48px 48px; }
       }
 
-      /* ── BACK TO HOME (mobile) ── */
-      .mob-back {
-        position: absolute; top: clamp(10px,2.5vw,16px); left: clamp(12px,3vw,16px);
-        z-index: 100; display: inline-flex; align-items: center; gap: 5px;
-        padding: clamp(5px,1.2vw,7px) clamp(10px,2.5vw,14px);
-        border-radius: 9999px;
-        background: rgba(0,0,0,0.06); border: 1.5px solid rgba(0,0,0,0.1);
-        color: #1E293B;
-        font-family: var(--font-display); font-size: clamp(0.7rem,1.8vw,0.8rem);
-        font-weight: 700; text-decoration: none;
-      }
-      .mob-back svg { width:13px; height:13px; stroke:currentColor; stroke-width:2.2; }
-
-      /* ── MOBILE CONTENT (everything between back-btn and sweep) ── */
-      .mob-content {
-        display: flex; flex-direction: column;
-        flex: 1; width: 100%; z-index: 5;
-        position: relative;
-      }
-
-      /* ── PORTAL TABS (position 2, at top) ── */
-      .mob-tabs {
-        padding: clamp(48px,10vw,60px) clamp(16px,4vw,24px) 0;
-        display: flex; justify-content: center;
+      /* ── BLUE CURVED PORTAL BANNER (Top in Login mode, Bottom in Register mode) ── */
+      .mob-banner {
+        order: 1;
+        width: 100%;
+        background: var(--primary-blue-gradient);
+        border-radius: 0 0 42px 42px;
+        padding: calc(env(safe-area-inset-top, 0px) + 14px) 20px 22px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 14px;
+        box-shadow: 0 12px 32px rgba(0, 102, 255, 0.2);
         flex-shrink: 0;
+        z-index: 6;
       }
-      .mob-tabs .portal-bar {
-        max-width: 320px; width: 100%;
-        background: rgba(0,120,255,0.08);
-        border-color: rgba(0,120,255,0.18);
+      .auth-mobile.mob-register .mob-banner {
+        order: 2;
+        border-radius: 42px 42px 0 0;
+        padding: 20px 20px calc(env(safe-area-inset-bottom, 0px) + 24px);
+        box-shadow: 0 -10px 30px rgba(0, 102, 255, 0.18);
       }
-      .mob-tabs .portal-btn {
-        color: var(--text-dark);
-        padding: clamp(6px,1.5vw,8px) clamp(8px,2vw,12px);
-        font-size: clamp(0.72rem,1.9vw,0.8rem);
+
+      .mob-banner-top-row {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+      }
+      .auth-mobile.mob-register .mob-banner-top-row {
+        display: none;
+      }
+
+      .mob-back {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 14px;
+        border-radius: 9999px;
+        background: rgba(255, 255, 255, 0.16);
+        border: 1.5px solid rgba(255, 255, 255, 0.55);
+        color: #FFFFFF;
+        font-family: var(--font-display);
+        font-size: 0.78rem;
+        font-weight: 700;
+        text-decoration: none;
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+      }
+      .mob-back svg { width: 14px; height: 14px; stroke: currentColor; stroke-width: 2.2; }
+
+      .mob-back-light {
+        display: none;
+        align-self: flex-start;
+        margin-bottom: 10px;
+        background: #F1F5F9;
+        border: 1px solid #E2E8F0;
+        color: #1E293B;
+        backdrop-filter: none;
+      }
+      .auth-mobile.mob-register .mob-back-light {
+        display: inline-flex;
+      }
+
+      .mob-strip-inner {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+      }
+      .mob-strip-title {
+        font-family: var(--font-display);
+        font-size: 1.35rem;
+        font-weight: 800;
+        color: #fff;
+        letter-spacing: -0.02em;
+        line-height: 1.2;
+      }
+      .mob-strip-sub {
+        font-size: 0.84rem;
+        color: rgba(255, 255, 255, 0.92);
+        font-weight: 500;
+        margin-bottom: 10px;
+      }
+      .mob-banner .btn-outline {
+        padding: 8px 34px;
+        font-size: 0.9rem;
+        border-width: 1.8px;
+      }
+
+      /* Order of Welcome vs Portal Access inside Blue Banner */
+      .mob-banner-welcome { order: 1; }
+      .mob-banner-portal  { order: 2; }
+      .auth-mobile.mob-register .mob-banner-portal  { order: 1; }
+      .auth-mobile.mob-register .mob-banner-welcome { order: 2; margin-top: 4px; }
+
+      .mob-banner .portal-wrap {
+        max-width: 340px;
+        width: 100%;
+      }
+      .mob-banner .portal-hdr {
+        margin-bottom: 10px;
+      }
+      .mob-banner .portal-btn {
+        padding: 7px 8px;
+        font-size: 0.78rem;
         gap: 5px;
       }
-      .mob-tabs .portal-btn svg { width:14px; height:14px; fill:currentColor; }
-      .mob-tabs .portal-btn.active {
-        background: var(--primary-blue); color: #fff;
-        box-shadow: 0 3px 10px rgba(0,120,255,0.25);
-      }
-      .mob-tabs .portal-btn:not(.active):hover {
-        background: rgba(0,120,255,0.08);
+      .mob-banner .portal-btn svg {
+        width: 14px;
+        height: 14px;
       }
 
-      /* ── FORM AREA (position 3-5, scrollable) ── */
+      /* ── FORM AREA ── */
       .mob-form-area {
-        flex: 1; position: relative;
-        overflow-y: auto; overflow-x: hidden;
-        padding: 0 clamp(20px,5vw,28px);
+        order: 2;
+        flex: 1;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 20px 22px calc(env(safe-area-inset-bottom, 0px) + 24px);
+        z-index: 5;
       }
+      .auth-mobile.mob-register .mob-form-area {
+        order: 1;
+        padding: calc(env(safe-area-inset-top, 0px) + 14px) 22px 20px;
+      }
+
       .mob-form {
-        width: 100%; max-width: 360px;
+        width: 100%;
+        max-width: 380px;
         margin: 0 auto;
-        display: flex; flex-direction: column;
-        align-items: center; text-align: center;
-        padding: clamp(20px,4vw,30px) 0 clamp(16px,3vw,24px);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
       }
       .mob-form .form-title {
-        font-size: clamp(1.5rem,5.5vw,2rem);
+        font-size: clamp(1.65rem, 6vw, 2rem);
+        font-weight: 800;
         margin-bottom: 4px;
       }
       .mob-form .form-sub {
-        font-size: clamp(0.78rem,2.2vw,0.88rem);
-        margin-bottom: clamp(16px,3.5vw,24px);
+        font-size: 0.86rem;
+        margin-bottom: 18px;
       }
       .mob-form .auth-form { gap: 12px; }
       .mob-form .pill-wrap {
-        height: clamp(46px,6vh,50px);
-        padding: 0 16px; gap: 10px;
+        height: 48px;
+        padding: 0 16px;
+        gap: 10px;
       }
       .mob-form .pill-input {
-        font-size: clamp(0.82rem,2.2vw,0.93rem);
+        font-size: 0.9rem;
         text-overflow: ellipsis;
       }
       .mob-form .btn-submit {
-        height: clamp(46px,6vh,50px);
-        font-size: clamp(0.95rem,2.5vw,1.05rem);
+        height: 48px;
+        font-size: 1rem;
       }
-      .mob-form .demo-logins-wrap { margin-top: 14px; gap: 6px; }
-      .mob-form .demo-pill-btn { padding: 6px 12px; font-size: 0.76rem; }
-      .mob-form .forgot-row { margin-top: -2px; margin-bottom: 4px; }
-      .mob-form .forgot-link { font-size: clamp(0.8rem,2vw,0.88rem); }
+      .mob-form .demo-logins-wrap { margin-top: 14px; gap: 8px; }
+      .mob-form .demo-pill-btn { padding: 7px 13px; font-size: 0.78rem; }
+      .mob-form .forgot-row { margin-top: -2px; margin-bottom: 2px; }
+      .mob-form .forgot-link { font-size: 0.84rem; }
 
-      /* Mobile form visibility (JS-controlled: display:none/flex + animation class) */
       .mob-form-enter {
         animation: mobFormIn var(--fade) ease forwards;
       }
       @keyframes mobFormIn {
-        from { opacity: 0; transform: translateY(15px); }
+        from { opacity: 0; transform: translateY(10px); }
         to   { opacity: 1; transform: translateY(0); }
       }
-
-      /* ── SWITCH STRIP (position 6, blue at bottom) ── */
-      .mob-strip {
-        flex-shrink: 0;
-        background: var(--primary-blue-gradient);
-        border-radius: clamp(30px,6vw,50px) clamp(30px,6vw,50px) 0 0;
-        padding: clamp(24px,5vw,36px) clamp(20px,4vw,28px) clamp(28px,5vw,40px);
-        display: flex; flex-direction: column;
-        align-items: center; text-align: center;
-        z-index: 6; /* above mob-content so it overlaps scroll if needed */
-      }
-      .mob-strip-title {
-        font-family: var(--font-display);
-        font-size: clamp(1.15rem,3.5vw,1.45rem);
-        font-weight: 800; color: #fff;
-        margin-bottom: 4px;
-      }
-      .mob-strip-sub {
-        font-size: clamp(0.78rem,2.2vw,0.88rem);
-        color: rgba(255,255,255,0.9);
-        margin-bottom: clamp(12px,2.5vw,18px);
-      }
-      .mob-strip .btn-outline {
-        padding: clamp(7px,1.5vw,9px) clamp(28px,7vw,40px);
-        font-size: clamp(0.82rem,2.2vw,0.92rem);
-      }
-
-      /* Switch strip inner content (toggled by JS) */
-      .mob-strip-inner { display:flex; flex-direction:column; align-items:center; }
-
-      /* ── Enter animation for switch strip content ── */
       .mob-strip-enter {
         animation: mobFormIn var(--fade) ease forwards;
       }
     }
 
-    /* ── Extra tight: ≤400px ── */
-    @media (max-width: 400px) {
-      .mob-tabs { padding-top: 44px; }
-      .mob-tabs .portal-btn { padding: 5px 6px; font-size: 0.7rem; gap: 3px; }
-      .mob-tabs .portal-btn svg { width: 12px; height: 12px; }
-      .mob-tabs .portal-bar { max-width: 290px; padding: 3px; gap: 2px; }
-      .mob-form .form-title { font-size: 1.4rem; }
-      .mob-form .form-sub { font-size: 0.76rem; margin-bottom: 14px; }
-      .mob-form .pill-wrap { height: 44px; padding: 0 14px; gap: 8px; }
-      .mob-form .pill-input { font-size: 0.8rem; }
-      .mob-form .auth-form { gap: 10px; }
-      .mob-strip { padding: 18px 16px 24px; border-radius: 28px 28px 0 0; }
-      .mob-strip-title { font-size: 1.05rem; }
-      .mob-strip-sub { font-size: 0.76rem; margin-bottom: 10px; }
-      .mob-strip .btn-outline { padding: 6px 24px; font-size: 0.8rem; }
+    /* ── Compact mobile tweaks (<= 380px) ── */
+    @media (max-width: 380px) {
+      .mob-banner { padding: 12px 16px 18px; border-radius: 0 0 34px 34px; gap: 10px; }
+      .auth-mobile.mob-register .mob-banner { border-radius: 34px 34px 0 0; padding: 16px 16px 20px; }
+      .mob-strip-title { font-size: 1.2rem; }
+      .mob-banner .portal-btn { font-size: 0.72rem; padding: 6px 6px; }
+      .mob-form-area { padding: 16px 18px 20px; }
+      .mob-form .pill-wrap { height: 45px; }
+      .mob-form .btn-submit { height: 45px; }
     }
   </style>
 </head>
@@ -606,10 +654,10 @@
       </div>
     </div>
 
-    <!-- FORM RIGHT — Sign In (visible in default/signin state) -->
+    <!-- FORM RIGHT — Login (visible in default/login state) -->
     <div class="auth-form-area auth-form-r">
       <div class="form-box">
-        <h1 class="form-title">Sign In</h1>
+        <h1 class="form-title">Login</h1>
         <p class="form-sub">Enter your email and password to log in</p>
         <form class="auth-form" onsubmit="handleSignIn(event)" autocomplete="off">
           <label for="dsi-email" class="sr-only">Email address</label>
@@ -694,23 +742,40 @@
 
   <!-- ══════════════════════════════════════════
        MOBILE  (≤768px)
-       Order: Back → Tabs → Title → Fields → Button → Switch strip
+       Login: Blue Curved Top Banner (Back + Welcome + Portal Access) -> Centered Login Form + Demo Logins
+       Register: Clean Create Account Form Top (Back + 4 Fields + Register) -> Blue Curved Bottom Banner
        ══════════════════════════════════════════ -->
   <div class="auth-mobile" id="authMobile">
 
-    <!-- Blue sweep curtain (animation overlay) -->
+    <!-- Blue sweep curtain (fast transition overlay) -->
     <div class="mob-sweep" id="mobSweep"></div>
 
-    <!-- 1. Back to Home -->
-    <a href="index.html" class="mob-back" aria-label="Back to home page">
-      <svg viewBox="0 0 24 24" fill="none"><path d="M19 12H5M12 19l-7-7 7-7" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      <span>Back to Home</span>
-    </a>
+    <!-- BLUE CURVED PORTAL BANNER (Top in Login mode, Bottom in Register mode) -->
+    <div class="mob-banner" id="mobBanner">
+      <div class="mob-banner-top-row">
+        <a href="index.html" class="mob-back" aria-label="Back to home page">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M19 12H5M12 19l-7-7 7-7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>Back to Home</span>
+        </a>
+      </div>
 
-    <div class="mob-content">
+      <div class="mob-banner-welcome">
+        <div class="mob-strip-inner" id="mobStripSignin">
+          <p class="mob-strip-title">Hello, Welcome!</p>
+          <p class="mob-strip-sub">Don't have an account with us yet?</p>
+          <button type="button" class="btn-outline" onclick="toggleAuth('register')">Register</button>
+        </div>
+        <div class="mob-strip-inner" id="mobStripRegister" style="display:none">
+          <p class="mob-strip-title">Welcome Back!</p>
+          <p class="mob-strip-sub">Already have an active account?</p>
+          <button type="button" class="btn-outline" onclick="toggleAuth('signin')">Login</button>
+        </div>
+      </div>
 
-      <!-- 2. Portal Access tabs -->
-      <div class="mob-tabs">
+      <div class="portal-wrap mob-banner-portal">
+        <div class="portal-hdr">
+          <span class="portal-line"></span><span class="portal-lbl">PORTAL ACCESS</span><span class="portal-line"></span>
+        </div>
         <div class="portal-bar">
           <button type="button" class="portal-btn active" data-role="student" onclick="setPortalRole('student')" aria-label="Student portal">
             <svg viewBox="0 0 24 24"><path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zM5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z"/></svg>Student
@@ -723,103 +788,93 @@
           </button>
         </div>
       </div>
-
-      <!-- 3-5. Form area (scrollable) -->
-      <div class="mob-form-area">
-
-        <!-- Sign In form -->
-        <div class="mob-form" id="mobFormSignin">
-          <h1 class="form-title">Sign In</h1>
-          <p class="form-sub">Enter your email and password to log in</p>
-          <form class="auth-form" onsubmit="handleSignIn(event)" autocomplete="off">
-            <label for="msi-email" class="sr-only">Email</label>
-            <div class="pill-wrap">
-              <span class="pill-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></span>
-              <span class="pill-div"></span>
-              <input type="email" id="msi-email" name="m_login_email" class="pill-input" placeholder="Registered email address" required autocomplete="off" readonly />
-            </div>
-            <label for="msi-pass" class="sr-only">Password</label>
-            <div class="pill-wrap">
-              <span class="pill-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
-              <span class="pill-div"></span>
-              <input type="password" id="msi-pass" name="m_login_pass" class="pill-input" placeholder="Enter your password" required autocomplete="new-password" readonly />
-              <button type="button" class="eye-btn" onclick="toggleEye('msi-pass',this)" aria-label="Toggle password visibility">
-                <svg class="eo" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                <svg class="ec" style="display:none" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
-              </button>
-            </div>
-            <div class="forgot-row"><a href="#" class="forgot-link" onclick="handleForgot(event)">Forgot Password?</a></div>
-            <button type="submit" class="btn-submit">Login</button>
-            <div class="demo-logins-wrap">
-              <span class="demo-logins-label">Demo Logins:</span>
-              <div class="demo-pills-row">
-                <button type="button" class="demo-pill-btn" data-demo-role="student" onclick="autofillDemo('student')">
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
-                  <span>Student</span>
-                </button>
-                <button type="button" class="demo-pill-btn" data-demo-role="employee" onclick="autofillDemo('employee')">
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                  <span>Employee</span>
-                </button>
-                <button type="button" class="demo-pill-btn" data-demo-role="admin" onclick="autofillDemo('admin')">
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                  <span>Admin</span>
-                </button>
-              </div>
-            </div>
-          </form>
-        </div>
-
-        <!-- Create Account form (hidden by default) -->
-        <div class="mob-form" id="mobFormRegister" style="display:none">
-          <h1 class="form-title">Create Account</h1>
-          <p class="form-sub">Please fill all mandatory fields to register</p>
-          <form class="auth-form" onsubmit="handleRegister(event)" autocomplete="off">
-            <label for="mrg-name" class="sr-only">Full name</label>
-            <div class="pill-wrap">
-              <span class="pill-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
-              <span class="pill-div"></span>
-              <input type="text" id="mrg-name" name="m_reg_name" class="pill-input" placeholder="Full name (as per official records)" required autocomplete="off" readonly />
-            </div>
-            <label for="mrg-email" class="sr-only">Email</label>
-            <div class="pill-wrap">
-              <span class="pill-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></span>
-              <span class="pill-div"></span>
-              <input type="email" id="mrg-email" name="m_reg_email" class="pill-input" placeholder="Official email address" required autocomplete="off" readonly />
-            </div>
-            <label for="mrg-phone" class="sr-only">Phone</label>
-            <div class="pill-wrap">
-              <span class="pill-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></span>
-              <span class="pill-div"></span>
-              <input type="tel" id="mrg-phone" name="m_reg_phone" class="pill-input" placeholder="10-digit mobile number" inputmode="tel" maxlength="10" pattern="[0-9]{10}" required autocomplete="off" readonly />
-            </div>
-            <label for="mrg-pass" class="sr-only">Password</label>
-            <div class="pill-wrap">
-              <span class="pill-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
-              <span class="pill-div"></span>
-              <input type="password" id="mrg-pass" name="m_reg_pass" class="pill-input" placeholder="Strong password (min 8 chars)" minlength="8" required autocomplete="new-password" readonly />
-              <button type="button" class="eye-btn" onclick="toggleEye('mrg-pass',this)" aria-label="Toggle password visibility">
-                <svg class="eo" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                <svg class="ec" style="display:none" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
-              </button>
-            </div>
-            <button type="submit" class="btn-submit">Register</button>
-          </form>
-        </div>
-      </div>
     </div>
 
-    <!-- 6. Switch strip (blue, at bottom) -->
-    <div class="mob-strip">
-      <div class="mob-strip-inner" id="mobStripSignin">
-        <p class="mob-strip-title">New here?</p>
-        <p class="mob-strip-sub">Don't have an account with us yet?</p>
-        <button type="button" class="btn-outline" onclick="toggleAuth('register')">Register</button>
+    <!-- WHITE FORM AREA (Bottom in Login mode, Top in Register mode) -->
+    <div class="mob-form-area">
+      <a href="index.html" class="mob-back mob-back-light" aria-label="Back to home page">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M19 12H5M12 19l-7-7 7-7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span>Back to Home</span>
+      </a>
+
+      <!-- Login form -->
+      <div class="mob-form" id="mobFormSignin">
+        <h1 class="form-title">Login</h1>
+        <p class="form-sub">Enter your email and password to log in</p>
+        <form class="auth-form" onsubmit="handleSignIn(event)" autocomplete="off">
+          <label for="msi-email" class="sr-only">Email</label>
+          <div class="pill-wrap">
+            <span class="pill-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></span>
+            <span class="pill-div"></span>
+            <input type="email" id="msi-email" name="m_login_email" class="pill-input" placeholder="Enter your email" required autocomplete="off" readonly />
+          </div>
+          <label for="msi-pass" class="sr-only">Password</label>
+          <div class="pill-wrap">
+            <span class="pill-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
+            <span class="pill-div"></span>
+            <input type="password" id="msi-pass" name="m_login_pass" class="pill-input" placeholder="Enter your password" required autocomplete="new-password" readonly />
+            <button type="button" class="eye-btn" onclick="toggleEye('msi-pass',this)" aria-label="Toggle password visibility">
+              <svg class="eo" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              <svg class="ec" style="display:none" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+            </button>
+          </div>
+          <div class="forgot-row"><a href="#" class="forgot-link" onclick="handleForgot(event)">Forgot Password?</a></div>
+          <button type="submit" class="btn-submit">Login</button>
+          <div class="demo-logins-wrap">
+            <span class="demo-logins-label">Demo Logins:</span>
+            <div class="demo-pills-row">
+              <button type="button" class="demo-pill-btn" data-demo-role="student" onclick="autofillDemo('student')">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+                <span>Student</span>
+              </button>
+              <button type="button" class="demo-pill-btn" data-demo-role="employee" onclick="autofillDemo('employee')">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                <span>Employee</span>
+              </button>
+              <button type="button" class="demo-pill-btn" data-demo-role="admin" onclick="autofillDemo('admin')">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                <span>Admin</span>
+              </button>
+            </div>
+          </div>
+        </form>
       </div>
-      <div class="mob-strip-inner" id="mobStripRegister" style="display:none">
-        <p class="mob-strip-title">Welcome Back!</p>
-        <p class="mob-strip-sub">Already have an active account?</p>
-        <button type="button" class="btn-outline" onclick="toggleAuth('signin')">Login</button>
+
+      <!-- Create Account form (hidden by default) -->
+      <div class="mob-form" id="mobFormRegister" style="display:none">
+        <h1 class="form-title">Create Account</h1>
+        <p class="form-sub">Please fill all mandatory fields to register</p>
+        <form class="auth-form" onsubmit="handleRegister(event)" autocomplete="off">
+          <label for="mrg-name" class="sr-only">Full name</label>
+          <div class="pill-wrap">
+            <span class="pill-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
+            <span class="pill-div"></span>
+            <input type="text" id="mrg-name" name="m_reg_name" class="pill-input" placeholder="Enter your full name" required autocomplete="off" readonly />
+          </div>
+          <label for="mrg-email" class="sr-only">Email</label>
+          <div class="pill-wrap">
+            <span class="pill-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></span>
+            <span class="pill-div"></span>
+            <input type="email" id="mrg-email" name="m_reg_email" class="pill-input" placeholder="Enter your email address" required autocomplete="off" readonly />
+          </div>
+          <label for="mrg-phone" class="sr-only">Phone</label>
+          <div class="pill-wrap">
+            <span class="pill-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></span>
+            <span class="pill-div"></span>
+            <input type="tel" id="mrg-phone" name="m_reg_phone" class="pill-input" placeholder="Enter 10-digit contact number" inputmode="tel" maxlength="10" pattern="[0-9]{10}" required autocomplete="off" readonly />
+          </div>
+          <label for="mrg-pass" class="sr-only">Password</label>
+          <div class="pill-wrap">
+            <span class="pill-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
+            <span class="pill-div"></span>
+            <input type="password" id="mrg-pass" name="m_reg_pass" class="pill-input" placeholder="Enter your password (min 6 chars)" minlength="6" required autocomplete="new-password" readonly />
+            <button type="button" class="eye-btn" onclick="toggleEye('mrg-pass',this)" aria-label="Toggle password visibility">
+              <svg class="eo" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              <svg class="ec" style="display:none" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+            </button>
+          </div>
+          <button type="submit" class="btn-submit">Register</button>
+        </form>
       </div>
     </div>
 
@@ -930,6 +985,7 @@
             newStrip.style.display = 'flex';
             newStrip.classList.add('mob-strip-enter');
           }
+          mobile.classList.toggle('mob-register', isReg);
         }, swapMs);
 
         // 4. After full sweep: clean up
@@ -938,10 +994,10 @@
           if (newStrip) newStrip.classList.remove('mob-strip-enter');
           mobile.classList.remove('mob-sweeping');
           isAnimating = false;
-        }, sweepMs + 150);
+        }, sweepMs + 50);
       } else {
         // Desktop: animation is CSS only, just unlock after sweep
-        setTimeout(() => { isAnimating = false; }, cssMs('--sweep') + 150);
+        setTimeout(() => { isAnimating = false; }, cssMs('--sweep') + 50);
       }
 
       // URL hash (pushState for back/forward)
@@ -1114,7 +1170,7 @@
 
       if (submitBtn) {
         submitBtn.disabled = true;
-        submitBtn.textContent = 'Signing in…';
+        submitBtn.textContent = 'Logging in…';
       }
 
       try {
@@ -1139,6 +1195,19 @@
           localStorage.setItem('arox_token_' + currentRole, result.data.token);
           localStorage.setItem('arox_token', result.data.token);
           localStorage.setItem('arox_role', currentRole);
+          if (result.data.user) {
+            const u = result.data.user;
+            const uName = [u.first_name, u.last_name].filter(Boolean).join(' ').trim() || (u.email ? u.email.split('@')[0] : 'AROX User');
+            const roleLabels = { admin: 'Admin', super_admin: 'Admin', employee: 'Employee', trainer: 'Trainer', staff: 'Employee', student: 'Student' };
+            localStorage.setItem('arox_user', JSON.stringify({
+              id: u.id,
+              email: u.email,
+              name: uName,
+              role: currentRole,
+              displayRole: roleLabels[currentRole] || roleLabels[(u.role || '').toLowerCase()] || 'User',
+              dashboardUrl: result.redirectUrl || (currentRole === 'admin' ? '/admin/dashboard' : (currentRole === 'employee' ? '/employee/dashboard' : '/student/dashboard'))
+            }));
+          }
         }
 
         const roleDashboards = {
@@ -1153,7 +1222,7 @@
         }, 400);
 
       } catch (err) {
-        showAuthAlert(form, err.message || 'Sign in failed. Check your credentials.', 'error');
+        showAuthAlert(form, err.message || 'Login failed. Check your credentials.', 'error');
         if (submitBtn) {
           submitBtn.disabled = false;
           submitBtn.textContent = origText;
@@ -1213,6 +1282,19 @@
           localStorage.setItem('arox_token_' + currentRole, result.data.token);
           localStorage.setItem('arox_token', result.data.token);
           localStorage.setItem('arox_role', currentRole);
+          if (result.data.user) {
+            const u = result.data.user;
+            const uName = [u.first_name, u.last_name].filter(Boolean).join(' ').trim() || (u.email ? u.email.split('@')[0] : 'AROX User');
+            const roleLabels = { admin: 'Admin', super_admin: 'Admin', employee: 'Employee', trainer: 'Trainer', staff: 'Employee', student: 'Student' };
+            localStorage.setItem('arox_user', JSON.stringify({
+              id: u.id,
+              email: u.email,
+              name: uName,
+              role: currentRole,
+              displayRole: roleLabels[currentRole] || roleLabels[(u.role || '').toLowerCase()] || 'User',
+              dashboardUrl: result.redirectUrl || (currentRole === 'admin' ? '/admin/dashboard' : (currentRole === 'employee' ? '/employee/dashboard' : '/student/dashboard'))
+            }));
+          }
         }
 
         const roleDashboards = {
@@ -1248,6 +1330,8 @@
         const card = document.getElementById('authCard');
         if (card) card.classList.add('active');
         // Mobile
+        const authMob = document.getElementById('authMobile');
+        if (authMob) authMob.classList.add('mob-register');
         const mSign = document.getElementById('mobFormSignin');
         const mReg = document.getElementById('mobFormRegister');
         const sSign = document.getElementById('mobStripSignin');
@@ -1297,6 +1381,8 @@
       const isMobile = window.matchMedia('(max-width: 768px)').matches;
       const isReg = currentMode === 'register';
       if (isMobile) {
+        const authMob = document.getElementById('authMobile');
+        if (authMob) authMob.classList.toggle('mob-register', isReg);
         const mSign = document.getElementById('mobFormSignin');
         const mReg = document.getElementById('mobFormRegister');
         const sSign = document.getElementById('mobStripSignin');

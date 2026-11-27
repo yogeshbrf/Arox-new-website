@@ -349,12 +349,12 @@
         const usernameInput = signinForm.querySelector('#auth-username');
         const usernameVal = usernameInput ? usernameInput.value.trim() : 'User';
 
-        showToast(`Welcome back, ${usernameVal || 'Pooja'}! Signing you in...`);
+        showToast(`Welcome back, ${usernameVal || 'Pooja'}! Logging you in...`);
         const submitBtn = signinForm.querySelector('.auth-submit-btn');
         if (submitBtn) {
           submitBtn.disabled = true;
           submitBtn.style.opacity = '0.85';
-          submitBtn.textContent = 'Signing in...';
+          submitBtn.textContent = 'Logging in...';
         }
 
         setTimeout(() => {

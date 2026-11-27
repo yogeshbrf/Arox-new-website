@@ -369,7 +369,7 @@ const registrationController = {
         if (existingReg) {
           return res.status(400).json({
             success: false,
-            message: `You are already registered for "${courseRecord.title}". Please sign in to your student dashboard.`
+            message: `You are already registered for "${courseRecord.title}". Please log in to your student dashboard.`
           });
         }
       }
