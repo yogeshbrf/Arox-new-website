@@ -10080,40 +10080,294 @@ html.dark .magic-bento-card__arrow {
   position: relative !important;
   flex-shrink: 0 !important;
 }
-.mobile-top-login-btn {
+/* ─── Animated Person & Door Auth Buttons (Login & Log Out) ─── */
+.arox-door-btn {
+  --door-frame: #E0F2FE;
+  --door-bg: rgba(0, 210, 255, 0.16);
+  --door-leaf: #00D2FF;
+  --door-knob: #FFFFFF;
+  --walker-color: #FFFFFF;
+  --door-glow: rgba(0, 210, 255, 0.36);
+
   display: inline-flex !important;
   align-items: center !important;
-  justify-content: center !important;
-  gap: 7px !important;
+  justify-content: space-between !important;
+  gap: 10px !important;
   height: 38px !important;
-  padding: 0 18px !important;
-  border-radius: 9999px !important;
-  background: linear-gradient(135deg, #0ea5e9 0%, #0066ff 100%) !important;
-  color: #FFFFFF !important;
+  padding: 0 13px 0 15px !important;
+  border-radius: 10px !important;
   font-family: var(--font-display, 'Montserrat', sans-serif) !important;
   font-size: 13.5px !important;
-  font-weight: 600 !important;
+  font-weight: 700 !important;
   letter-spacing: -0.01em !important;
+  line-height: 1 !important;
   text-decoration: none !important;
-  border: none !important;
-  box-shadow: 0 4px 14px rgba(0, 102, 255, 0.32) !important;
   white-space: nowrap !important;
+  cursor: pointer !important;
+  user-select: none !important;
   -webkit-tap-highlight-color: transparent !important;
-  transition: transform 0.15s ease, box-shadow 0.2s ease, filter 0.2s ease !important;
+  position: relative !important;
+  overflow: hidden !important;
+  transition: transform 0.18s ease, box-shadow 0.22s ease, border-color 0.22s ease, background 0.22s ease !important;
 }
-.mobile-top-login-btn:hover {
+.arox-door-btn:focus-visible {
+  outline: 2px solid var(--accent, #00D2FF) !important;
+  outline-offset: 2px !important;
+}
+.arox-door-btn:active {
+  transform: scale(0.97) !important;
+}
+.arox-door-label {
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+/* Dark Theme (default): Deep Navy / Electric Blue + Cyan accents */
+.arox-login-btn {
+  background: linear-gradient(135deg, #09204F 0%, #0052CC 100%) !important;
+  color: #FFFFFF !important;
+  border: 1px solid rgba(56, 189, 248, 0.48) !important;
+  box-shadow: 0 4px 12px rgba(0, 24, 72, 0.42) !important;
+  --door-frame: #E0F2FE;
+  --door-bg: rgba(0, 210, 255, 0.18);
+  --door-leaf: #00D2FF;
+  --door-knob: #FFFFFF;
+  --walker-color: #FFFFFF;
+  --door-glow: rgba(0, 210, 255, 0.35);
+}
+.arox-login-btn:hover {
+  border-color: rgba(0, 210, 255, 0.85) !important;
+  box-shadow: 0 6px 16px rgba(0, 102, 255, 0.36) !important;
   transform: translateY(-1px) !important;
-  box-shadow: 0 6px 20px rgba(0, 102, 255, 0.42) !important;
-  filter: brightness(1.04) !important;
 }
-.mobile-top-login-btn:active {
-  transform: scale(0.95) !important;
+
+.arox-logout-btn {
+  width: 100% !important;
+  margin-top: 4px !important;
+  background: linear-gradient(135deg, #071636 0%, #0D234D 100%) !important;
+  color: #FFFFFF !important;
+  border: 1px solid rgba(56, 189, 248, 0.42) !important;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.32) !important;
+  --door-frame: #38BDF8;
+  --door-bg: rgba(0, 210, 255, 0.14);
+  --door-leaf: #00D2FF;
+  --door-knob: #071636;
+  --walker-color: #38BDF8;
+  --door-glow: rgba(0, 210, 255, 0.32);
 }
-.mobile-top-login-btn svg {
-  width: 16px !important;
-  height: 16px !important;
-  stroke: #FFFFFF !important;
-  flex-shrink: 0 !important;
+.arox-logout-btn:hover {
+  border-color: rgba(0, 210, 255, 0.8) !important;
+  box-shadow: 0 4px 14px rgba(0, 102, 255, 0.25) !important;
+}
+
+/* Light Theme: Blue-to-Cyan Gradient Login, Soft Blue + Dark Navy Log Out */
+.theme-light .arox-login-btn,
+html:not(.dark) .arox-login-btn,
+[data-theme="light"] .arox-login-btn {
+  background: linear-gradient(135deg, #0066FF 0%, #0EA5E9 100%) !important;
+  color: #FFFFFF !important;
+  border: 1px solid rgba(255, 255, 255, 0.28) !important;
+  box-shadow: 0 4px 14px rgba(0, 102, 255, 0.28) !important;
+  --door-frame: #FFFFFF;
+  --door-bg: rgba(15, 23, 42, 0.18);
+  --door-leaf: #BAE6FD;
+  --door-knob: #0066FF;
+  --walker-color: #FFFFFF;
+  --door-glow: rgba(255, 255, 255, 0.45);
+}
+.theme-light .arox-login-btn:hover,
+html:not(.dark) .arox-login-btn:hover,
+[data-theme="light"] .arox-login-btn:hover {
+  box-shadow: 0 6px 18px rgba(0, 102, 255, 0.38) !important;
+}
+
+.theme-light .arox-logout-btn,
+html:not(.dark) .arox-logout-btn,
+[data-theme="light"] .arox-logout-btn {
+  background: linear-gradient(135deg, #F0F7FF 0%, #E0F2FE 100%) !important;
+  color: var(--heading, #0F172A) !important;
+  border: 1px solid rgba(0, 102, 255, 0.24) !important;
+  box-shadow: 0 2px 10px rgba(0, 102, 255, 0.1) !important;
+  --door-frame: #0066FF;
+  --door-bg: rgba(0, 102, 255, 0.12);
+  --door-leaf: #0284C7;
+  --door-knob: #FFFFFF;
+  --walker-color: #0066FF;
+  --door-glow: rgba(0, 102, 255, 0.24);
+}
+.theme-light .arox-logout-btn:hover,
+html:not(.dark) .arox-logout-btn:hover,
+[data-theme="light"] .arox-logout-btn:hover {
+  border-color: rgba(0, 102, 255, 0.5) !important;
+  box-shadow: 0 4px 14px rgba(0, 102, 255, 0.16) !important;
+}
+
+/* Fixed-size SVG stage (zero layout shift during animation) */
+.arox-door-stage {
+  position: relative;
+  width: 28px;
+  height: 22px;
+  flex-shrink: 0;
+  perspective: 90px;
+  overflow: hidden;
+  display: inline-block;
+}
+.arox-doorway,
+.arox-door-leaf,
+.arox-walker {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: visible;
+}
+.arox-doorway { z-index: 1; }
+.arox-walker {
+  z-index: 2;
+  transform-origin: 30% 60%;
+  transition: transform 0.34s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.25s ease;
+}
+.arox-door-leaf {
+  z-index: 3;
+  transform-origin: 87.5% 50%;
+  transform-style: preserve-3d;
+  transition: transform 0.34s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.door-glow-floor { fill: var(--door-glow); opacity: 0.45; }
+.door-frame-path {
+  fill: var(--door-bg);
+  stroke: var(--door-frame);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.door-panel-rect { fill: var(--door-leaf); }
+.door-knob-dot { fill: var(--door-knob); }
+
+.walker-fill { fill: var(--walker-color); }
+.walker-stroke-torso {
+  stroke: var(--walker-color);
+  stroke-width: 2.3;
+  stroke-linecap: round;
+}
+.walker-stroke {
+  stroke: var(--walker-color);
+  stroke-width: 1.9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.walker-speed {
+  stroke: var(--walker-color);
+  stroke-width: 1.35;
+  stroke-linecap: round;
+  opacity: 0;
+  transition: opacity 0.2s ease, transform 0.28s ease;
+}
+.walker-arm-b,
+.walker-arm-f { transform-origin: 9.5px 9.8px; }
+.walker-leg-b,
+.walker-leg-f { transform-origin: 8.9px 15px; }
+
+/* Resting states */
+.arox-login-btn .arox-door-leaf { transform: rotateY(-18deg); }
+.arox-logout-btn .arox-door-leaf { transform: rotateY(-56deg); }
+.arox-logout-btn .walker-speed { opacity: 0.65; }
+
+/* Hover / Focus preview */
+.arox-login-btn:hover .arox-door-leaf,
+.arox-login-btn:focus-visible .arox-door-leaf {
+  transform: rotateY(-64deg);
+}
+.arox-login-btn:hover .arox-walker,
+.arox-login-btn:focus-visible .arox-walker {
+  transform: translateX(4px);
+}
+.arox-login-btn:hover .walker-speed,
+.arox-login-btn:focus-visible .walker-speed,
+.arox-login-btn.is-animating .walker-speed {
+  opacity: 0.75;
+}
+.arox-logout-btn:hover .arox-door-leaf,
+.arox-logout-btn:focus-visible .arox-door-leaf {
+  transform: rotateY(-66deg);
+}
+.arox-logout-btn:hover .arox-walker,
+.arox-logout-btn:focus-visible .arox-walker {
+  transform: translateX(3px);
+}
+
+/* Stride keyframes on hover & active animation */
+.arox-door-btn:hover .walker-leg-f,
+.arox-door-btn:focus-visible .walker-leg-f,
+.arox-door-btn.is-animating .walker-leg-f {
+  animation: aroxStrideF 0.34s ease-in-out infinite alternate;
+}
+.arox-door-btn:hover .walker-leg-b,
+.arox-door-btn:focus-visible .walker-leg-b,
+.arox-door-btn.is-animating .walker-leg-b {
+  animation: aroxStrideB 0.34s ease-in-out infinite alternate;
+}
+.arox-door-btn:hover .walker-arm-f,
+.arox-door-btn:focus-visible .walker-arm-f,
+.arox-door-btn.is-animating .walker-arm-f {
+  animation: aroxStrideB 0.34s ease-in-out infinite alternate;
+}
+.arox-door-btn:hover .walker-arm-b,
+.arox-door-btn:focus-visible .walker-arm-b,
+.arox-door-btn.is-animating .walker-arm-b {
+  animation: aroxStrideF 0.34s ease-in-out infinite alternate;
+}
+
+/* Click animations */
+.arox-login-btn.is-animating .arox-door-leaf {
+  transform: rotateY(-68deg);
+}
+.arox-login-btn.is-animating .arox-walker {
+  animation: aroxWalkEnter 0.48s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.arox-logout-btn.is-animating .arox-walker {
+  animation: aroxWalkOut 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+.arox-logout-btn.is-animating .arox-door-leaf {
+  animation: aroxDoorClose 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes aroxStrideF {
+  0%   { transform: rotate(-14deg); }
+  100% { transform: rotate(16deg); }
+}
+@keyframes aroxStrideB {
+  0%   { transform: rotate(14deg); }
+  100% { transform: rotate(-16deg); }
+}
+@keyframes aroxWalkEnter {
+  0%   { transform: translateX(0) scale(1); opacity: 1; }
+  65%  { transform: translateX(9.5px) scale(0.94); opacity: 1; }
+  100% { transform: translateX(12px) scale(0.86); opacity: 0; }
+}
+@keyframes aroxWalkOut {
+  0%   { transform: translateX(0) scale(1); opacity: 1; }
+  45%  { transform: translateX(9.5px) scale(0.93); opacity: 1; }
+  65%  { transform: translateX(12px) scale(0.85); opacity: 0; }
+  100% { transform: translateX(12px) scale(0.85); opacity: 0; }
+}
+@keyframes aroxDoorClose {
+  0%   { transform: rotateY(-56deg); }
+  42%  { transform: rotateY(-66deg); }
+  100% { transform: rotateY(0deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .arox-door-btn,
+  .arox-door-btn *,
+  .arox-door-btn:hover *,
+  .arox-door-btn.is-animating * {
+    animation: none !important;
+    transition: none !important;
+  }
 }
 
 .mobile-profile-btn {
@@ -10453,15 +10707,15 @@ html:not(.dark) .mobile-profile-logout,
   }
 
   /* Mobile size tweaks for Login/Profile */
-  .mobile-top-login-btn {
+  .arox-door-btn.arox-login-btn {
     height: 34px !important;
-    padding: 0 15px !important;
+    padding: 0 11px 0 13px !important;
     font-size: 13px !important;
-    gap: 6px !important;
+    gap: 8px !important;
   }
-  .mobile-top-login-btn svg {
-    width: 15px !important;
-    height: 15px !important;
+  .arox-door-stage {
+    width: 26px !important;
+    height: 20px !important;
   }
   .mobile-profile-btn {
     width: 36px !important;

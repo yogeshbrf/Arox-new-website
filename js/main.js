@@ -284,16 +284,57 @@
 
   function renderMobileAuth(user) {
     if (!mobileAuthWrap) return;
+    const doorSceneHTML = `
+      <span class="arox-door-stage" aria-hidden="true">
+        <svg class="arox-doorway" viewBox="0 0 32 26" fill="none">
+          <ellipse class="door-glow-floor" cx="19" cy="23.5" rx="8.5" ry="1.5"/>
+          <path class="door-frame-path" d="M16 23V4.4A1.4 1.4 0 0 1 17.4 3h9.2A1.4 1.4 0 0 1 28 4.4V23"/>
+        </svg>
+        <svg class="arox-door-leaf" viewBox="0 0 32 26" fill="none">
+          <rect class="door-panel-rect" x="17" y="4" width="10" height="19" rx="0.8"/>
+          <circle class="door-knob-dot" cx="19.2" cy="13.5" r="1.1"/>
+        </svg>
+        <svg class="arox-walker" viewBox="0 0 32 26" fill="none">
+          <path class="walker-speed" d="M1.5 9.5h3.2M1 12.5h4M2 15.5h3"/>
+          <g class="walker-body">
+            <circle cx="9.8" cy="6.2" r="2.1" class="walker-fill"/>
+            <path d="M9.6 8.8 8.9 15" class="walker-stroke-torso"/>
+            <path d="M9.5 9.8 6.9 13.5" class="walker-stroke walker-arm-b"/>
+            <path d="M9.5 9.8 12.6 12.3" class="walker-stroke walker-arm-f"/>
+            <path d="M8.9 15 6.4 19.3 5.6 22.2" class="walker-stroke walker-leg-b"/>
+            <path d="M8.9 15 11.6 18.4 12.1 22.2" class="walker-stroke walker-leg-f"/>
+          </g>
+        </svg>
+      </span>
+    `;
+
+    const prefersReducedMotion = () =>
+      typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
     if (!user) {
       mobileAuthWrap.innerHTML = `
-        <a href="/login" class="mobile-top-login-btn" id="mobile-top-login-btn">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="8" r="3.8" fill="currentColor" fill-opacity="0.24"/>
-            <path d="M4.8 20a7.2 7.2 0 0 1 14.4 0" fill="currentColor" fill-opacity="0.16"/>
-          </svg>
-          <span>Login</span>
+        <a href="/login" class="arox-door-btn arox-login-btn" id="mobile-top-login-btn" aria-label="Login">
+          <span class="arox-door-label">Login</span>
+          ${doorSceneHTML}
         </a>
       `;
+      const loginBtn = document.getElementById('mobile-top-login-btn');
+      if (loginBtn) {
+        loginBtn.addEventListener('click', (e) => {
+          if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+          e.preventDefault();
+          if (loginBtn.dataset.animating === '1') return;
+          loginBtn.dataset.animating = '1';
+          if (prefersReducedMotion()) {
+            window.location.href = loginBtn.getAttribute('href') || '/login';
+            return;
+          }
+          loginBtn.classList.add('is-animating');
+          setTimeout(() => {
+            window.location.href = loginBtn.getAttribute('href') || '/login';
+          }, 480);
+        });
+      }
       return;
     }
 
@@ -336,13 +377,9 @@
               <path d="m9.5 6.5 5.5 5.5-5.5 5.5"/>
             </svg>
           </a>
-          <button type="button" class="mobile-profile-logout" id="mobile-profile-logout">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M10 4H6.5A2.5 2.5 0 0 0 4 6.5v11A2.5 2.5 0 0 0 6.5 20H10" fill="currentColor" fill-opacity="0.12"/>
-              <path d="M10 4H6.5A2.5 2.5 0 0 0 4 6.5v11A2.5 2.5 0 0 0 6.5 20H10"/>
-              <path d="m16 16 4.2-4L16 8"/><path d="M20 12H9.5"/>
-            </svg>
-            <span>Logout</span>
+          <button type="button" class="arox-door-btn arox-logout-btn" id="mobile-profile-logout" aria-label="Log Out">
+            <span class="arox-door-label">Log Out</span>
+            ${doorSceneHTML}
           </button>
         </div>
       </div>
@@ -365,14 +402,35 @@
       logoutBtn.addEventListener('click', async (e) => {
         e.preventDefault();
         e.stopPropagation();
-        clearStoredAuth();
-        renderMobileAuth(null);
-        try {
-          await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
-        } catch (err) {}
+        if (logoutBtn.dataset.animating === '1') return;
+        logoutBtn.dataset.animating = '1';
+
+        const performLogout = async () => {
+          closeProfileDropdown();
+          clearStoredAuth();
+          renderMobileAuth(null);
+          try {
+            await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
+          } catch (err) {}
+        };
+
+        if (prefersReducedMotion()) {
+          performLogout();
+          return;
+        }
+        logoutBtn.classList.add('is-animating');
+        setTimeout(performLogout, 620);
       });
     }
   }
+
+  window.addEventListener('pageshow', () => {
+    const loginBtn = document.getElementById('mobile-top-login-btn');
+    if (loginBtn) {
+      loginBtn.dataset.animating = '0';
+      loginBtn.classList.remove('is-animating');
+    }
+  });
 
   document.addEventListener('click', (e) => {
     if (mobileAuthWrap && !mobileAuthWrap.contains(e.target)) {
