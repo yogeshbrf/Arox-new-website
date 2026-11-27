@@ -159,7 +159,7 @@ const paymentController = {
    */
   async submitProof(req, res) {
     try {
-      const { registration_id, amount, payment_method, transaction_id, notes } = req.body;
+      const { registration_id, amount, payment_method, transaction_id, proof_type, notes } = req.body;
       const db = getDb();
 
       if (!registration_id) {
@@ -214,7 +214,7 @@ const paymentController = {
         transaction_id: transaction_id || 'PENDING-VERIFICATION',
         invoice_number: invoiceNumber,
         receipt_path: receiptPath,
-        notes: notes || 'Submitted via Student Portal for Verification'
+        notes: proof_type ? `[${proof_type}] ${notes || 'Submitted via Student Portal'}` : (notes || 'Submitted via Student Portal for Verification')
       });
 
       // Update registration notes to indicate pending verification

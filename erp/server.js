@@ -157,6 +157,7 @@ app.get('/api/students', (req, res) => {
 
     // Format the result array
     const formatted = students.map(s => ({
+      db_id: s.db_id,
       id: s.id,
       name: s.name,
       department: s.department || 'N/A',

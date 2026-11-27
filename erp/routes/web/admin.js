@@ -81,6 +81,7 @@ router.get('/payments', paymentsController.index);
 
 // --- Live Attendance Management ---
 router.get('/attendance', adminAttendanceController.renderPage);
+router.post('/attendance/full-100', adminAttendanceController.markFull100);
 
 // ============================================================
 // GENERATORS - Individual Pages
@@ -130,6 +131,8 @@ router.get('/generators/project', (req, res) => {
 router.get('/document-hub', (req, res) => {
   res.redirect('/admin/generators/certificate');
 });
+router.get('/certificates', (req, res) => res.redirect('/admin/generators/certificate'));
+router.get('/coupons', (req, res) => res.redirect('/admin/settings'));
 
 // ============================================
 // EMPLOYEE & CRM (Admin Management)

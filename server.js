@@ -219,6 +219,7 @@ app.get('/api/students', (req, res) => {
     });
 
     const formatted = students.map(s => ({
+      db_id: s.db_id,
       id: s.id,
       name: s.name,
       department: s.department || 'N/A',

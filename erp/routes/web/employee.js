@@ -23,6 +23,7 @@ router.get('/performance', employeeController.performance);
 
 // 2. Call Reports
 router.get('/call-reports', employeeController.callReports);
+router.get(['/reports', '/report'], (req, res) => res.redirect('/employee/call-reports'));
 
 // 3. Contacts
 router.get('/contacts', employeeController.contacts);

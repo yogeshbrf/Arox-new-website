@@ -202,9 +202,20 @@
             <span>Live Sync</span>
           </div>
 
-          <button class="hidden md:inline-flex" style="background: transparent; border: none; cursor: pointer; color: var(--erp-text-secondary);" title="Notifications">
-            <i data-lucide="bell" style="width: 20px; height: 20px;"></i>
-          </button>
+          <div class="erp-notif-wrapper hidden md:inline-flex" style="position: relative;">
+            <button type="button" class="erp-notif-trigger" style="background: transparent; border: none; cursor: pointer; color: var(--erp-text-secondary); padding: 6px; border-radius: 8px;" title="Notifications" aria-haspopup="true" aria-expanded="false">
+              <i data-lucide="bell" style="width: 20px; height: 20px;"></i>
+            </button>
+            <div class="erp-notif-dropdown" aria-label="Live ERP Notifications">
+              <div class="erp-notif-header">
+                <span>Live ERP Activity</span>
+                <span class="erp-notif-status">Synced</span>
+              </div>
+              <div class="erp-notif-list">
+                <div class="erp-notif-empty">Loading notifications...</div>
+              </div>
+            </div>
+          </div>
 
           <div class="erp-profile-wrapper">
             <button type="button" class="erp-profile erp-profile-trigger" aria-haspopup="true" aria-expanded="false" title="Account Menu">

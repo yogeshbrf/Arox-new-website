@@ -12,6 +12,14 @@
       </p>
     </div>
     <div style="display:flex; flex-wrap:wrap; gap:10px;">
+      <button type="button" id="btnOneClickAll100" onclick="markEntireAll100Now(this)" class="erp-btn" style="background:#15803D; color:#FFFFFF; display:inline-flex; align-items:center; gap:8px; font-weight:700; border:none; box-shadow:0 2px 8px rgba(21,128,61,0.3);">
+        <i data-lucide="check-circle-2" style="width:16px; height:16px;"></i>
+        ⚡ 1-Click 100% (All Students)
+      </button>
+      <button type="button" onclick="openFull100Modal()" class="erp-btn" style="background:#16A34A; color:#FFFFFF; display:inline-flex; align-items:center; gap:8px; font-weight:700; border:none;">
+        <i data-lucide="award" style="width:16px; height:16px;"></i>
+        100% Options / Student
+      </button>
       <button type="button" onclick="openAttendanceModal()" class="erp-btn erp-btn-primary" style="display:inline-flex; align-items:center; gap:8px;">
         <i data-lucide="plus-circle" style="width:16px; height:16px;"></i>
         Mark / Override Student
@@ -143,6 +151,12 @@
                   <% } %>
                 </td>
                 <td style="text-align:right; white-space:nowrap;">
+                  <button type="button" class="erp-btn erp-btn-sm" style="background:#DCFCE7; color:#15803D; font-weight:700; border:1px solid #86EFAC;"
+                    title="Grant 100% Full Attendance (Override for Student)"
+                    data-student="<%= rec.student_id %>"
+                    data-course="<%= rec.course_id %>"
+                    data-name="<%= rec.student_name || 'Student' %>"
+                    onclick="quickMarkStudent100(this)">⚡ 100%</button>
                   <button type="button" class="erp-btn erp-btn-sm erp-btn-secondary"
                     onclick='openEditAttendance(<%- JSON.stringify(rec) %>)'>Edit</button>
                   <button type="button" class="erp-btn erp-btn-sm" style="background:#FEE2E2; color:#B91C1C;"
@@ -219,9 +233,14 @@
         <label class="erp-label">Admin Remarks</label>
         <input type="text" id="attRemarks" class="erp-input" placeholder="Medical leave approved, offline lab session, etc.">
       </div>
-      <div style="display:flex; justify-content:flex-end; gap:10px; padding-top:8px;">
-        <button type="button" onclick="closeAttendanceModal()" class="erp-btn erp-btn-secondary">Cancel</button>
-        <button type="submit" class="erp-btn erp-btn-primary">Save Attendance</button>
+      <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; padding-top:8px;">
+        <button type="button" onclick="apply100CurrentStudent()" class="erp-btn" style="background:#DCFCE7; color:#15803D; font-weight:700; border:1px solid #86EFAC;">
+          ⚡ Grant 100% Attendance
+        </button>
+        <div style="display:flex; gap:8px;">
+          <button type="button" onclick="closeAttendanceModal()" class="erp-btn erp-btn-secondary">Cancel</button>
+          <button type="submit" class="erp-btn erp-btn-primary">Save Attendance</button>
+        </div>
       </div>
     </form>
   </div>
@@ -278,6 +297,60 @@
       <div style="display:flex; justify-content:flex-end; gap:10px;">
         <button type="button" onclick="closeBulkModal()" class="erp-btn erp-btn-secondary">Cancel</button>
         <button type="submit" class="erp-btn erp-btn-primary">Apply Bulk Attendance</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- 100% Full Attendance Modal -->
+<div id="modal100" style="display:none; position:fixed; inset:0; background:rgba(15,23,42,0.6); z-index:2300; align-items:center; justify-content:center; padding:16px;">
+  <div style="background:#fff; border-radius:14px; max-width:540px; width:100%; padding:24px; box-shadow:0 24px 60px rgba(0,0,0,0.25);">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+      <h3 style="margin:0; font-size:18px; font-weight:800; color:#15803D; display:flex; align-items:center; gap:8px;">
+        <i data-lucide="award" style="width:20px; height:20px;"></i>
+        ⚡ 100% Full Attendance Grant & Override
+      </h3>
+      <button type="button" onclick="closeFull100Modal()" style="border:none; background:transparent; font-size:22px; cursor:pointer;">&times;</button>
+    </div>
+    <p style="font-size:13px; color:#475569; margin:0 0 16px; line-height:1.5;">
+      In 1-click, populate all session numbers to <strong>100% Present</strong> and override student records. Any past absences or leaves will be updated to <strong>PRESENT</strong>.
+    </p>
+    <form id="form100" class="space-y-4">
+      <div>
+        <label class="erp-label">Target Students</label>
+        <select id="modal100StudentId" class="erp-input">
+          <option value="">⚡ All Enrolled Students (<%= studentEnrollments.length %> Enrolled)</option>
+          <% allStudents.forEach(function(s) { %>
+            <option value="<%= s.id %>"><%= s.first_name %> <%= s.last_name %> (<%= s.student_id || s.student_code %>)</option>
+          <% }) %>
+        </select>
+      </div>
+      <div>
+        <label class="erp-label">Course / Program</label>
+        <select id="modal100CourseId" class="erp-input">
+          <option value="">All Courses for Selected Student(s)</option>
+          <% courses.forEach(function(c) { %>
+            <option value="<%= c.id %>"><%= c.title %> (<%= (c.mode || 'online').toUpperCase() %>)</option>
+          <% }) %>
+        </select>
+      </div>
+      <div>
+        <label class="erp-label">Session Numbers to Fill / Ensure</label>
+        <select id="modal100SessionCount" class="erp-input">
+          <option value="30">Full 30 Weekday Sessions (100% Attendance)</option>
+          <option value="45">Full 45 Sessions (Extended Batch)</option>
+          <option value="60">Full 60 Sessions (Comprehensive / Internship)</option>
+          <option value="20">Standard 20 Sessions</option>
+        </select>
+      </div>
+      <div style="background:#F0FDF4; border:1px solid #BBF7D0; border-radius:8px; padding:12px; font-size:12.5px; color:#166534;">
+        ✔ Student portals will immediately show <strong>100% Attendance</strong> with full attendance records.
+      </div>
+      <div style="display:flex; justify-content:flex-end; gap:10px; padding-top:6px;">
+        <button type="button" onclick="closeFull100Modal()" class="erp-btn erp-btn-secondary">Cancel</button>
+        <button type="submit" id="btnConfirm100" class="erp-btn" style="background:#16A34A; color:#FFFFFF; font-weight:700;">
+          ⚡ Confirm 100% Full Attendance
+        </button>
       </div>
     </form>
   </div>
@@ -400,5 +473,100 @@
     const data = await res.json();
     if (!data.success) return alert(data.message || 'Bulk update failed');
     location.reload();
+  });
+
+  function openFull100Modal() {
+    document.getElementById('modal100').style.display = 'flex';
+  }
+  function closeFull100Modal() {
+    document.getElementById('modal100').style.display = 'none';
+  }
+
+  async function markEntireAll100Now(btn) {
+    if (!confirm('Grant 100% Full Attendance for ALL enrolled students across all sessions? This will immediately override any absences to 100% Present.')) return;
+    const orig = btn ? btn.innerHTML : '';
+    if (btn) {
+      btn.disabled = true;
+      btn.innerHTML = 'Applying 100%...';
+    }
+    try {
+      const res = await fetch('/api/admin/attendance/full-100', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ student_id: null, course_id: null, session_count: 30 })
+      });
+      const data = await res.json();
+      if (!data.success) throw new Error(data.message || 'Failed to apply 100% attendance');
+      alert(data.message || '100% Attendance successfully granted for all students!');
+      location.reload();
+    } catch (err) {
+      alert(err.message);
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = orig;
+      }
+    }
+  }
+
+  async function quickMarkStudent100(btn) {
+    const studentId = parseInt(btn.dataset.student, 10);
+    const courseId = parseInt(btn.dataset.course, 10);
+    const name = btn.dataset.name || 'this student';
+    if (!confirm(`Are you sure you want to grant 100% Full Attendance for ${name}? This will override all absences and set records to 100%.`)) return;
+    const res = await fetch('/api/admin/attendance/full-100', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ student_id: studentId, course_id: courseId, session_count: 30 })
+    });
+    const data = await res.json();
+    if (!data.success) return alert(data.message || 'Failed to grant 100% attendance');
+    alert(data.message || '100% Attendance successfully granted!');
+    location.reload();
+  }
+
+  async function apply100CurrentStudent() {
+    const studentId = document.getElementById('attStudentId').value;
+    const courseId = document.getElementById('attCourseId').value;
+    if (!studentId) return alert('Please select a student first.');
+    if (!confirm('Grant 100% Full Attendance for this student?')) return;
+    const res = await fetch('/api/admin/attendance/full-100', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ student_id: studentId, course_id: courseId, session_count: 30 })
+    });
+    const data = await res.json();
+    if (!data.success) return alert(data.message || 'Failed to grant 100% attendance');
+    alert(data.message || '100% Attendance successfully granted!');
+    location.reload();
+  }
+
+  document.getElementById('form100').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    const btn = document.getElementById('btnConfirm100');
+    const orig = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = 'Applying 100% Attendance...';
+    try {
+      const studentId = document.getElementById('modal100StudentId').value;
+      const courseId = document.getElementById('modal100CourseId').value;
+      const sessionCount = document.getElementById('modal100SessionCount').value;
+      const res = await fetch('/api/admin/attendance/full-100', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          student_id: studentId ? parseInt(studentId, 10) : null,
+          course_id: courseId ? parseInt(courseId, 10) : null,
+          session_count: parseInt(sessionCount, 10) || 30
+        })
+      });
+      const data = await res.json();
+      if (!data.success) throw new Error(data.message || 'Update failed');
+      alert(data.message || '100% Attendance successfully granted!');
+      location.reload();
+    } catch (err) {
+      alert(err.message);
+      btn.disabled = false;
+      btn.innerHTML = orig;
+    }
   });
 </script>

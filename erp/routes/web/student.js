@@ -38,6 +38,6 @@ router.get('/profile', (req, res) => res.redirect('/student/settings'));
 
 // Documents & Certificates (redirect to courses where certs are accessed)
 router.get('/documents', (req, res) => res.redirect('/student/courses'));
-router.get('/certificates', (req, res) => res.redirect('/student/courses'));
+router.get(['/certificates', '/certificate'], (req, res) => res.redirect('/student/courses'));
 
 module.exports = router;

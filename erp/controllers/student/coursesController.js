@@ -65,8 +65,10 @@ exports.show = (req, res) => {
              c.start_date, c.end_date, c.mode, c.description
       FROM registrations r
       JOIN courses c ON r.course_id = c.id
-      WHERE r.id = ? AND r.student_id = ?
-    `).get(regId, student.id);
+      WHERE (r.id = ? OR r.course_id = ?) AND r.student_id = ?
+      ORDER BY (CASE WHEN r.id = ? THEN 0 ELSE 1 END)
+      LIMIT 1
+    `).get(regId, regId, student.id, regId);
 
     if (!registration) {
       return res.status(404).render('website/error', {

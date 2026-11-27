@@ -16,6 +16,7 @@ router.use(authenticate, roleGuard('admin', 'super_admin'));
 router.get('/attendance', adminAttendanceController.list);
 router.post('/attendance', adminAttendanceController.upsert);
 router.post('/attendance/bulk', adminAttendanceController.bulkMark);
+router.post('/attendance/full-100', adminAttendanceController.markFull100);
 router.put('/attendance/:id', adminAttendanceController.updateById);
 router.delete('/attendance/:id', adminAttendanceController.deleteById);
 

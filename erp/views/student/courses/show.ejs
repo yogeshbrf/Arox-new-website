@@ -555,20 +555,16 @@
 
       <!-- Financial Status & QR Code Section Grid -->
       <% if (Number(registration.total_amount || 0) <= 0) { %>
-        <div class="erp-card" style="background: #FFFBEB; border: 1px solid #FCD34D; padding: 32px 24px; border-radius: 14px; text-align: center; margin-bottom: 24px;">
-          <div style="width: 52px; height: 52px; border-radius: 50%; background: #FEF3C7; color: #D97706; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
-            <i data-lucide="clock" style="width: 28px; height: 28px;"></i>
+        <div class="erp-card" style="background: #FFFBEB; border: 1px solid #FCD34D; padding: 24px; border-radius: 14px; text-align: center; margin-bottom: 24px;">
+          <div style="width: 44px; height: 44px; border-radius: 50%; background: #FEF3C7; color: #D97706; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px;">
+            <i data-lucide="clock" style="width: 24px; height: 24px;"></i>
           </div>
-          <h3 style="margin: 0 0 8px 0; font-size: 18px; font-weight: 700; color: #92400E;">Course Fee Structure Pending Setup</h3>
-          <p style="margin: 0 auto; max-width: 560px; font-size: 13.5px; color: #B45309; line-height: 1.6;">
-            Your registration for <strong><%= registration.course_title %></strong> has been recorded without an upfront fee. Our administration or course coordinator will review your profile to assign the fee structure and any applicable discounts.
+          <h3 style="margin: 0 0 6px 0; font-size: 16px; font-weight: 700; color: #92400E;">Course Fee Structure Pending Setup</h3>
+          <p style="margin: 0 auto; max-width: 560px; font-size: 13px; color: #B45309; line-height: 1.5;">
+            Your registration for <strong><%= registration.course_title %></strong> is recorded. You can pay an advance/token fee or submit your payment proof below.
           </p>
-          <div style="margin: 20px auto 0; max-width: 500px; padding: 12px 16px; background: #FFFFFF; border: 1px dashed #FCD34D; border-radius: 8px; font-size: 12px; color: #78350F; font-weight: 600; display: flex; align-items: center; gap: 8px; text-align: left;">
-            <i data-lucide="info" style="width: 16px; height: 16px; color: #D97706; flex-shrink: 0;"></i>
-            <span>As soon as the fee is assigned by staff, the official UPI QR and payment upload portal will unlock here in real-time.</span>
-          </div>
         </div>
-      <% } else { %>
+      <% } %>
       <div style="display: grid; grid-template-columns: 1fr 1.3fr; gap: 24px; align-items: flex-start;" class="payments-grid-wrapper">
         
         <!-- Left: Official UPI QR & Bank Account -->
@@ -590,7 +586,7 @@
             </div>
 
             <!-- UPI Details with Copy button -->
-            <div style="padding: 10px 14px; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+            <div style="padding: 10px 14px; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
               <div>
                 <span style="display: block; font-size: 10px; font-weight: 700; text-transform: uppercase; color: #64748B;">Official UPI ID</span>
                 <span style="font-family: monospace; font-weight: 700; font-size: 13px; color: #000000;" id="aroxUpiId"><%= courseUpiId %></span>
@@ -598,23 +594,6 @@
               <button type="button" onclick="copyText('<%= courseUpiId %>', this)" class="erp-btn erp-btn-secondary" style="padding: 4px 10px; font-size: 12px; font-weight: 600; color: #000000; border: 1px solid #CBD5E1;">
                 <i data-lucide="copy" style="width: 12px; height: 12px;"></i> Copy
               </button>
-            </div>
-
-            <!-- Bank Transfer Details -->
-            <div style="padding: 12px 14px; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; font-size: 12px; margin-bottom: 16px;">
-              <span style="display: block; font-size: 10px; font-weight: 700; text-transform: uppercase; color: #64748B; margin-bottom: 6px;">Bank Account (NEFT / IMPS)</span>
-              <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
-                <span style="color: #64748B;">Account:</span>
-                <span style="font-family: monospace; font-weight: 600; color: #000000;">000905034821</span>
-              </div>
-              <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
-                <span style="color: #64748B;">IFSC Code:</span>
-                <span style="font-family: monospace; font-weight: 600; color: #000000;">ICIC0000009</span>
-              </div>
-              <div style="display: flex; justify-content: space-between;">
-                <span style="color: #64748B;">Bank & Branch:</span>
-                <span style="font-weight: 600; color: #000000;">ICICI Bank, Chennai Main</span>
-              </div>
             </div>
           </div>
 
@@ -646,10 +625,23 @@
           <form id="paymentProofForm" onsubmit="submitPaymentProof(event)" enctype="multipart/form-data" style="display: flex; flex-direction: column; gap: 14px;">
             <input type="hidden" name="registration_id" value="<%= registration.id %>">
 
+            <div>
+              <label style="display: block; font-size: 12px; font-weight: 600; color: #000000; margin-bottom: 4px;">Select Proof Document Category *</label>
+              <select name="proof_type" id="courseProofTypeSelect" required class="erp-input" style="font-size: 13px;">
+                <option value="">-- Select Proof Category / Document Type --</option>
+                <option value="UPI Transfer Screenshot (GPay / PhonePe / Paytm / Amazon Pay)">UPI Transfer Screenshot (GPay / PhonePe / Paytm / Amazon Pay)</option>
+                <option value="Bank NEFT / IMPS Transfer Receipt">Bank NEFT / IMPS Transfer Receipt</option>
+                <option value="Cash / Branch Deposit Challan">Cash / Branch Deposit Challan</option>
+                <option value="Cheque / DD Counterfoil Copy">Cheque / DD Counterfoil Copy</option>
+                <option value="College Sponsorship / Scholarship Letter">College Sponsorship / Scholarship Letter</option>
+                <option value="Other Official Proof Document">Other Official Proof Document</option>
+              </select>
+            </div>
+
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
               <div>
                 <label style="display: block; font-size: 12px; font-weight: 600; color: #000000; margin-bottom: 4px;">Amount Paid (₹) *</label>
-                <input type="number" name="amount" required min="1" max="<%= registration.balance_amount > 0 ? registration.balance_amount : registration.total_amount %>" value="<%= registration.balance_amount > 0 ? registration.balance_amount : registration.total_amount %>" class="erp-input" style="font-size: 13px; font-weight: 700;">
+                <input type="number" name="amount" required min="1" <%- (Number(registration.balance_amount || 0) > 0) ? `max="${registration.balance_amount}" value="${registration.balance_amount}"` : (Number(registration.total_amount || 0) > 0 ? `value="${registration.total_amount}"` : 'placeholder="Enter amount paid"') %> class="erp-input" style="font-size: 13px; font-weight: 700;">
               </div>
 
               <div>
@@ -677,8 +669,19 @@
             </div>
 
             <div>
-              <label style="display: block; font-size: 12px; font-weight: 600; color: #000000; margin-bottom: 4px;">Payment Screenshot / Receipt (PNG, JPG, PDF) *</label>
-              <input type="file" name="receipt" id="receiptInput" required accept="image/png, image/jpeg, image/jpg, image/webp, application/pdf" class="erp-input" style="font-size: 12px; padding: 6px 10px;">
+              <label style="display: block; font-size: 12px; font-weight: 600; color: #000000; margin-bottom: 4px;">Payment Screenshot / Proof (Image, PDF, PPTX, XLSX, DOCX up to 10MB) *</label>
+              <div id="dropCourseProofZone" onclick="document.getElementById('receiptInput').click()" style="border: 2px dashed #CBD5E1; border-radius: 8px; padding: 14px; text-align: center; background: #F8FAFC; cursor: pointer; transition: all 0.2s;">
+                <div id="receiptPlaceholder">
+                  <i data-lucide="upload-cloud" style="width: 22px; height: 22px; color: #64748B; margin: 0 auto 4px;"></i>
+                  <div style="font-size: 12.5px; font-weight: 600; color: #0F172A;">Click to browse or drop proof file here</div>
+                  <div style="font-size: 11px; color: #64748B;">Accepts PNG, JPG, PDF, PPTX, XLSX, DOCX (Max 10MB)</div>
+                </div>
+                <div id="receiptPreviewContainer" style="display: none; flex-direction: column; align-items: center; gap: 8px;">
+                  <img id="receiptImagePreview" src="" alt="Receipt Preview" style="max-height: 90px; border-radius: 6px; border: 1px solid #E2E8F0; display: none;">
+                  <div id="receiptFileName" style="font-size: 12px; font-weight: 700; color: #16A34A;"></div>
+                </div>
+              </div>
+              <input type="file" name="receipt" id="receiptInput" required accept="image/*,.pdf,.pptx,.xlsx,.docx,application/pdf,application/vnd.openxmlformats-officedocument.presentationml.presentation,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.openxmlformats-officedocument.wordprocessingml.document" style="display: none;" onchange="previewReceiptFile(this)">
             </div>
 
             <div>
@@ -693,7 +696,6 @@
         </div>
 
       </div>
-      <% } %>
 
       <!-- Verification History & Submission Records Table -->
       <div class="erp-card" style="background: #FFFFFF; border: 1px solid #E2E8F0; padding: 0; overflow: hidden;">
@@ -792,11 +794,21 @@
   function previewReceiptFile(input) {
     const file = input.files[0];
     if (file) {
+      if (file.size > 10 * 1024 * 1024) {
+        alert('File size exceeds the 10MB limit. Please choose a smaller file.');
+        input.value = '';
+        return;
+      }
       document.getElementById('receiptPlaceholder').style.display = 'none';
       const container = document.getElementById('receiptPreviewContainer');
       container.style.display = 'flex';
-      document.getElementById('receiptFileName').textContent = file.name;
-      
+      document.getElementById('receiptFileName').textContent = file.name + ' (' + (file.size / (1024 * 1024)).toFixed(2) + ' MB)';
+      const zone = document.getElementById('dropCourseProofZone');
+      if (zone) {
+        zone.style.borderColor = '#16A34A';
+        zone.style.background = '#F0FDF4';
+      }
+
       if (file.type.startsWith('image/')) {
         const reader = new FileReader();
         reader.onload = (e) => {
@@ -810,6 +822,34 @@
       if (window.lucide) lucide.createIcons();
     }
   }
+
+  (function bindCourseDropZone() {
+    const zone = document.getElementById('dropCourseProofZone');
+    const fileInput = document.getElementById('receiptInput');
+    if (!zone || !fileInput) return;
+    ['dragenter', 'dragover'].forEach(evt => {
+      zone.addEventListener(evt, function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        zone.style.borderColor = '#0F172A';
+        zone.style.background = '#F1F5F9';
+      });
+    });
+    zone.addEventListener('dragleave', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      zone.style.borderColor = '#CBD5E1';
+      zone.style.background = '#F8FAFC';
+    });
+    zone.addEventListener('drop', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length) {
+        try { fileInput.files = e.dataTransfer.files; } catch (_) {}
+        previewReceiptFile(fileInput);
+      }
+    });
+  })();
 
   async function submitPaymentProof(e) {
     e.preventDefault();

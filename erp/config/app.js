@@ -13,7 +13,7 @@ module.exports = {
     gstin: process.env.ORG_GSTIN || '33AABCU9603R1ZM'
   },
   upload: {
-    maxFileSize: parseInt(process.env.MAX_FILE_SIZE) || 5 * 1024 * 1024,
+    maxFileSize: parseInt(process.env.MAX_FILE_SIZE) || 10 * 1024 * 1024,
     dir: process.env.UPLOAD_DIR || './public/uploads'
   }
 };

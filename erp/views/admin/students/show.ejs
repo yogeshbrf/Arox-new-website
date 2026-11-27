@@ -7,7 +7,10 @@
       </a>
       <h1 style="font-size: 1.5rem; font-weight: 700; margin: 0; color: #0f172a;">Student Profile</h1>
     </div>
-    <div style="display: flex; gap: 10px;">
+    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+      <button type="button" id="btnStudent100Att" onclick="grantStudent100Attendance(<%= student.id %>, this)" class="erp-btn" style="background: #16A34A; color: #FFFFFF; display: inline-flex; align-items: center; gap: 8px; font-weight: 700; border: none;">
+        ⚡ 100% Full Attendance
+      </button>
       <button type="button" onclick="openEditStudentModal()" class="erp-btn erp-btn-primary" style="display: inline-flex; align-items: center; gap: 8px; font-weight: 600;">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15.2 4.2a2 2 0 0 1 2.8 0l1.2 1.2a2 2 0 0 1 0 2.8L9 18.4l-4.5.8.8-4.5L15.2 4.2Z" fill="currentColor" fill-opacity="0.2"/><path d="M13 20h7.5"/></svg>
         Edit Student Details
@@ -244,6 +247,32 @@
 
   function openEditStudentModal() {
     document.getElementById('editStudentModal').style.display = 'flex';
+  }
+
+  async function grantStudent100Attendance(studentId, btn) {
+    if (!confirm('Grant 100% Full Attendance to this student across all enrolled courses and override any absences?')) return;
+    const orig = btn ? btn.innerHTML : '';
+    if (btn) {
+      btn.disabled = true;
+      btn.innerHTML = 'Applying 100%...';
+    }
+    try {
+      const res = await fetch('/api/admin/attendance/full-100', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ student_id: studentId, session_count: 30 })
+      });
+      const data = await res.json();
+      if (!data.success) throw new Error(data.message || 'Failed to apply 100% attendance');
+      showToast(data.message || '100% Full Attendance granted!', 'success');
+      if (btn) btn.innerHTML = '✔ 100% Granted';
+    } catch (err) {
+      showToast(err.message, 'error');
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = orig;
+      }
+    }
   }
 
   function closeEditStudentModal() {

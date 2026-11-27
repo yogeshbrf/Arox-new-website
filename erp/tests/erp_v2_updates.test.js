@@ -139,14 +139,32 @@ async function runSuite() {
       assert(!page.text.includes('erp-mobile-toggle'), `${label} topbar has NO mobile hamburger button`);
       assert(page.text.includes('erp-bottom-nav') && page.text.includes('nav-pill-box'), `${label} renders app-style mobile bottom navigation`);
       assert(page.text.includes('erp-duotone-icon') && page.text.includes('sidebar-layers'), `${label} renders unified duotone sidebar icons`);
+      assert(page.text.includes('erp-notif-trigger') && page.text.includes('erp-notif-dropdown'), `${label} renders live notifications dropdown trigger`);
       assert(page.text.includes('erp-mobile-nav-brand'), `${label} topbar has mobile logo / current page`);
       assert(page.text.includes('erp-profile-wrapper') && !page.text.includes('erp-profile hidden md:flex'), `${label} topbar profile icon is unhidden on mobile`);
       assert(page.text.includes('/erp-assets/js/erp-shell.js'), `${label} includes unified erp-shell.js`);
     }
-    console.log('✅ CHECK 1 & 8 PASS: Sidebar unpin/thin-scrollbar, duotone icons, mobile bottom nav & topbar verified across all 3 panels');
+
+    // Check previously non-workable alias routes & generator student API
+    const [admCerts, admCoupons, empRep, stuCert, stuCourse1, genStudents] = await Promise.all([
+      request(server, { path: '/admin/certificates', headers: { Authorization: `Bearer ${adminToken}`, 'X-Role': 'admin' } }),
+      request(server, { path: '/admin/coupons', headers: { Authorization: `Bearer ${adminToken}`, 'X-Role': 'admin' } }),
+      request(server, { path: '/employee/reports', headers: { Authorization: `Bearer ${empToken}`, 'X-Role': 'employee' } }),
+      request(server, { path: '/student/certificate', headers: { Authorization: `Bearer ${stuToken}`, 'X-Role': 'student' } }),
+      request(server, { path: '/student/courses/1', headers: { Authorization: `Bearer ${stuToken}`, 'X-Role': 'student' } }),
+      request(server, { path: '/api/students' })
+    ]);
+    assert([200, 302].includes(admCerts.status), '/admin/certificates works');
+    assert([200, 302].includes(admCoupons.status), '/admin/coupons works');
+    assert([200, 302].includes(empRep.status), '/employee/reports works');
+    assert([200, 302].includes(stuCert.status), '/student/certificate works');
+    assert.strictEqual(stuCourse1.status, 200, '/student/courses/1 works cleanly');
+    assert.strictEqual(genStudents.status, 200);
+    assert(Array.isArray(genStudents.json) && genStudents.json.length > 0 && genStudents.json[0].db_id !== undefined, '/api/students exposes db_id for Attendance Generator');
+    console.log('✅ CHECK 1 & 8 PASS: Sidebar unpin/thin-scrollbar, duotone icons, live notifications, mobile bottom nav & routes verified across all 3 panels');
 
     // ---------------------------------------------------------
-    // CHECK 2: Payment UPI ID (6379000598@amazonpay) & Live QR PNG
+    // CHECK 2: Payment UPI ID (6379000598@amazonpay), Live QR PNG, Bank Details Removed & Proof Dropdown Added
     // ---------------------------------------------------------
     const payCfg = await request(server, { path: '/api/payments/config' });
     assert.strictEqual(payCfg.status, 200);
@@ -162,15 +180,22 @@ async function runSuite() {
     assert(stuPayPage.text.includes('6379000598@amazonpay'), 'Student payments shows 6379000598@amazonpay');
     assert(stuPayPage.text.includes('/api/payments/qr'), 'Student payments embeds live QR');
     assert(!stuPayPage.text.includes('aroxtechnologies@icici'), 'Legacy UPI removed from Student payments');
-    console.log('✅ CHECK 2 PASS: UPI 6379000598@amazonpay & dynamic scannable QR PNG verified');
+    assert(!stuPayPage.text.includes('000905034821') && !stuPayPage.text.includes('ICIC0000009'), 'Bank transfer details removed from Student payments');
+    assert(stuPayPage.text.includes('proofTypeSelect') && stuPayPage.text.includes('dropProofZone'), 'Proof category dropdown & drag-drop upload zone present in Student payments');
+    assert(!stuCourse1.text.includes('000905034821') && stuCourse1.text.includes('courseProofTypeSelect') && stuCourse1.text.includes('dropCourseProofZone'), 'Course page removes bank transfer and renders proof dropdown & drop zone');
+    console.log('✅ CHECK 2 PASS: UPI 6379000598@amazonpay, bank transfer removal, proof category dropdown & dynamic QR verified');
 
     // ---------------------------------------------------------
-    // CHECK 3: Daily Attendance (Student Update Today + Admin Full Control)
+    // CHECK 3: Daily Attendance (Student Update Today + Admin Full Control + 100% Override)
     // ---------------------------------------------------------
     const studentRow = db.prepare('SELECT id FROM students WHERE user_id = ?').get(stuLogin.json.data.user.id);
     assert(studentRow, 'Seeded student row exists');
     const enroll = db.prepare('SELECT course_id FROM registrations WHERE student_id = ? LIMIT 1').get(studentRow.id);
     assert(enroll, 'Student has a registration');
+
+    // Cleanup any leftover test 100% rows from previous interrupted run before taking snapshot
+    db.prepare("DELETE FROM attendance WHERE student_id = ? AND remarks LIKE '100% Full Attendance%' AND date < date('now')").run(studentRow.id);
+    const stuAttSnapshot = db.prepare('SELECT * FROM attendance WHERE student_id = ?').all(studentRow.id);
 
     const stuAttUpdate = await request(server, {
       method: 'PUT',
@@ -183,6 +208,25 @@ async function runSuite() {
 
     const adminAttPage = await request(server, { path: '/admin/attendance', headers: { Authorization: `Bearer ${adminToken}`, 'X-Role': 'admin' } });
     assert.strictEqual(adminAttPage.status, 200, 'Admin attendance page loads');
+    assert(adminAttPage.text.includes('btnOneClickAll100') && adminAttPage.text.includes('modal100'), 'Admin attendance exposes 1-click 100% button and override modal');
+
+    const full100Res = await request(server, {
+      method: 'POST',
+      path: '/api/admin/attendance/full-100',
+      headers: { Authorization: `Bearer ${adminToken}`, 'X-Role': 'admin' }
+    }, { student_id: studentRow.id, course_id: enroll.course_id, session_count: 30 });
+    assert.strictEqual(full100Res.status, 200, 'Admin 100% override endpoint succeeds');
+    assert.strictEqual(full100Res.json.success, true);
+
+    const stuAttAfter100 = await request(server, { path: '/student/attendance', headers: { Authorization: `Bearer ${stuToken}`, 'X-Role': 'student' } });
+    assert.strictEqual(stuAttAfter100.status, 200);
+    assert(stuAttAfter100.text.includes('100%') && stuAttAfter100.text.includes('100% VERIFIED'), 'Student attendance portal reflects 100% Admin override');
+    assert(!/color:\s*#000000;">\s*0\s*<span/.test(stuAttAfter100.text) && stuAttAfter100.text.includes('30 / 30 sessions'), 'Total Sessions Present reflects non-zero present count (presentDays fixed)');
+
+    // Track any newly added synthetic attendance IDs and restore original student attendance rows at cleanup
+    const stuAttSnapIds = new Set(stuAttSnapshot.map(r => r.id));
+    const addedBy100 = db.prepare('SELECT id FROM attendance WHERE student_id = ?').all(studentRow.id).filter(r => !stuAttSnapIds.has(r.id));
+    addedBy100.forEach(r => createdAttIds.push(r.id));
 
     const customDate = '2026-10-15';
     const adminUpsert = await request(server, {
@@ -209,7 +253,16 @@ async function runSuite() {
       headers: { Authorization: `Bearer ${adminToken}`, 'X-Role': 'admin' }
     });
     assert.strictEqual(adminDel.status, 200);
-    console.log('✅ CHECK 3 PASS: Student daily attendance self-update & full Admin CRUD verified');
+
+    // Restore original student 1 records cleanly before continuing
+    for (const oldRow of stuAttSnapshot) {
+      db.prepare('UPDATE attendance SET status = ?, method = ?, remarks = ?, updated_by_admin = ? WHERE id = ?')
+        .run(oldRow.status, oldRow.method, oldRow.remarks, oldRow.updated_by_admin || 0, oldRow.id);
+    }
+    for (const rid of addedBy100) {
+      db.prepare('DELETE FROM attendance WHERE id = ?').run(rid.id);
+    }
+    console.log('✅ CHECK 3 PASS: Student daily attendance, 1-click 100% Admin override & full Admin CRUD verified');
 
     // ---------------------------------------------------------
     // CHECK 4: Admin Offline Class Schedule Syncs -> Student Dashboard
@@ -403,6 +456,13 @@ async function runSuite() {
     });
     assert.strictEqual(stuAdminApi.status, 403, 'Student blocked from Admin attendance API (403)');
 
+    const [stuFull100, empFull100] = await Promise.all([
+      request(server, { method: 'POST', path: '/api/admin/attendance/full-100', headers: { Authorization: `Bearer ${stuToken}`, 'X-Role': 'student' } }, { student_id: 1 }),
+      request(server, { method: 'POST', path: '/api/admin/attendance/full-100', headers: { Authorization: `Bearer ${empToken}`, 'X-Role': 'employee' } }, { student_id: 1 })
+    ]);
+    assert.strictEqual(stuFull100.status, 403, 'Student blocked from Admin 100% attendance override API (403)');
+    assert.strictEqual(empFull100.status, 403, 'Employee blocked from Admin 100% attendance override API (403)');
+
     const stuEmpApi = await request(server, {
       path: '/api/employee/proofs', headers: { Authorization: `Bearer ${stuToken}`, 'X-Role': 'student' }
     });
@@ -425,6 +485,9 @@ async function runSuite() {
     }
     for (const sid of createdStudentIds) {
       try { db.prepare('DELETE FROM students WHERE id = ?').run(sid); } catch (e) {}
+    }
+    for (const aid of createdAttIds) {
+      try { db.prepare('DELETE FROM attendance WHERE id = ?').run(aid); } catch (e) {}
     }
     for (const code of createdRefCodes) {
       try { db.prepare('DELETE FROM referrals WHERE UPPER(code) = UPPER(?)').run(code); } catch (e) {}

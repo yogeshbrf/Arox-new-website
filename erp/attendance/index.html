@@ -348,9 +348,11 @@
   <div class="checks">
     <label><input type="checkbox" id="f_skipsun" onchange="generateSheet()"> Skip Sundays when assigning dates</label>
     <label><input type="checkbox" id="f_filldate" checked onchange="generateSheet()"> Auto-fill Date column</label>
+    <label style="font-weight:700; color:#15803D;"><input type="checkbox" id="f_fill100" onchange="generateSheet()"> ⚡ Fill All Rows 100% PRESENT</label>
   </div>
 
   <div class="actions">
+    <button id="full100Btn" onclick="fill100SheetAndOverride()" style="background:#16A34A; color:#fff;">⚡ 100% Full Attendance (All Numbers + Student)</button>
     <button id="genBtn" onclick="generateSheet()">Refresh Preview</button>
     <button class="btn-orange" onclick="downloadPDF()">Download PDF</button>
     <div style="display: flex; gap: 10px;">
@@ -369,25 +371,7 @@
   </div>
 
 <script>
-let studentsData = [];
-
-async function fetchStudents() {
-  try {
-    const res = await fetch('/api/students');
-    studentsData = await res.json();
-    const select = document.getElementById('studentSelect');
-    select.innerHTML = '<option value="">-- Choose Student --</option>';
-    studentsData.forEach(s => {
-      const opt = document.createElement('option');
-      opt.value = s.id;
-      opt.textContent = `${s.name} - ${s.internship}`;
-      select.appendChild(opt);
-    });
-  } catch(e) {
-    console.error(e);
-    document.getElementById('studentSelect').innerHTML = '<option value="">-- Failed to load students. Ensure ERP is running --</option>';
-  }
-}
+let allStudents = [];
 
 window.addEventListener('DOMContentLoaded', () => {
   fetchStudents();
@@ -396,16 +380,17 @@ window.addEventListener('DOMContentLoaded', () => {
 
 function handleStudentSelect(id) {
   if(!id) return;
-  const s = allStudents.find(st => st.id === id);
+  const s = allStudents.find(st => String(st.id) === String(id) || String(st.db_id) === String(id));
   if(s) {
-    document.getElementById('f_name').value = s.name;
-    document.getElementById('f_dept').value = s.department;
-    document.getElementById('f_college').value = s.collegeName;
-    document.getElementById('f_year').value = s.year;
-    document.getElementById('f_intern').value = s.internship;
-    document.getElementById('f_trainer').value = s.trainerName;
-    
-    window.selectedStudentAttendances = s.attendances;
+    document.getElementById('f_name').value = s.name || '';
+    document.getElementById('f_dept').value = s.department || '';
+    document.getElementById('f_college').value = s.collegeName || '';
+    document.getElementById('f_year').value = s.year || '';
+    document.getElementById('f_intern').value = s.internship || '';
+    document.getElementById('f_trainer').value = s.trainerName || '';
+
+    window.selectedStudentDbId = s.db_id || null;
+    window.selectedStudentAttendances = s.attendances || [];
     generateSheet();
   }
 }
@@ -505,6 +490,7 @@ function generateSheet(){
   const totalDays = Math.max(1, parseInt(document.getElementById('f_days').value || "30", 10));
   const skipSun = document.getElementById('f_skipsun').checked;
   const fillDate = document.getElementById('f_filldate').checked;
+  const fill100 = document.getElementById('f_fill100') ? document.getElementById('f_fill100').checked : false;
 
   const dateList = fillDate ? buildDateList(start, totalDays, skipSun) : new Array(totalDays).fill(null);
 
@@ -521,7 +507,7 @@ function generateSheet(){
   for(let i=0;i<totalDays;i++){
     const d = dateList[i];
     const dateStr = d ? fmtDate(d) : "";
-    const attStatus = dateStr ? (attendanceMap[dateStr] || "") : "";
+    const attStatus = fill100 ? "PRESENT" : (dateStr ? (attendanceMap[dateStr] || "") : "");
     const attClass = attStatus === "PRESENT" ? "text-present" : (attStatus === "ABSENT" || attStatus === "LATE" ? "text-absent" : "");
 
     rows.push({
@@ -588,7 +574,30 @@ function openCert() {
   }
 }
 
-let allStudents = [];
+async function fill100SheetAndOverride() {
+  const cb = document.getElementById('f_fill100');
+  if (cb) cb.checked = true;
+  generateSheet();
+
+  if (window.selectedStudentDbId) {
+    try {
+      const res = await fetch('/api/admin/attendance/full-100', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          student_id: parseInt(window.selectedStudentDbId, 10),
+          session_count: Math.max(15, parseInt(document.getElementById('f_days').value || '30', 10))
+        })
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        document.getElementById('status').textContent = '100% Full Attendance applied to sheet & student ERP record!';
+        return;
+      }
+    } catch (e) {}
+  }
+  document.getElementById('status').textContent = '100% Full Attendance populated for all rows!';
+}
 
 async function fetchStudents() {
   try {
@@ -685,7 +694,15 @@ async function downloadPDF(){
         if (d.intern) document.getElementById('f_intern').value = d.intern;
         if (d.month) document.getElementById('f_month').value = d.month;
         if (d.days) document.getElementById('f_days').value = d.days;
+        if (typeof d.fill100 === 'boolean' && document.getElementById('f_fill100')) {
+          document.getElementById('f_fill100').checked = d.fill100;
+        }
         
+        generateSheet();
+      } else if (event.data.type === 'FILL_100') {
+        if (document.getElementById('f_fill100')) {
+          document.getElementById('f_fill100').checked = event.data.enabled !== false;
+        }
         generateSheet();
       } else if (event.data.type === 'EXPORT_PDF') {
         downloadPDF();

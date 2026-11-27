@@ -55,6 +55,10 @@
           <input type="number" id="inputDays" class="erp-input" value="30" min="1" max="365" style="font-size: 13px;">
         </div>
       </div>
+
+      <button type="button" id="btnGen100All" onclick="grant100AndFillSheet(this)" class="erp-btn" style="background: #16A34A; color: #FFFFFF; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 14px; border-radius: 8px; border: none; cursor: pointer; margin-top: 4px;">
+        ⚡ 100% Full Attendance (Fill All + Override Student)
+      </button>
     </div>
   </div>
 
@@ -153,6 +157,8 @@
     }
   });
 
+  var fill100State = false;
+
   function updatePreview() {
     var data = {
       name: document.getElementById('inputName').value,
@@ -161,7 +167,8 @@
       year: document.getElementById('inputYear').value,
       intern: document.getElementById('inputIntern').value,
       month: document.getElementById('inputMonth').value,
-      days: document.getElementById('inputDays').value
+      days: document.getElementById('inputDays').value,
+      fill100: fill100State
     };
     if (frame && frame.contentWindow) {
       frame.contentWindow.postMessage({ type: 'UPDATE_DATA', data: data }, '*');
@@ -169,6 +176,34 @@
     var fsFrame = document.getElementById('fullscreenFrame');
     if (fsFrame && fsFrame.contentWindow) {
       fsFrame.contentWindow.postMessage({ type: 'UPDATE_DATA', data: data }, '*');
+    }
+  }
+
+  async function grant100AndFillSheet(btn) {
+    fill100State = true;
+    updatePreview();
+    if (frame && frame.contentWindow) {
+      frame.contentWindow.postMessage({ type: 'FILL_100', enabled: true }, '*');
+    }
+    var studentId = document.getElementById('studentQuickFill') ? document.getElementById('studentQuickFill').value : '';
+    var days = parseInt(document.getElementById('inputDays').value || '30', 10);
+    if (studentId) {
+      var orig = btn ? btn.innerHTML : '';
+      if (btn) { btn.disabled = true; btn.innerHTML = 'Applying 100%...'; }
+      try {
+        var res = await fetch('/api/admin/attendance/full-100', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ student_id: parseInt(studentId, 10), session_count: days })
+        });
+        var json = await res.json();
+        if (res.ok && json.success) {
+          if (btn) btn.innerHTML = '✔ 100% Filled & Overridden';
+          setTimeout(function() { if (btn) { btn.disabled = false; btn.innerHTML = orig; } }, 2500);
+          return;
+        }
+      } catch (e) {}
+      if (btn) { btn.disabled = false; btn.innerHTML = orig; }
     }
   }
 

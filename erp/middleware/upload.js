@@ -68,7 +68,7 @@ const fileFilter = (req, file, cb) => {
     photo: /jpeg|jpg|png|gif|webp/,
     document: /jpeg|jpg|png|gif|webp|pdf|doc|docx|xls|xlsx/,
     submission: /zip|rar|pdf|doc|docx|ppt|pptx|py|js|html|css/,
-    receipt: /jpeg|jpg|png|webp|pdf/
+    receipt: /jpeg|jpg|png|webp|pdf|docx|pptx|xlsx/
   };
 
   const ext = path.extname(file.originalname).toLowerCase().slice(1);

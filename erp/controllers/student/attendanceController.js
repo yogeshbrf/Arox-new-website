@@ -60,6 +60,7 @@ exports.index = (req, res) => {
       const presentCount = records.filter(r => r.status === 'present').length;
       const totalRecorded = records.length;
       const percentage = totalRecorded > 0 ? Math.round((presentCount / totalRecorded) * 100) : 100;
+      const hasAdminOverride = records.some(r => r.updated_by_admin === 1);
 
       // Check if marked for today
       const todayRecord = records.find(r => r.date === serverToday);
@@ -81,8 +82,10 @@ exports.index = (req, res) => {
         ...course,
         records,
         presentCount,
+        presentDays: presentCount,
         totalRecorded,
         percentage,
+        hasAdminOverride,
         isMarkedToday,
         todayRecord,
         canMarkToday,

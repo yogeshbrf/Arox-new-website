@@ -431,6 +431,163 @@ const adminAttendanceController = {
       logger.error('Admin attendance delete error:', err);
       res.status(500).json({ success: false, message: 'Failed to delete attendance.' });
     }
+  },
+
+  /**
+   * POST /api/admin/attendance/full-100
+   * 1-Click 100% Full Attendance Grant & Override for Student(s)
+   */
+  markFull100(req, res) {
+    try {
+      const db = getDb();
+      const studentId = req.body.student_id ? parseInt(req.body.student_id, 10) : null;
+      const courseId = req.body.course_id ? parseInt(req.body.course_id, 10) : null;
+      const sessionCount = parseInt(req.body.session_count, 10) || 30;
+
+      // 1. Determine student enrollments
+      let enrollments = [];
+      if (studentId && courseId) {
+        enrollments = db.prepare(`
+          SELECT r.student_id, r.course_id, c.start_date, c.duration,
+                 s.first_name, s.last_name, c.title as course_title
+          FROM registrations r
+          JOIN students s ON r.student_id = s.id
+          JOIN courses c ON r.course_id = c.id
+          WHERE r.student_id = ? AND r.course_id = ? AND r.deleted_at IS NULL
+        `).all(studentId, courseId);
+      } else if (studentId) {
+        enrollments = db.prepare(`
+          SELECT r.student_id, r.course_id, c.start_date, c.duration,
+                 s.first_name, s.last_name, c.title as course_title
+          FROM registrations r
+          JOIN students s ON r.student_id = s.id
+          JOIN courses c ON r.course_id = c.id
+          WHERE r.student_id = ? AND r.deleted_at IS NULL
+        `).all(studentId);
+      } else if (courseId) {
+        enrollments = db.prepare(`
+          SELECT r.student_id, r.course_id, c.start_date, c.duration,
+                 s.first_name, s.last_name, c.title as course_title
+          FROM registrations r
+          JOIN students s ON r.student_id = s.id
+          JOIN courses c ON r.course_id = c.id
+          WHERE r.course_id = ? AND r.deleted_at IS NULL
+        `).all(courseId);
+      } else {
+        enrollments = db.prepare(`
+          SELECT r.student_id, r.course_id, c.start_date, c.duration,
+                 s.first_name, s.last_name, c.title as course_title
+          FROM registrations r
+          JOIN students s ON r.student_id = s.id
+          JOIN courses c ON r.course_id = c.id
+          WHERE r.status IN ('pending', 'confirmed', 'active', 'completed', 'enrolled')
+            AND r.deleted_at IS NULL
+        `).all();
+      }
+
+      if (enrollments.length === 0 && studentId) {
+        const s = db.prepare('SELECT id, first_name, last_name FROM students WHERE id = ?').get(studentId);
+        const c = courseId ? db.prepare('SELECT id, title FROM courses WHERE id = ?').get(courseId) : db.prepare('SELECT id, title FROM courses ORDER BY id ASC LIMIT 1').get();
+        if (s && c) {
+          enrollments.push({ student_id: s.id, course_id: c.id, first_name: s.first_name, last_name: s.last_name, course_title: c.title });
+        }
+      }
+
+      if (enrollments.length === 0) {
+        return res.status(400).json({ success: false, message: 'No student enrollments found to mark 100% attendance.' });
+      }
+
+      // Generate weekday dates ending on today's IST date (always include today)
+      const targetTotal = Math.min(Math.max(sessionCount, 15), 60);
+      const todayStr = getTodayDateString();
+      const dates = [todayStr];
+      const cur = new Date(todayStr + 'T12:00:00Z');
+      while (dates.length < targetTotal) {
+        cur.setUTCDate(cur.getUTCDate() - 1);
+        const day = cur.getUTCDay();
+        if (day !== 0 && day !== 6) {
+          dates.push(cur.toISOString().split('T')[0]);
+        }
+      }
+      dates.sort();
+
+      const upsertStmt = db.prepare(`
+        INSERT INTO attendance (
+          student_id, course_id, date, status, check_in_time, check_out_time, method, remarks, marked_by, updated_by_admin, updated_at
+        ) VALUES (
+          @student_id, @course_id, @date, 'present', '09:30 AM', '05:30 PM', 'manual', '100% Full Attendance (Admin Override)', @marked_by, 1, CURRENT_TIMESTAMP
+        )
+        ON CONFLICT(student_id, course_id, date) DO UPDATE SET
+          status = 'present',
+          check_in_time = COALESCE(attendance.check_in_time, '09:30 AM'),
+          method = 'manual',
+          remarks = '100% Full Attendance (Admin Override)',
+          marked_by = excluded.marked_by,
+          updated_by_admin = 1,
+          updated_at = CURRENT_TIMESTAMP
+      `);
+
+      let totalUpdated = 0;
+      const tx = db.transaction(() => {
+        for (const enr of enrollments) {
+          // Override all existing attendance to present
+          db.prepare(`
+            UPDATE attendance
+            SET status = 'present',
+                remarks = '100% Full Attendance (Admin Override)',
+                updated_by_admin = 1,
+                updated_at = CURRENT_TIMESTAMP
+            WHERE student_id = ? AND course_id = ?
+          `).run(enr.student_id, enr.course_id);
+
+          // Ensure all session dates are recorded
+          for (const dt of dates) {
+            upsertStmt.run({
+              student_id: enr.student_id,
+              course_id: enr.course_id,
+              date: dt,
+              marked_by: req.user.id
+            });
+            totalUpdated++;
+          }
+        }
+      });
+      tx();
+
+      logAudit(req, {
+        action: 'ADMIN_OVERRIDE_100_PERCENT_ATTENDANCE',
+        module: 'attendance',
+        entityType: 'attendance',
+        entityId: enrollments[0]?.student_id || null,
+        newValues: {
+          studentId,
+          courseId,
+          enrollmentsCount: enrollments.length,
+          totalUpdated,
+          status: 'present',
+          percentage: 100
+        }
+      });
+
+      syncService.broadcast('attendance:marked', {
+        studentId,
+        courseId,
+        percentage: 100,
+        status: 'present',
+        updatedByAdmin: true,
+        message: `Admin applied 100% attendance override for ${enrollments.length} student(s).`
+      });
+
+      res.json({
+        success: true,
+        message: `100% Full Attendance successfully granted and overridden for ${enrollments.length} student(s) across ${dates.length} sessions.`,
+        enrollmentsCount: enrollments.length,
+        recordsUpdated: totalUpdated
+      });
+    } catch (err) {
+      logger.error('Admin markFull100 error:', err);
+      res.status(500).json({ success: false, message: 'Failed to apply 100% attendance: ' + err.message });
+    }
   }
 };
 

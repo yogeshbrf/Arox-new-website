@@ -321,7 +321,7 @@
       </div>
 
       <!-- UPI ID Copy Box -->
-      <div style="padding: 10px 14px; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+      <div style="padding: 10px 14px; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px;">
         <div>
           <div style="font-size: 10px; text-transform: uppercase; font-weight: 700; color: #64748B;">UPI ID</div>
           <div style="font-family: monospace; font-weight: 700; font-size: 13px; color: #000000;"><%= stuPayUpi %></div>
@@ -330,23 +330,6 @@
           <i data-lucide="copy" style="width: 12px; height: 12px;"></i> Copy
         </button>
       </div>
-
-      <!-- Bank Transfer Details -->
-      <div style="padding: 12px 14px; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; font-size: 12px;">
-        <div style="font-size: 10px; text-transform: uppercase; font-weight: 700; color: #64748B; margin-bottom: 6px;">Bank Transfer (NEFT / IMPS)</div>
-        <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
-          <span style="color: #64748B;">Account:</span>
-          <span style="font-family: monospace; font-weight: 600; color: #000000;">000905034821</span>
-        </div>
-        <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
-          <span style="color: #64748B;">IFSC Code:</span>
-          <span style="font-family: monospace; font-weight: 600; color: #000000;">ICIC0000009</span>
-        </div>
-        <div style="display: flex; justify-content: space-between;">
-          <span style="color: #64748B;">Bank & Branch:</span>
-          <span style="font-weight: 600; color: #000000;">ICICI Bank, Chennai Main</span>
-        </div>
-      </div>
     </div>
 
     <!-- Submit Payment Proof Form Card -->
@@ -354,7 +337,7 @@
       <div class="erp-card" style="background: #FFFFFF; border: 1px solid #E2E8F0; padding: 24px; border-radius: 14px;">
         <h3 class="erp-h3" style="margin: 0 0 4px 0; color: #000000; display: flex; align-items: center; gap: 8px; font-size: 16px;">
           <i data-lucide="file-up" style="width: 18px; height: 18px; color: #000000;"></i>
-          Submit Payment Screenshot
+          Submit Payment Proof & Verification
         </h3>
         <p style="margin: 0 0 16px 0; font-size: 12px; color: #64748B;">Upload your transaction screenshot with 12-digit UTR reference for admin verification.</p>
 
@@ -365,6 +348,19 @@
               <% registrations.forEach(reg => { %>
                 <option value="<%= reg.id %>"><%= reg.course_title %> (Due: ₹<%= reg.balance_amount %>)</option>
               <% }); %>
+            </select>
+          </div>
+
+          <div>
+            <label style="display: block; font-size: 12px; font-weight: 600; color: #000000; margin-bottom: 4px;">Select Proof Document Category *</label>
+            <select name="proof_type" id="proofTypeSelect" required class="erp-input" style="font-size: 13px; width: 100%; height: 38px; border: 1px solid #CBD5E1; border-radius: 6px; padding: 0 10px; background: #fff;">
+              <option value="">-- Select Proof Category / Document Type --</option>
+              <option value="UPI Transfer Screenshot (GPay / PhonePe / Paytm / Amazon Pay)">UPI Transfer Screenshot (GPay / PhonePe / Paytm / Amazon Pay)</option>
+              <option value="Bank NEFT / IMPS Transfer Receipt">Bank NEFT / IMPS Transfer Receipt</option>
+              <option value="Cash / Branch Deposit Challan">Cash / Branch Deposit Challan</option>
+              <option value="Cheque / DD Counterfoil Copy">Cheque / DD Counterfoil Copy</option>
+              <option value="College Sponsorship / Scholarship Letter">College Sponsorship / Scholarship Letter</option>
+              <option value="Other Official Proof Document">Other Official Proof Document</option>
             </select>
           </div>
 
@@ -390,8 +386,13 @@
           </div>
 
           <div>
-            <label style="display: block; font-size: 12px; font-weight: 600; color: #000000; margin-bottom: 4px;">Attach Screenshot (PNG, JPG, PDF) *</label>
-            <input type="file" name="receipt" required accept="image/*, application/pdf" class="erp-input" style="font-size: 12px; padding: 6px 10px; width: 100%; border: 1px solid #CBD5E1; border-radius: 6px; background: #fff;">
+            <label style="display: block; font-size: 12px; font-weight: 600; color: #000000; margin-bottom: 4px;">Attach Proof Document (Image, PDF, PPTX, XLSX, DOCX up to 10MB) *</label>
+            <div id="dropProofZone" style="border: 2px dashed #CBD5E1; border-radius: 8px; padding: 16px; text-align: center; background: #F8FAFC; cursor: pointer; transition: all 0.2s;" onclick="document.getElementById('receiptFileInput').click()">
+              <i data-lucide="upload-cloud" style="width: 24px; height: 24px; color: #64748B; margin: 0 auto 6px;"></i>
+              <div style="font-size: 12.5px; font-weight: 600; color: #0F172A;" id="proofFileName">Click to browse or drop proof file here</div>
+              <div style="font-size: 11px; color: #64748B; margin-top: 2px;">Accepts image, PDF, PPTX, XLSX, DOCX up to 10MB</div>
+            </div>
+            <input type="file" id="receiptFileInput" name="receipt" required accept="image/*,.pdf,.pptx,.xlsx,.docx,application/pdf,application/vnd.openxmlformats-officedocument.presentationml.presentation,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.openxmlformats-officedocument.wordprocessingml.document" style="display: none;" onchange="handleReceiptSelected(this)">
           </div>
 
           <button type="submit" id="btnSubmitGlobalProof" class="erp-btn erp-btn-primary" style="width: 100%; padding: 10px; font-size: 13px; font-weight: 600; background: #000000; color: #FFFFFF; border-radius: 8px; margin-top: 4px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
@@ -431,6 +432,59 @@
       if (window.lucide) lucide.createIcons();
     }, 2000);
   }
+
+  function handleReceiptSelected(input) {
+    if (input.files && input.files[0]) {
+      const file = input.files[0];
+      if (file.size > 10 * 1024 * 1024) {
+        alert('File size exceeds the 10MB limit. Please choose a smaller file.');
+        input.value = '';
+        return;
+      }
+      const label = document.getElementById('proofFileName');
+      if (label) {
+        label.textContent = 'Selected: ' + file.name + ' (' + (file.size / (1024 * 1024)).toFixed(2) + ' MB)';
+      }
+      const zone = document.getElementById('dropProofZone');
+      if (zone) {
+        zone.style.borderColor = '#16A34A';
+        zone.style.background = '#F0FDF4';
+      }
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    const zone = document.getElementById('dropProofZone');
+    const fileInput = document.getElementById('receiptFileInput');
+    if (zone && fileInput) {
+      ['dragenter', 'dragover'].forEach(evt => {
+        zone.addEventListener(evt, function (e) {
+          e.preventDefault();
+          e.stopPropagation();
+          zone.style.borderColor = '#0F172A';
+          zone.style.background = '#F1F5F9';
+        });
+      });
+      ['dragleave', 'drop'].forEach(evt => {
+        zone.addEventListener(evt, function (e) {
+          e.preventDefault();
+          e.stopPropagation();
+          if (evt === 'dragleave') {
+            zone.style.borderColor = '#CBD5E1';
+            zone.style.background = '#F8FAFC';
+          }
+        });
+      });
+      zone.addEventListener('drop', function (e) {
+        if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length) {
+          try {
+            fileInput.files = e.dataTransfer.files;
+          } catch (_) {}
+          handleReceiptSelected(fileInput);
+        }
+      });
+    }
+  });
 
   async function submitGlobalProof(e) {
     e.preventDefault();
