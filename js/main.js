@@ -303,15 +303,17 @@
 
     mobileAuthWrap.innerHTML = `
       <button type="button" class="mobile-profile-btn" id="mobile-profile-btn" aria-label="User Profile" aria-expanded="false">
-        <svg viewBox="0 0 24 24" fill="currentColor">
-          <path d="M12 2.5a9.5 9.5 0 1 0 0 19 9.5 9.5 0 0 0 0-19Zm0 4a3 3 0 1 1 0 6 3 3 0 0 1 0-6Zm0 13a7.2 7.2 0 0 1-5.4-2.4c.7-2.1 2.9-3.4 5.4-3.4s4.7 1.3 5.4 3.4A7.2 7.2 0 0 1 12 19.5Z"/>
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <circle cx="12" cy="9.2" r="4"/>
+          <path d="M4.2 21.8c0-3.9 3.5-6.6 7.8-6.6s7.8 2.7 7.8 6.6Z"/>
         </svg>
       </button>
       <div class="mobile-profile-dropdown" id="mobile-profile-dropdown" role="menu">
         <div class="mobile-profile-header">
           <div class="mobile-profile-avatar">
-            <svg viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 2.5a9.5 9.5 0 1 0 0 19 9.5 9.5 0 0 0 0-19Zm0 4a3 3 0 1 1 0 6 3 3 0 0 1 0-6Zm0 13a7.2 7.2 0 0 1-5.4-2.4c.7-2.1 2.9-3.4 5.4-3.4s4.7 1.3 5.4 3.4A7.2 7.2 0 0 1 12 19.5Z"/>
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <circle cx="12" cy="9.2" r="4"/>
+              <path d="M4.2 21.8c0-3.9 3.5-6.6 7.8-6.6s7.8 2.7 7.8 6.6Z"/>
             </svg>
           </div>
           <div class="mobile-profile-info">
