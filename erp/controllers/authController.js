@@ -196,7 +196,13 @@ const authController = {
       const rawName = (req.body.name || '').trim();
       const phone = (req.body.phone || '').trim();
       const roleStr = (req.body.role || 'student').toLowerCase();
-      // Default registered admin or employee password is the same as the email
+      if (roleStr === 'admin') {
+        return res.status(403).json({
+          success: false,
+          message: 'Admin account registration is disabled. Please register as a Student or Employee.'
+        });
+      }
+      // Default registered employee password is the same as the email
       let password = req.body.password;
       if (!password || password.trim() === '') {
         password = email;
@@ -228,8 +234,8 @@ const authController = {
       const first_name = nameParts[0] || 'User';
       const last_name = nameParts.slice(1).join(' ') || '';
 
-      const roleId = ['employee', 'trainer', 'staff'].includes(roleStr) ? 4 : (roleStr === 'admin' ? 2 : 3);
-      const roleName = roleId === 4 ? 'employee' : (roleId === 2 ? 'admin' : 'student');
+      const roleId = ['employee', 'trainer', 'staff'].includes(roleStr) ? 4 : 3;
+      const roleName = roleId === 4 ? 'employee' : 'student';
 
       const user = await User.create({
         email,

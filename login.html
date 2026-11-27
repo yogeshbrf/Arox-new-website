@@ -377,7 +377,7 @@
         background: #fff;
       }
 
-      /* ── MOBILE SWEEP (fast blue curtain transition) ── */
+      /* ── MOBILE SWEEP (directional fast blue curtain transition) ── */
       .mob-sweep {
         position: fixed;
         inset: 0;
@@ -385,15 +385,24 @@
         z-index: 90;
         pointer-events: none;
         opacity: 0;
-        transform: translateY(100%);
+        transform: translateY(-100%);
       }
-      .auth-mobile.mob-sweeping .mob-sweep {
-        animation: mobSweep var(--sweep) cubic-bezier(0.22, 1, 0.36, 1) forwards;
+      .auth-mobile.mob-sweeping.mob-to-register .mob-sweep {
+        animation: mobSweepDown var(--sweep) cubic-bezier(0.22, 1, 0.36, 1) forwards;
       }
-      @keyframes mobSweep {
-        0%   { opacity: 0.95; transform: translateY(100%); border-radius: 48px 48px 0 0; }
-        40%  { opacity: 1;    transform: translateY(0%);   border-radius: 0; }
-        60%  { opacity: 1;    transform: translateY(0%);   border-radius: 0; }
+      .auth-mobile.mob-sweeping.mob-to-login .mob-sweep {
+        animation: mobSweepUp var(--sweep) cubic-bezier(0.22, 1, 0.36, 1) forwards;
+      }
+      @keyframes mobSweepDown {
+        0%   { opacity: 0.96; transform: translateY(-100%); border-radius: 0 0 48px 48px; }
+        40%  { opacity: 1;    transform: translateY(0%);    border-radius: 0; }
+        60%  { opacity: 1;    transform: translateY(0%);    border-radius: 0; }
+        100% { opacity: 0;    transform: translateY(100%);  border-radius: 48px 48px 0 0; }
+      }
+      @keyframes mobSweepUp {
+        0%   { opacity: 0.96; transform: translateY(100%);  border-radius: 48px 48px 0 0; }
+        40%  { opacity: 1;    transform: translateY(0%);    border-radius: 0; }
+        60%  { opacity: 1;    transform: translateY(0%);    border-radius: 0; }
         100% { opacity: 0;    transform: translateY(-100%); border-radius: 0 0 48px 48px; }
       }
 
@@ -508,6 +517,10 @@
       .mob-banner .portal-btn svg {
         width: 14px;
         height: 14px;
+      }
+      /* Remove Admin option from Portal Access in Register mode */
+      .auth-mobile.mob-register .portal-btn[data-role="admin"] {
+        display: none;
       }
 
       /* ── FORM AREA ── */
@@ -646,9 +659,6 @@
           </button>
           <button type="button" class="portal-btn" data-role="employee" onclick="setPortalRole('employee')" aria-label="Employee portal">
             <svg viewBox="0 0 24 24"><path d="M20 6h-4V4c0-1.11-.89-2-2-2h-4c-1.11 0-2 .89-2 2v2H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-6 0h-4V4h4v2z"/></svg>Employee
-          </button>
-          <button type="button" class="portal-btn" data-role="admin" onclick="setPortalRole('admin')" aria-label="Admin portal">
-            <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>Admin
           </button>
         </div>
       </div>
@@ -921,6 +931,9 @@
 
     /* ── Portal role ── */
     function setPortalRole(role) {
+      if (currentMode === 'register' && role === 'admin') {
+        role = 'student';
+      }
       currentRole = role;
       document.querySelectorAll('.portal-btn').forEach(b => {
         b.classList.toggle('active', b.getAttribute('data-role') === role);
@@ -939,6 +952,10 @@
       const fadeMs  = cssMs('--fade');
       const isReg   = mode === 'register';
 
+      if (isReg && currentRole === 'admin') {
+        setPortalRole('student');
+      }
+
       /* ─── DESKTOP: just toggle .active, CSS handles everything ─── */
       const card = document.getElementById('authCard');
       if (card) card.classList.toggle('active', isReg);
@@ -951,8 +968,9 @@
         const oldStrip = document.getElementById(isReg ? 'mobStripSignin' : 'mobStripRegister');
         const newStrip = document.getElementById(isReg ? 'mobStripRegister' : 'mobStripSignin');
 
-        // 1. Start sweep curtain
-        mobile.classList.add('mob-sweeping');
+        // 1. Start directional sweep curtain (top -> bottom for Register, bottom -> top for Login)
+        mobile.classList.remove('mob-to-register', 'mob-to-login');
+        mobile.classList.add('mob-sweeping', isReg ? 'mob-to-register' : 'mob-to-login');
 
         // 2. Fade out old content immediately
         if (oldForm) {
@@ -992,7 +1010,7 @@
         setTimeout(() => {
           if (newForm) newForm.classList.remove('mob-form-enter');
           if (newStrip) newStrip.classList.remove('mob-strip-enter');
-          mobile.classList.remove('mob-sweeping');
+          mobile.classList.remove('mob-sweeping', 'mob-to-register', 'mob-to-login');
           isAnimating = false;
         }, sweepMs + 50);
       } else {
@@ -1260,11 +1278,13 @@
         submitBtn.textContent = 'Creating account…';
       }
 
+      const registerRole = currentRole === 'employee' ? 'employee' : 'student';
+
       try {
         const res = await fetch('/api/auth/register', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name, email, phone, password, role: currentRole })
+          body: JSON.stringify({ name, email, phone, password, role: registerRole })
         });
 
         const result = await res.json();
@@ -1279,9 +1299,9 @@
         showAuthAlert(form, 'Account created! Redirecting to dashboard…', 'success');
 
         if (result.data && result.data.token) {
-          localStorage.setItem('arox_token_' + currentRole, result.data.token);
+          localStorage.setItem('arox_token_' + registerRole, result.data.token);
           localStorage.setItem('arox_token', result.data.token);
-          localStorage.setItem('arox_role', currentRole);
+          localStorage.setItem('arox_role', registerRole);
           if (result.data.user) {
             const u = result.data.user;
             const uName = [u.first_name, u.last_name].filter(Boolean).join(' ').trim() || (u.email ? u.email.split('@')[0] : 'AROX User');
@@ -1290,19 +1310,18 @@
               id: u.id,
               email: u.email,
               name: uName,
-              role: currentRole,
-              displayRole: roleLabels[currentRole] || roleLabels[(u.role || '').toLowerCase()] || 'User',
-              dashboardUrl: result.redirectUrl || (currentRole === 'admin' ? '/admin/dashboard' : (currentRole === 'employee' ? '/employee/dashboard' : '/student/dashboard'))
+              role: registerRole,
+              displayRole: roleLabels[registerRole] || roleLabels[(u.role || '').toLowerCase()] || 'User',
+              dashboardUrl: result.redirectUrl || (registerRole === 'employee' ? '/employee/dashboard' : '/student/dashboard')
             }));
           }
         }
 
         const roleDashboards = {
-          admin: '/admin/dashboard',
           employee: '/employee/dashboard',
           student: '/student/dashboard'
         };
-        const targetUrl = result.redirectUrl || roleDashboards[currentRole] || '/student/dashboard';
+        const targetUrl = result.redirectUrl || roleDashboards[registerRole] || '/student/dashboard';
 
         setTimeout(() => {
           window.location.href = targetUrl;
@@ -1342,10 +1361,14 @@
         if (sReg) sReg.style.display = 'flex';
       }
 
-      // Restore portal role
+      // Restore portal role (disallow admin when opening register view)
       try {
         const r = localStorage.getItem('arox_user_role');
-        if (r && ['student','employee','admin'].includes(r)) setPortalRole(r);
+        if (currentMode === 'register' && r === 'admin') {
+          setPortalRole('student');
+        } else if (r && ['student','employee','admin'].includes(r)) {
+          setPortalRole(r);
+        }
       } catch(e){}
 
       // Extra clear after browsers autofill post-DOMContentLoaded
