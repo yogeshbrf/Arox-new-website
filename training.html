@@ -1282,7 +1282,7 @@
       height: 32px;
       background: var(--border);
     }
-    @media (max-width: 768px) {
+    @media (max-width: 900px) {
       .benefit-divider { display: none; }
       .expanded-view { flex-direction: column; padding: 24px; }
       .expanded-right { display: none; }
@@ -2135,11 +2135,7 @@
       gap: 32px;
       align-items: start;
     }
-    @media (min-width: 769px) { .exp-layout { display: grid; } .exp-mobile { display: none !important; } }
-    @media (min-width: 769px) and (max-width: 1023px) {
-      .exp-layout { grid-template-columns: 4.5fr 7.5fr; gap: 20px; }
-      .exp-detail-panel { padding: 22px; min-height: 500px; }
-    }
+    @media (min-width: 1024px) { .exp-layout { display: grid; } .exp-mobile { display: none !important; } }
 
     /* Detail panel */
     .exp-detail-panel {
@@ -2621,7 +2617,7 @@
       }
     }
     .hidden-lg { display: block; }
-    @media (min-width: 769px) { .hidden-lg { display: none; } }
+    @media (min-width: 1024px) { .hidden-lg { display: none; } }
 
     /* Transition helper */
     .fade-slide { animation: fadeUp 0.25s ease forwards; }
@@ -3330,13 +3326,8 @@
       opacity: 0.6;
     }
 
-    /* Responsive: Tablet (769px-1023px) proportional desktop layout; Mobile (<=768px) below */
-    @media (min-width: 769px) and (max-width: 1023px) {
-      .internship-category-pills { gap: 8px !important; padding: 0 12px !important; }
-      .intern-cat-pill { padding: 0 14px !important; font-size: 13px !important; height: 44px !important; }
-      .card-hero-graphic { width: 260px; height: 220px; max-width: 48%; }
-    }
-    @media (max-width: 768px) {
+    /* Responsive: Tablet and Mobile (<1024px) */
+    @media (max-width: 1023px) {
       .hscroll-section.is-internship-view {
         padding: 3.5rem 1rem 3rem !important;
       }
@@ -4327,8 +4318,10 @@
         font-size: 11px !important;
         gap: 4px 8px !important;
       }
+    }
 
-      /* Mobile Section Headers with Expandable Search (Image 3) */
+    @media (max-width: 1024px) {
+      /* Compact Section Headers with Expandable Search (Mobile & Tablet) */
       .arox-mob-header-row {
         display: flex !important;
         align-items: center !important;
@@ -4497,15 +4490,19 @@
 
     <style id="mobile-training-styles">
     @media (max-width: 768px) {
-      /* Mobile Hero Section - Spacing & Typography */
-      #hero.page-hero-pro {
-        min-height: auto !important;
-        padding-top: calc(env(safe-area-inset-top, 0px) + 94px) !important;
-        padding-bottom: 48px !important;
-        padding-left: 20px !important;
-        padding-right: 20px !important;
+      /* Mobile Hero Section - Full-Screen Coverage & Typography */
+      #hero.page-hero-pro,
+      #hero.page-hero-pro.hero-courses {
+        min-height: 100vh !important;
+        min-height: 100dvh !important;
+        height: auto !important;
+        padding: calc(env(safe-area-inset-top, 0px) + 76px) 20px 2.5rem !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        box-sizing: border-box !important;
       }
-      #hero.page-hero-pro { min-height: 100vh !important; min-height: 100dvh !important; height: auto !important; padding: calc(env(safe-area-inset-top, 0px) + 76px) 20px 24px !important; display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; box-sizing: border-box !important; }
       #hero .hero-main-title {
         font-size: clamp(2.1rem, 7.8vw, 2.75rem) !important;
         line-height: 1.15 !important;
@@ -4995,14 +4992,14 @@
 <style id="arox-strict-mobile-css">
 
     /* ============================================================
-       MOBILE VIEW: BALANCED TRAINING & INTERNSHIP CARDS
+       MOBILE & TABLET VIEW (<= 1024px): BALANCED TRAINING & INTERNSHIP CARDS
     ============================================================ */
     .arox-mobile-courses-view {
       display: none;
     }
 
-    @media (max-width: 768px) {
-      /* STRICTLY HIDE SCROLL HINT ON MOBILE */
+    @media (max-width: 1024px) {
+      /* STRICTLY HIDE SCROLL HINT ON MOBILE & TABLET */
       .scroll-hint,
       .hscroll-section .scroll-hint,
       .hscroll-section.is-training-view .scroll-hint,
@@ -5798,11 +5795,132 @@
       .arox-intern-explore-btn:hover svg {
         transform: translateX(2px) !important;
       }
+      html.dark .arox-intern-img,
+      html.theme-dark .arox-intern-img {
         filter: drop-shadow(0 8px 18px rgba(0, 180, 255, 0.24)) !important;
       }
       html.theme-light .arox-intern-img,
       html:not(.dark) .arox-intern-img {
         filter: drop-shadow(0 8px 16px rgba(0, 70, 200, 0.16)) !important;
+      }
+    }
+
+    /* ============================================================
+       TABLET PROPORTIONAL SIZING (769px - 1024px)
+    ============================================================ */
+    @media (min-width: 769px) and (max-width: 1024px) {
+      #hscrollSection,
+      .hscroll-section,
+      .hscroll-section.is-training-view,
+      .hscroll-section.is-internship-view {
+        padding: 44px 32px 56px 32px !important;
+      }
+      .arox-mob-section {
+        margin-bottom: 44px !important;
+      }
+      .arox-mob-heading {
+        font-size: 32px !important;
+      }
+      .arox-mob-sub {
+        font-size: 15px !important;
+        margin-bottom: 18px !important;
+      }
+      .arox-mob-search-wrapper {
+        height: 40px !important;
+      }
+      .arox-mob-search-btn {
+        width: 40px !important;
+        height: 40px !important;
+      }
+      .arox-mob-search-bar {
+        height: 40px !important;
+        border-radius: 20px !important;
+      }
+      .arox-mob-search-wrapper.expanded .arox-mob-search-bar {
+        width: 280px !important;
+        max-width: 42vw !important;
+      }
+      .arox-mob-search-input {
+        font-size: 13px !important;
+      }
+      .arox-mob-scroll-track {
+        gap: 20px !important;
+        padding: 6px 32px 20px 32px !important;
+        margin: 0 -32px !important;
+        scroll-padding-left: 32px !important;
+      }
+      .arox-mobile-flip-card {
+        width: 292px !important;
+        min-width: 292px !important;
+        height: 435px !important;
+      }
+      .arox-mobile-card-front {
+        padding: 22px 20px 20px 20px !important;
+      }
+      .arox-train-num-box {
+        width: 40px !important;
+        height: 40px !important;
+        font-size: 15px !important;
+      }
+      .arox-train-cat-badge {
+        font-size: 10.5px !important;
+        padding: 5px 12px !important;
+      }
+      .arox-train-title {
+        font-size: 18px !important;
+      }
+      .arox-train-desc {
+        font-size: 12.5px !important;
+      }
+      .arox-train-graphic-box {
+        height: 126px !important;
+      }
+      .arox-train-graphic-img {
+        max-width: 122px !important;
+        max-height: 114px !important;
+      }
+      .arox-train-explore-btn {
+        font-size: 13px !important;
+        padding: 9px 20px !important;
+      }
+      .arox-mobile-card-back {
+        padding: 20px 18px 18px 18px !important;
+      }
+      .arox-mob-back-header {
+        font-size: 0.78rem !important;
+      }
+      .arox-mob-learn-list li {
+        font-size: 0.82rem !important;
+      }
+      .arox-mob-pills-row {
+        gap: 10px !important;
+        padding: 4px 32px 14px 32px !important;
+        margin: 0 -32px 10px -32px !important;
+      }
+      .arox-mob-pill {
+        height: 36px !important;
+        padding: 6px 18px !important;
+        font-size: 12.5px !important;
+      }
+      .arox-mob-card-intern {
+        width: 256px !important;
+        min-width: 256px !important;
+        height: 338px !important;
+        min-height: 338px !important;
+        padding: 16px !important;
+        border-radius: 24px !important;
+      }
+      .arox-intern-img-box {
+        height: 148px !important;
+        min-height: 148px !important;
+      }
+      .arox-intern-l1,
+      .arox-intern-l2 {
+        font-size: 17px !important;
+      }
+      .arox-intern-explore-btn {
+        height: 42px !important;
+        font-size: 13px !important;
       }
     }
 
@@ -6164,7 +6282,7 @@
   /* Responsive Adjustments */
   @media (min-width: 769px) and (max-width: 1024px) {
     .page-hero-pro.hero-courses {
-      padding-top: 90px !important;
+      padding-top: calc(90px + 1.5rem) !important;
       padding-bottom: 2.5rem !important;
     }
     .training-hero-left-content {
@@ -6173,16 +6291,18 @@
   }
 
   @media (max-width: 768px) {
+    #hero.page-hero-pro.hero-courses,
     .page-hero-pro.hero-courses {
-      min-height: 100dvh !important;
       min-height: 100vh !important;
+      min-height: 100dvh !important;
       height: auto !important;
-      padding-top: calc(64px + 12px) !important;
-      padding-bottom: 1.5rem !important;
+      padding-top: calc(env(safe-area-inset-top, 0px) + 76px) !important;
+      padding-bottom: 2.5rem !important;
       display: flex !important;
       flex-direction: column !important;
+      align-items: center !important;
       justify-content: center !important;
-      background-position: center top !important;
+      background-position: center center !important;
       box-sizing: border-box !important;
     }
     .training-hero-inner {
@@ -6289,6 +6409,11 @@
     if (event && event.preventDefault) event.preventDefault();
     if (window.innerWidth <= 768) {
       window.location.href = 'contact.html';
+      return;
+    }
+    if (window.innerWidth <= 1024) {
+      const internSection = document.getElementById('aroxMobInternSection');
+      if (internSection) internSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
       return;
     }
     const hscroll = document.getElementById('hscrollSection');
@@ -7158,7 +7283,7 @@
       start: 'top top',
       end: () => `+=${scrollAmt + window.innerHeight * 0.95}`,
       onEnter: () => {
-        if (window.innerWidth > 768) {
+        if (window.innerWidth > 1024) {
           const header = document.getElementById('site-header');
           if (header) {
             header.classList.add('hidden-nav');
@@ -7179,7 +7304,7 @@
         window.isHScrollActive = false;
       },
       onEnterBack: () => {
-        if (window.innerWidth > 768) {
+        if (window.innerWidth > 1024) {
           const header = document.getElementById('site-header');
           if (header) {
             header.classList.add('hidden-nav');
@@ -7201,7 +7326,7 @@
       }
     });
 
-    if (window.innerWidth > 768 && pillNavTrigger && pillNavTrigger.isActive) {
+    if (window.innerWidth > 1024 && pillNavTrigger && pillNavTrigger.isActive) {
       const header = document.getElementById('site-header');
       if (header) {
         header.classList.add('hidden-nav');
@@ -7210,7 +7335,7 @@
       if (pillNav) pillNav.classList.add('is-visible');
       window.isHScrollActive = true;
     } else {
-      if (pillNav && window.innerWidth <= 768) pillNav.classList.remove('is-visible');
+      if (pillNav && window.innerWidth <= 1024) pillNav.classList.remove('is-visible');
     }
   }
 
@@ -7342,7 +7467,7 @@
   }
 
   function initHScroll() {
-    if (window.innerWidth <= 768) {
+    if (window.innerWidth <= 1024) {
       if (typeof initAroxMobileCourses === 'function') initAroxMobileCourses();
       return;
     }
@@ -7430,7 +7555,7 @@
   }
 
   function initInternTrigger() {
-    if (window.innerWidth <= 768) {
+    if (window.innerWidth <= 1024) {
       if (typeof initAroxMobileCourses === 'function') initAroxMobileCourses();
       return;
     }
@@ -7440,7 +7565,7 @@
       window.internTrigger = null;
     }
 
-    const isDesktop = window.innerWidth >= 768;
+    const isDesktop = window.innerWidth > 1024;
     const internScrollAmt = isDesktop ? Math.max(1600, window.innerHeight * 2.4) : 0;
     const DOMAIN_KEYS = ['cse_it', 'ece', 'mech', 'management'];
 
@@ -7537,7 +7662,7 @@
           }
         },
         onEnter: () => {
-          if (window.innerWidth > 768) {
+          if (window.innerWidth > 1024) {
             window.isHScrollActive = true;
             const header = document.getElementById('site-header');
             if (header) {
@@ -7558,7 +7683,7 @@
           if (pillNav) pillNav.classList.remove('is-visible');
         },
         onEnterBack: () => {
-          if (window.innerWidth > 768) {
+          if (window.innerWidth > 1024) {
             window.isHScrollActive = true;
             const header = document.getElementById('site-header');
             if (header) {
@@ -7589,7 +7714,7 @@
       }
     }
 
-    if (window.innerWidth > 768 && internTrigger && internTrigger.isActive) {
+    if (window.innerWidth > 1024 && internTrigger && internTrigger.isActive) {
       const header = document.getElementById('site-header');
       if (header) {
         header.classList.add('hidden-nav');
@@ -7598,7 +7723,7 @@
       if (pillNav) pillNav.classList.add('is-visible');
       window.isHScrollActive = true;
     } else {
-      if (pillNav && window.innerWidth <= 768) pillNav.classList.remove('is-visible');
+      if (pillNav && window.innerWidth <= 1024) pillNav.classList.remove('is-visible');
     }
   }
 
@@ -7955,7 +8080,7 @@
       }
 
       if (!isInitialLoad && (prevScrollY >= heroBottom - 20 || window.scrollY >= heroBottom - 20)) {
-        if (window.innerWidth > 768) {
+        if (window.innerWidth > 1024) {
           if (header) {
             header.classList.add('hidden-nav');
             header.style.pointerEvents = 'none';
@@ -8032,7 +8157,7 @@
       }
 
       if (!isInitialLoad && (prevScrollY >= heroBottom - 20 || window.scrollY >= heroBottom - 20)) {
-        if (window.innerWidth > 768) {
+        if (window.innerWidth > 1024) {
           if (header) {
             header.classList.add('hidden-nav');
             header.style.pointerEvents = 'none';
@@ -8100,7 +8225,7 @@
         updateMobileDiagonalStage(0);
       }
 
-      if (window.innerWidth > 768) {
+      if (window.innerWidth > 1024) {
         const pillNavEl = document.getElementById('coursesPillNav');
         const catPills = document.getElementById('internshipCategoryPills');
         const header = document.getElementById('site-header');
@@ -8111,6 +8236,11 @@
         if (pillNavEl) pillNavEl.classList.add('is-visible');
         if (catPills) catPills.classList.remove('is-visible');
         window.isHScrollActive = true;
+      } else {
+        const trainSection = document.getElementById('aroxMobTrainingSection') || document.getElementById('hscrollSection');
+        if (trainSection) {
+          trainSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
       }
     } else {
       const chosenDomain = targetDomainParam || window.currentActiveDomain || 'cse_it';
@@ -8124,7 +8254,7 @@
       document.querySelectorAll('.intern-cat-pill').forEach(pill => {
         pill.classList.toggle('active', pill.getAttribute('data-domain') === chosenDomain);
       });
-      if (window.innerWidth <= 768) {
+      if (window.innerWidth <= 1024) {
         if (typeof window.renderMobileInternship === 'function') {
           window.renderMobileInternship(chosenDomain);
         }
@@ -8154,7 +8284,7 @@
         if (typeof st.progress === 'function') st.progress(0);
       }
 
-      if (window.innerWidth > 768) {
+      if (window.innerWidth > 1024) {
         const pillNavEl = document.getElementById('coursesPillNav');
         const catPills = document.getElementById('internshipCategoryPills');
         const header = document.getElementById('site-header');
@@ -8179,6 +8309,11 @@
     if (event && event.preventDefault) event.preventDefault();
     if (window.innerWidth <= 768) {
       window.location.href = 'contact.html';
+      return;
+    }
+    if (window.innerWidth <= 1024) {
+      const targetEl = document.getElementById('aroxMobInternSection') || document.getElementById('aroxMobTrainingSection');
+      if (targetEl) targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
       return;
     }
     const now = Date.now();
@@ -10885,7 +11020,7 @@
             ScrollTrigger.refresh();
           }
 
-          if (window.innerWidth > 768) {
+          if (window.innerWidth > 1024) {
             const header = document.getElementById('site-header');
             const pillNav = document.getElementById('coursesPillNav');
             if (header) {
@@ -11654,15 +11789,26 @@
     renderMobileInternship(initialMobDom);
   }
 
-  // Ensure init on DOMReady / resize
+  // Ensure init on DOMReady / resize (Mobile & Tablet <= 1024px)
   if (typeof window !== 'undefined') {
     window.initAroxMobileCourses = initAroxMobileCourses;
-    if (window.innerWidth <= 768) {
+    let wasCompactViewport = window.innerWidth <= 1024;
+    if (wasCompactViewport) {
       setTimeout(initAroxMobileCourses, 200);
     }
     window.addEventListener('resize', () => {
-      if (window.innerWidth <= 768) {
+      const isCompactViewport = window.innerWidth <= 1024;
+      const track = document.getElementById('aroxMobileTrainingTrack');
+      if (isCompactViewport && (!wasCompactViewport || !track || track.children.length === 0)) {
         initAroxMobileCourses();
+      }
+      if (isCompactViewport !== wasCompactViewport) {
+        wasCompactViewport = isCompactViewport;
+        if (typeof window.setActiveType === 'function') {
+          const hscroll = document.getElementById('hscrollSection');
+          const curType = (hscroll && hscroll.classList.contains('is-internship-view')) ? 'internship' : 'training';
+          window.setActiveType(curType, true, true);
+        }
       }
     });
   }
@@ -11683,7 +11829,7 @@
       }
       
       const trySwitch = (attempts = 0) => {
-        if (window.innerWidth <= 768) {
+        if (window.innerWidth <= 1024) {
           if (typeof window.initAroxMobileCourses === 'function' && typeof window.renderMobileInternship !== 'function') {
             window.initAroxMobileCourses();
           }
@@ -11753,7 +11899,7 @@
             document.querySelectorAll('.intern-cat-pill').forEach(pill => {
               pill.classList.toggle('active', pill.getAttribute('data-domain') === dom);
             });
-            if (window.innerWidth <= 768) {
+            if (window.innerWidth <= 1024) {
               if (typeof window.initAroxMobileCourses === 'function' && typeof window.renderMobileInternship !== 'function') {
                 window.initAroxMobileCourses();
               }
