@@ -8,7 +8,7 @@
     'use strict';
 
     // ─── 1. URL & Course Extraction ───
-    function getSelectedCourse() {
+    function getRawCourseSlugFromUrl() {
         const urlParams = new URLSearchParams(window.location.search);
         let slug = urlParams.get('course') || urlParams.get('program') || urlParams.get('internship') || urlParams.get('track') || urlParams.get('id') || urlParams.get('name');
 
@@ -24,10 +24,11 @@
             slug = window.location.hash.replace('#card-', '').replace('#', '');
         }
 
-        if (!slug) {
-            slug = 'full-stack-web-development';
-        }
+        return slug ? String(slug).trim() : '';
+    }
 
+    function getSelectedCourse() {
+        const slug = getRawCourseSlugFromUrl() || 'full-stack-web-development';
         return getCourseBySlug(slug);
     }
 
@@ -104,29 +105,44 @@
         'ui-ux-designing': 'assets/internships/cards/ui-ux-design.png',
         'embedded-systems-and-iot': 'assets/internships/cards/embedded-system.png',
         'software-development': 'assets/internships/cards/selenium-testing.png',
-        'app-development': 'assets/internships/cards/iot.png'
+        'app-development': 'assets/internships/cards/iot.png',
+        'full-stack-web-development': 'assets/internships/cards/python-full-stack.png',
+        'full-stack-web-engineering': 'assets/internships/cards/python-full-stack.png',
+        'python-backend-microservices': 'assets/internships/cards/python-full-stack.png',
+        'mern-stack': 'assets/internships/cards/python-full-stack.png',
+        'mern-stack-cloud-engineering': 'assets/internships/cards/python-full-stack.png',
+        'cyber-security-specialist': 'assets/internships/cards/cyber-security.png',
+        'cyber-security-pentesting': 'assets/internships/cards/cyber-security.png',
+        'qa-automation-testing': 'assets/internships/cards/selenium-testing.png',
+        'ui-ux-product-design': 'assets/internships/cards/ui-ux-design.png',
+        'cloud-devops-engineering': 'assets/internships/cards/devops.png',
+        'data-science-ai': 'assets/internships/cards/data-analytics-data-science.png',
+        'embedded-systems-iot': 'assets/internships/cards/embedded-system.png',
+        'cross-platform-mobile-dev': 'assets/internships/cards/iot.png'
     };
 
     function getDetailHeroImage(course) {
         if (!course) return 'assets/detail page images/Neon Full-Stack Developer Workspace.png';
         const urlParams = new URLSearchParams(window.location.search);
         const fromParam = (urlParams.get('from') || '').toLowerCase();
-        const querySlug = (urlParams.get('course') || urlParams.get('internship') || urlParams.get('track') || urlParams.get('id') || '').toLowerCase().trim();
+        const rawQuerySlug = getRawCourseSlugFromUrl().toLowerCase();
+        const querySlug = rawQuerySlug.replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
         const slug = (course.slug || course.id || '').toLowerCase();
         const isInternship = fromParam === 'internship' ||
                              (course.category && course.category.toLowerCase().includes('internship')) ||
                              Boolean(course.isInternship) ||
-                             (Boolean(INTERNSHIP_CARD_IMAGES[querySlug]) && fromParam !== 'training') ||
+                             (Boolean(INTERNSHIP_CARD_IMAGES[rawQuerySlug] || INTERNSHIP_CARD_IMAGES[querySlug]) && fromParam !== 'training') ||
                              (Boolean(INTERNSHIP_CARD_IMAGES[slug]) && fromParam !== 'training');
 
-        const isMobileScreen = typeof window !== 'undefined' && window.innerWidth <= 768;
-
-        // Outside 2D internship card is ONLY used on MOBILE screens (<= 768px)
-        if (isMobileScreen && isInternship) {
-            if (querySlug && INTERNSHIP_CARD_IMAGES[querySlug]) {
+        // Always use the matching arox-intern-img-box card image on every internship detail page (desktop & mobile)
+        if (isInternship) {
+            if (INTERNSHIP_CARD_IMAGES[rawQuerySlug]) {
+                return INTERNSHIP_CARD_IMAGES[rawQuerySlug];
+            }
+            if (INTERNSHIP_CARD_IMAGES[querySlug]) {
                 return INTERNSHIP_CARD_IMAGES[querySlug];
             }
-            if (slug && INTERNSHIP_CARD_IMAGES[slug]) {
+            if (INTERNSHIP_CARD_IMAGES[slug]) {
                 return INTERNSHIP_CARD_IMAGES[slug];
             }
             if (querySlug) {
@@ -137,7 +153,7 @@
             }
         }
 
-        // On DESKTOP view (> 768px), reverse/restore to rich 3D Neon illustrations for both training & internship cards
+        // Non-internship training detail views continue using their rich 3D Neon illustrations
         if (DETAIL_HERO_IMAGES[slug]) {
             return DETAIL_HERO_IMAGES[slug];
         }
@@ -299,7 +315,7 @@
             });
         }
 
-        // Hero 3D Graphic Image
+        // Hero Course Visual Graphic
         const heroCourseImg = document.getElementById('hero-course-image');
         if (heroCourseImg) {
             heroCourseImg.src = getDetailHeroImage(course);
@@ -308,17 +324,6 @@
                 this.onerror = null;
                 this.src = 'assets/internships/3d_laptop_dark.png';
             };
-            if (!window._detailResizeBound) {
-                window._detailResizeBound = true;
-                let wasMobile = window.innerWidth <= 768;
-                window.addEventListener('resize', () => {
-                    const isMob = window.innerWidth <= 768;
-                    if (wasMobile !== isMob) {
-                        wasMobile = isMob;
-                        heroCourseImg.src = getDetailHeroImage(course);
-                    }
-                });
-            }
         }
 
         // Back to Courses Link
