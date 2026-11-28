@@ -1119,9 +1119,9 @@
     }
 
     /* Responsive Adjustments */
-    @media (min-width: 769px) and (max-width: 1024px) {
+    @media (max-width: 1024px) {
       .page-hero-pro.hero-services {
-        padding-top: 90px !important;
+        padding-top: calc(90px + 1.5rem) !important;
         padding-bottom: 2.5rem !important;
       }
       .services-hero-left-content {
@@ -1323,6 +1323,77 @@
     /* Hide on Desktop */
     .arox-mobile-services-view {
       display: none !important;
+    }
+
+    /* Tablet View (769px - 1024px): Disable card-stack pinning, hide floating service nav bar, normal document scroll */
+    @media (min-width: 769px) and (max-width: 1024px) {
+      #services-floating-nav {
+        display: none !important;
+        opacity: 0 !important;
+        visibility: hidden !important;
+        pointer-events: none !important;
+      }
+
+      #site-header.services-nav-hidden {
+        transform: none !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+        pointer-events: auto !important;
+      }
+
+      #services-stack-wrapper {
+        height: auto !important;
+        min-height: auto !important;
+        padding: 36px 24px 56px 24px !important;
+        overflow: visible !important;
+      }
+
+      #services-stack-pinned {
+        position: relative !important;
+        top: auto !important;
+        left: auto !important;
+        transform: none !important;
+        width: 100% !important;
+        height: auto !important;
+        min-height: auto !important;
+        padding: 0 !important;
+        display: block !important;
+      }
+
+      #services-stack-stage,
+      .services-stack-stage {
+        position: relative !important;
+        width: 100% !important;
+        max-width: 980px !important;
+        margin: 0 auto !important;
+        height: auto !important;
+        min-height: auto !important;
+        max-height: none !important;
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 28px !important;
+        transform: none !important;
+      }
+
+      .domain-section-card.domain-folder-card {
+        position: relative !important;
+        top: auto !important;
+        left: auto !important;
+        width: 100% !important;
+        height: auto !important;
+        min-height: auto !important;
+        max-height: none !important;
+        transform: none !important;
+        opacity: 1 !important;
+        z-index: 1 !important;
+        margin: 0 !important;
+        padding: 32px 26px 28px 26px !important;
+        border-radius: 28px !important;
+      }
+
+      .domain-section-card.domain-folder-card .domain-tagline {
+        opacity: 0.85 !important;
+      }
     }
 
     @media (max-width: 768px) {
@@ -2220,9 +2291,10 @@
                 const header = document.getElementById('site-header');
 
                 const checkNavAndHeader = () => {
-                    const isMobile = window.innerWidth <= 768;
-                    if (isMobile) {
+                    const isMobileOrTablet = window.innerWidth <= 1024;
+                    if (isMobileOrTablet) {
                         setNavVisible(false);
+                        window.isServicesScrollActive = false;
                         if (header) header.classList.remove('services-nav-hidden');
                         return;
                     }
@@ -2266,78 +2338,125 @@
                 };
             }, []);
 
-            // GSAP ScrollTrigger Sticky Domain Stacking Timeline (Active on both Desktop and Mobile)
+            // GSAP ScrollTrigger Sticky Domain Stacking Timeline (Desktop >= 1025px only; normal document scroll on Tablet & Mobile)
             useEffect(() => {
                 if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return;
-                if (window.innerWidth <= 768) return; // Do NOT initialize desktop pinning on mobile!
-                
                 gsap.registerPlugin(ScrollTrigger);
 
-                if (window.lenis) {
-                    window.lenis.on('scroll', ScrollTrigger.update);
-                }
+                let tl = null;
+                let lastIsDesktop = null;
 
-                const tl = gsap.timeline({
-                    scrollTrigger: {
-                        id: "services-folder-stack-trigger",
-                        trigger: "#services-stack-wrapper",
-                        pin: "#services-stack-pinned",
-                        pinSpacing: false,
-                        start: "top top",
-                        end: "bottom bottom",
-                        scrub: 0.6,
-                        onUpdate: (self) => {
-                            const p = self.progress;
-                            if (p < 0.28) setActiveIdx(0);
-                            else if (p < 0.60) setActiveIdx(1);
-                            else if (p < 0.88) setActiveIdx(2);
-                            else setActiveIdx(3);
-                        }
+                const teardownStack = () => {
+                    const st = ScrollTrigger.getById("services-folder-stack-trigger");
+                    if (st) st.kill(true);
+                    if (tl) {
+                        tl.kill();
+                        tl = null;
                     }
-                });
+                    gsap.set(
+                        [
+                            "#services-stack-pinned",
+                            "#domain-section-0",
+                            "#domain-section-1",
+                            "#domain-section-2",
+                            "#domain-section-3",
+                            "#domain-section-0 .domain-tagline",
+                            "#domain-section-1 .domain-tagline",
+                            "#domain-section-2 .domain-tagline",
+                            "#domain-section-3 .domain-tagline"
+                        ],
+                        { clearProps: "all" }
+                    );
+                };
 
-                // Step 1: Card 1 (Creative & Experience) slides up over Card 0 (Development)
-                tl.to("#domain-section-1", {
-                    y: "0%",
-                    ease: "power2.out",
-                    duration: 1
-                }, 0)
-                .to("#domain-section-0 .domain-tagline", { opacity: 0, duration: 0.3 }, 0.2)
-                .to("#domain-section-0", { scale: 0.97, opacity: 0.7, duration: 0.6 }, 0.4);
+                const setupStack = () => {
+                    const isDesktop = window.innerWidth >= 1025;
+                    if (lastIsDesktop === isDesktop) return;
+                    lastIsDesktop = isDesktop;
 
-                // Step 2: Card 2 (Business Solutions) slides up over Card 1
-                tl.to("#domain-section-2", {
-                    y: "0%",
-                    ease: "power2.out",
-                    duration: 1
-                }, 1.2)
-                .to("#domain-section-1 .domain-tagline", { opacity: 0, duration: 0.3 }, 1.4)
-                .to("#domain-section-1", { scale: 0.97, opacity: 0.7, duration: 0.6 }, 1.6);
+                    if (!isDesktop) {
+                        teardownStack();
+                        return;
+                    }
 
-                // Step 3: Card 3 (Infrastructure) slides up over Card 2
-                tl.to("#domain-section-3", {
-                    y: "0%",
-                    ease: "power2.out",
-                    duration: 1
-                }, 2.4)
-                .to("#domain-section-2 .domain-tagline", { opacity: 0, duration: 0.3 }, 2.6)
-                .to("#domain-section-2", { scale: 0.97, opacity: 0.7, duration: 0.6 }, 2.8);
+                    if (window.lenis) {
+                        window.lenis.on('scroll', ScrollTrigger.update);
+                    }
+
+                    gsap.set("#domain-section-0", { y: "0%", scale: 1, opacity: 1 });
+                    gsap.set(["#domain-section-1", "#domain-section-2", "#domain-section-3"], { y: "105%", scale: 1, opacity: 1 });
+
+                    tl = gsap.timeline({
+                        scrollTrigger: {
+                            id: "services-folder-stack-trigger",
+                            trigger: "#services-stack-wrapper",
+                            pin: "#services-stack-pinned",
+                            pinSpacing: false,
+                            start: "top top",
+                            end: "bottom bottom",
+                            scrub: 0.6,
+                            onUpdate: (self) => {
+                                const p = self.progress;
+                                if (p < 0.28) setActiveIdx(0);
+                                else if (p < 0.60) setActiveIdx(1);
+                                else if (p < 0.88) setActiveIdx(2);
+                                else setActiveIdx(3);
+                            }
+                        }
+                    });
+
+                    // Step 1: Card 1 (Creative & Experience) slides up over Card 0 (Development)
+                    tl.to("#domain-section-1", {
+                        y: "0%",
+                        ease: "power2.out",
+                        duration: 1
+                    }, 0)
+                    .to("#domain-section-0 .domain-tagline", { opacity: 0, duration: 0.3 }, 0.2)
+                    .to("#domain-section-0", { scale: 0.97, opacity: 0.7, duration: 0.6 }, 0.4);
+
+                    // Step 2: Card 2 (Business Solutions) slides up over Card 1
+                    tl.to("#domain-section-2", {
+                        y: "0%",
+                        ease: "power2.out",
+                        duration: 1
+                    }, 1.2)
+                    .to("#domain-section-1 .domain-tagline", { opacity: 0, duration: 0.3 }, 1.4)
+                    .to("#domain-section-1", { scale: 0.97, opacity: 0.7, duration: 0.6 }, 1.6);
+
+                    // Step 3: Card 3 (Infrastructure) slides up over Card 2
+                    tl.to("#domain-section-3", {
+                        y: "0%",
+                        ease: "power2.out",
+                        duration: 1
+                    }, 2.4)
+                    .to("#domain-section-2 .domain-tagline", { opacity: 0, duration: 0.3 }, 2.6)
+                    .to("#domain-section-2", { scale: 0.97, opacity: 0.7, duration: 0.6 }, 2.8);
+
+                    ScrollTrigger.refresh();
+                };
+
+                setupStack();
+                window.addEventListener('resize', setupStack);
 
                 return () => {
-                    const st = ScrollTrigger.getById("services-folder-stack-trigger");
-                    if (st) st.kill();
+                    window.removeEventListener('resize', setupStack);
+                    if (window.lenis) {
+                        window.lenis.off('scroll', ScrollTrigger.update);
+                    }
+                    teardownStack();
                 };
             }, []);
 
             const goToCard = (index, force = false) => {
-                if (!force && !navVisible) return;
+                const isDesktop = window.innerWidth >= 1025;
+                if (isDesktop && !force && !navVisible) return;
                 setActiveIdx(index);
                 const st = ScrollTrigger.getById("services-folder-stack-trigger");
-                if (!st) {
+                if (!st || !isDesktop) {
                     const el = document.getElementById(`domain-section-${index}`);
                     if (el) {
-                        const topOffset = el.getBoundingClientRect().top + window.pageYOffset - 80;
-                        window.scrollTo({ top: topOffset, behavior: 'smooth' });
+                        const topOffset = el.getBoundingClientRect().top + window.pageYOffset - 96;
+                        window.scrollTo({ top: Math.max(0, topOffset), behavior: 'smooth' });
                     }
                     return;
                 }
@@ -2379,6 +2498,8 @@
                                 if (mobEl) {
                                     mobEl.scrollIntoView({ behavior: 'instant', block: 'start' });
                                 }
+                            } else if (window.innerWidth <= 1024) {
+                                goToCard(idx, true);
                             } else {
                                 goToCard(idx, false);
                             }
@@ -2454,10 +2575,10 @@
 
                     {/* Technology Stack Section (Previous Design Restored) */}
                     <section id="tech-stack-section" className="tech-stack-section py-24 relative overflow-hidden" style={{ backgroundColor: 'var(--background)' }}>
-                        <div className="max-w-[1400px] mx-auto px-6 md:px-12 flex flex-col md:flex-row items-center justify-between gap-12 relative z-10">
+                        <div className="max-w-[1400px] mx-auto px-6 md:px-12 flex flex-col lg:flex-row items-center justify-between gap-12 relative z-10">
                             
                             {/* Left Info Column (40%) */}
-                            <div className="w-full md:w-[40%] space-y-6">
+                            <div className="w-full lg:w-[40%] space-y-6">
                                 <div className="section-eyebrow inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-opacity-30 text-xs font-bold" style={{ backgroundColor: 'var(--glow-color)', color: 'var(--primary)', borderColor: 'var(--primary)' }}>
                                     <span className="w-2 h-2 rounded-full bg-[var(--primary)] animate-pulse"></span>
                                     ENTERPRISE TECH STACK
@@ -2474,7 +2595,7 @@
                             </div>
 
                             {/* Right Marquee Column (60%) */}
-                            <div className="w-full md:w-[60%] flex flex-col gap-6 overflow-hidden relative py-4">
+                            <div className="w-full lg:w-[60%] flex flex-col gap-6 overflow-hidden relative py-4">
                                 {/* Edge Fade Masks */}
                                 <div className="absolute inset-y-0 left-0 w-20 fade-mask-left z-20 pointer-events-none"></div>
                                 <div className="absolute inset-y-0 right-0 w-20 fade-mask-right z-20 pointer-events-none"></div>
@@ -2750,6 +2871,8 @@
                             if (window.innerWidth <= 768) {
                                 const mobEl = document.getElementById(`mob-service-${svc.toLowerCase()}`);
                                 if (mobEl) mobEl.scrollIntoView({ behavior: 'instant', block: 'start' });
+                            } else if (window.innerWidth <= 1024 && typeof window.goToServiceCard === 'function') {
+                                window.goToServiceCard(idx, true);
                             } else if (typeof window.goToServiceCard === 'function') {
                                 window.goToServiceCard(idx, false);
                             }

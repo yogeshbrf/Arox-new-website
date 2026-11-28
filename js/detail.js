@@ -280,19 +280,34 @@
                 'business-analytics': 'business-analytics',
                 'hr-finance': 'hr-finance',
                 'python-dev': 'python-full-stack-development',
+                'python-backend-microservices': 'python-full-stack-development',
                 'java-fsd': 'java-full-stack-development',
                 'cloud-aws': 'aws-cloud-computing',
                 'devops-engineering': 'devops',
+                'cloud-devops-engineering': 'devops',
                 'data-science-and-ai': 'data-analytics-data-science',
                 'data-science-ai-systems': 'data-analytics-data-science',
+                'data-science-ai': 'data-analytics-data-science',
                 'cyber-security-specialist': 'cyber-security',
+                'cyber-security-pentesting': 'cyber-security',
                 'ui-ux-designing': 'ui-ux-design',
+                'ui-ux-product-design': 'ui-ux-design',
                 'qa-automation-testing': 'selenium-testing-java',
                 'embedded-systems-and-iot': 'embedded-system',
-                'software-development': 'selenium-testing-java',
-                'app-development': 'internet-of-things',
-                'full-stack-web-development': 'python-full-stack-development',
-                'mern-stack': 'python-full-stack-development'
+                'embedded-systems-iot': 'embedded-system',
+                'software-development': 'software-development',
+                'app-development': 'app-development',
+                'cross-platform-mobile-dev': 'app-development',
+                'full-stack-web-development': 'full-stack-web-development',
+                'full-stack-web-engineering': 'full-stack-web-development',
+                'mern-stack': 'mern-stack',
+                'mern-stack-cloud-engineering': 'mern-stack',
+                'full-stack-internship': 'full-stack-internship',
+                'python-backend-internship': 'python-backend-internship',
+                'ui-ux-design-internship': 'ui-ux-design-internship',
+                'ai-agent-internship': 'ai-agent-internship',
+                'cloud-devops-internship': 'cloud-devops-internship',
+                'mobile-app-internship': 'mobile-app-internship'
             };
             const rawSlug = (course.slug || course.id || '').toLowerCase();
             const urlCourseParam = (new URLSearchParams(window.location.search).get('course') || '').toLowerCase();
@@ -428,7 +443,6 @@
                     <div class="topic-num-badge">${stepNum}</div>
                     <div class="topic-content-preview">
                         <h4 class="topic-title">${topic.title}</h4>
-                        <span class="topic-tag"><i class="fa-solid fa-layer-group"></i> Module ${index + 1} &bull; ${topic.tool}</span>
                     </div>
                 </div>
             `;
