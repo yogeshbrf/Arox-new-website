@@ -177,11 +177,15 @@
     /* Mobile fine-tuning */
     @media (max-width: 768px) {
       #hero.home-hero-pro {
-        min-height: auto !important;
+        min-height: 100vh !important;
+        min-height: 100dvh !important;
         height: auto !important;
-        padding-top: calc(85px + 2rem) !important;
+        padding-top: calc(64px + 12px) !important;
         padding-bottom: 1.5rem !important;
-        justify-content: flex-start !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
       }
       #hero.home-hero-pro .hero-inner {
         background: transparent !important;

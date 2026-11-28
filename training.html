@@ -1282,7 +1282,7 @@
       height: 32px;
       background: var(--border);
     }
-    @media (max-width: 900px) {
+    @media (max-width: 768px) {
       .benefit-divider { display: none; }
       .expanded-view { flex-direction: column; padding: 24px; }
       .expanded-right { display: none; }
@@ -2135,7 +2135,11 @@
       gap: 32px;
       align-items: start;
     }
-    @media (min-width: 1024px) { .exp-layout { display: grid; } .exp-mobile { display: none !important; } }
+    @media (min-width: 769px) { .exp-layout { display: grid; } .exp-mobile { display: none !important; } }
+    @media (min-width: 769px) and (max-width: 1023px) {
+      .exp-layout { grid-template-columns: 4.5fr 7.5fr; gap: 20px; }
+      .exp-detail-panel { padding: 22px; min-height: 500px; }
+    }
 
     /* Detail panel */
     .exp-detail-panel {
@@ -2617,7 +2621,7 @@
       }
     }
     .hidden-lg { display: block; }
-    @media (min-width: 1024px) { .hidden-lg { display: none; } }
+    @media (min-width: 769px) { .hidden-lg { display: none; } }
 
     /* Transition helper */
     .fade-slide { animation: fadeUp 0.25s ease forwards; }
@@ -3326,8 +3330,13 @@
       opacity: 0.6;
     }
 
-    /* Responsive: Tablet and Mobile (<1024px) */
-    @media (max-width: 1023px) {
+    /* Responsive: Tablet (769px-1023px) proportional desktop layout; Mobile (<=768px) below */
+    @media (min-width: 769px) and (max-width: 1023px) {
+      .internship-category-pills { gap: 8px !important; padding: 0 12px !important; }
+      .intern-cat-pill { padding: 0 14px !important; font-size: 13px !important; height: 44px !important; }
+      .card-hero-graphic { width: 260px; height: 220px; max-width: 48%; }
+    }
+    @media (max-width: 768px) {
       .hscroll-section.is-internship-view {
         padding: 3.5rem 1rem 3rem !important;
       }
@@ -4496,6 +4505,7 @@
         padding-left: 20px !important;
         padding-right: 20px !important;
       }
+      #hero.page-hero-pro { min-height: 100vh !important; min-height: 100dvh !important; height: auto !important; padding: calc(env(safe-area-inset-top, 0px) + 76px) 20px 24px !important; display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; box-sizing: border-box !important; }
       #hero .hero-main-title {
         font-size: clamp(2.1rem, 7.8vw, 2.75rem) !important;
         line-height: 1.15 !important;
@@ -6152,9 +6162,9 @@
   }
 
   /* Responsive Adjustments */
-  @media (max-width: 1024px) {
+  @media (min-width: 769px) and (max-width: 1024px) {
     .page-hero-pro.hero-courses {
-      padding-top: calc(90px + 1.5rem) !important;
+      padding-top: 90px !important;
       padding-bottom: 2.5rem !important;
     }
     .training-hero-left-content {
@@ -6164,8 +6174,8 @@
 
   @media (max-width: 768px) {
     .page-hero-pro.hero-courses {
-      min-height: calc(100dvh - 16px) !important;
-      min-height: calc(100vh - 16px) !important;
+      min-height: 100dvh !important;
+      min-height: 100vh !important;
       height: auto !important;
       padding-top: calc(64px + 12px) !important;
       padding-bottom: 1.5rem !important;

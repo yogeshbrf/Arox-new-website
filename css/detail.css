@@ -82,7 +82,7 @@ details[open] summary~* { animation: sweep .3s ease-in-out; }
 }
 .detail-container { max-width: 80rem; margin: 0 auto; padding: 0 1rem; }
 @media (min-width: 640px) { .detail-container { padding: 0 1.5rem; } }
-@media (min-width: 1024px) { .detail-container { padding: 0 2rem; } }
+@media (min-width: 769px) { .detail-container { padding: 0 2rem; } }
 
 .detail-card {
     background: var(--surface);
@@ -142,7 +142,7 @@ details[open] summary~* { animation: sweep .3s ease-in-out; }
     overflow: hidden;
     border-bottom: 1px solid var(--border);
 }
-@media (min-width: 1024px) {
+@media (min-width: 769px) {
     .detail-hero {
         height: auto !important;
         min-height: auto !important;
@@ -348,6 +348,12 @@ details[open] summary~* { animation: sweep .3s ease-in-out; }
     grid-template-columns: 1fr;
     gap: 2rem;
     align-items: start;
+}
+@media (min-width: 769px) {
+    .syllabus-3col-grid {
+        grid-template-columns: 205px 1fr 270px;
+        gap: 1.25rem;
+    }
 }
 @media (min-width: 1024px) {
     .syllabus-3col-grid {
@@ -834,7 +840,7 @@ details[open] summary~* { animation: sweep .3s ease-in-out; }
 @media (min-width: 768px) { .grid-3 { grid-template-columns: repeat(3, 1fr); } }
 .grid-4 { display: grid; grid-template-columns: 1fr; gap: 1.5rem; }
 @media (min-width: 640px) { .grid-4 { grid-template-columns: 1fr 1fr; } }
-@media (min-width: 1024px) { .grid-4 { grid-template-columns: repeat(4, 1fr); } }
+@media (min-width: 769px) { .grid-4 { grid-template-columns: repeat(4, 1fr); } }
 
 /* ─── Hero Visual & Floating 3D Graphic ─── */
 .hero-grid {
@@ -845,6 +851,12 @@ details[open] summary~* { animation: sweep .3s ease-in-out; }
     margin: 0 auto;
     align-items: center;
     text-align: left;
+}
+@media (min-width: 769px) {
+    .hero-grid {
+        grid-template-columns: 1.15fr 0.85fr;
+        gap: 2.5rem;
+    }
 }
 @media (min-width: 992px) {
     .hero-grid {
@@ -954,7 +966,7 @@ html:not(.dark) .hero-visual-glow { display: none !important; width: 0 !importan
 
 
 .syllabus-grid { display: grid; grid-template-columns: 1fr; gap: 2.5rem; align-items: start; }
-@media (min-width: 1024px) { .syllabus-grid { grid-template-columns: 7fr 5fr; } }
+@media (min-width: 769px) { .syllabus-grid { grid-template-columns: 7fr 5fr; } }
 
 .faq-grid { display: grid; grid-template-columns: 1fr; gap: 3rem; align-items: center; }
 .faq-grid img {
@@ -962,7 +974,7 @@ html:not(.dark) .hero-visual-glow { display: none !important; width: 0 !importan
     box-shadow: none !important;
 }
 
-@media (min-width: 1024px) { .faq-grid { grid-template-columns: 1fr 1fr; } }
+@media (min-width: 769px) { .faq-grid { grid-template-columns: 1fr 1fr; } }
 
 
 /* ══════════════════════════════════════════════════════════════
