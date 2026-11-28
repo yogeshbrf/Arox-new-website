@@ -94,6 +94,16 @@ router.post('/', (req, res) => {
       message: `New review submitted by ${reviewerName} (${rating}★).`
     });
 
+    const Notification = require('../../models/Notification');
+    Notification.notifyAdmins({
+      actorUserId: user.id,
+      actorName: reviewerName,
+      eventType: 'review:created',
+      title: 'New Review Submitted',
+      message: `${reviewerName} submitted a ${rating}★ review.`,
+      targetUrl: '/admin/reviews'
+    });
+
     res.status(201).json({ success: true, message: 'Review submitted successfully! Thank you for your feedback.', data: created });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
@@ -133,6 +143,21 @@ const acknowledgeHandler = (req, res) => {
       status: 'acknowledged',
       message: `Review #${review.id} by ${review.reviewer_name} acknowledged by ${updated.acknowledged_by_name}.`
     });
+
+    if (review.user_id) {
+      const Notification = require('../../models/Notification');
+      const targetRole = review.user_type === 'employee' ? 'employee' : 'student';
+      Notification.createTargeted({
+        recipientUserId: review.user_id,
+        recipientRole: targetRole,
+        actorUserId: req.user.id,
+        actorName: updated.acknowledged_by_name || 'Admin',
+        eventType: 'review:acknowledged',
+        title: 'Review Acknowledged',
+        message: `${updated.acknowledged_by_name || 'Admin'} acknowledged your review.`,
+        targetUrl: targetRole === 'employee' ? '/employee/reviews' : '/student/reviews'
+      });
+    }
 
     res.json({ success: true, message: 'Review acknowledged successfully.', data: updated });
   } catch (err) {
@@ -176,6 +201,21 @@ const replyHandler = (req, res) => {
       reply: reply.trim(),
       message: `Admin replied to review #${review.id} by ${review.reviewer_name}.`
     });
+
+    if (review.user_id) {
+      const Notification = require('../../models/Notification');
+      const targetRole = review.user_type === 'employee' ? 'employee' : 'student';
+      Notification.createTargeted({
+        recipientUserId: review.user_id,
+        recipientRole: targetRole,
+        actorUserId: req.user.id,
+        actorName: `${req.user.first_name || ''} ${req.user.last_name || ''}`.trim() || 'Admin',
+        eventType: 'review:replied',
+        title: 'Reply to Your Review',
+        message: `Admin replied to your review: "${reply.trim().slice(0, 70)}${reply.trim().length > 70 ? '...' : ''}"`,
+        targetUrl: targetRole === 'employee' ? '/employee/reviews' : '/student/reviews'
+      });
+    }
 
     res.json({ success: true, message: 'Admin reply posted successfully.', data: updated });
   } catch (err) {

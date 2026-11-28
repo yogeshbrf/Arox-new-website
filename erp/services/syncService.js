@@ -62,6 +62,12 @@ class TriangularSyncService {
    * Broadcast an update event to all active panels
    */
   broadcast(eventType, payload = {}) {
+    const tLower = String(eventType || '').toLowerCase();
+    // Never push alert notifications for delete, login, or logout actions
+    if (tLower.includes(':deleted') || tLower.includes('login') || tLower.includes('logout') || (payload && payload.deleted === true)) {
+      return null;
+    }
+
     const event = {
       id: ++this.eventSequence,
       type: eventType,

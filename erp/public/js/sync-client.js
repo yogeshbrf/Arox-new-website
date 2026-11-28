@@ -11,23 +11,7 @@
   let pollInterval = null;
   let isConnected = false;
 
-  // Visual status capsule updater (Apple Dynamic Island / Google Pill style)
-  function updateSyncCapsule(active, text) {
-    const capsules = document.querySelectorAll('.sync-status-capsule');
-    capsules.forEach(capsule => {
-      if (active) {
-        capsule.classList.add('sync-active');
-        const textSpan = capsule.querySelector('span:last-child');
-        if (textSpan && text) textSpan.textContent = text;
-        setTimeout(() => {
-          capsule.classList.remove('sync-active');
-          if (textSpan) textSpan.textContent = 'Live Sync';
-        }, 2500);
-      }
-    });
-  }
-
-  // Toast Notification System
+  // Toast Notification System (available only for explicit manual calls)
   function showSyncToast(message, type = 'info') {
     let container = document.getElementById('erp-sync-toast-container');
     if (!container) {
@@ -100,17 +84,27 @@
       lastEventTimestamp = Math.max(lastEventTimestamp, event.timestamp);
     }
 
-    const { type, data } = event;
+    const type = String(event.type || '').trim();
+    const lowerType = type.toLowerCase();
+    const data = event.data || {};
     const currentPath = window.location.pathname;
 
-    // Trigger visual capsule pulse
-    updateSyncCapsule(true, 'Synced');
+    // Never push alert notifications or sync broadcasts for delete or login/logout actions
+    if (!type || lowerType.endsWith(':deleted') || lowerType.includes('delete') || lowerType.includes('login') || lowerType.includes('logout') || data.deleted === true) {
+      return;
+    }
+
+    // Dispatch lightweight notification ping to refresh header notification badge/dropdown silently
+    if (type === 'notification:new') {
+      document.dispatchEvent(new CustomEvent('erp:notification:new', { detail: data }));
+      return;
+    }
 
     // Dispatch custom DOM events for page-specific handlers
     document.dispatchEvent(new CustomEvent('erp:sync', { detail: event }));
     document.dispatchEvent(new CustomEvent(`erp:${type}`, { detail: data }));
 
-    // Intelligent automated page updates based on context
+    // Intelligent automated page updates based on context (without popping alert toasts)
     function reloadIfNotEditing(delay = 600) {
       // Check if user is actively editing in a modal
       const isModalOpen = document.querySelector('[id*="Modal"][style*="flex"], [id*="Modal"][style*="block"], .modal.show, [aria-modal="true"]');
@@ -121,7 +115,6 @@
 
     switch (type) {
       case 'registration:created':
-        showSyncToast(data.message || 'New student registration received!', 'success');
         if (currentPath.includes('/internships') || currentPath.includes('/registrations') || currentPath.includes('/dashboard') || currentPath.includes('/leads') || currentPath.includes('/students')) {
           reloadIfNotEditing(600);
         }
@@ -130,7 +123,6 @@
       case 'payment:updated':
       case 'payment:verified':
       case 'payment:created':
-        showSyncToast(data.message || 'Payment record updated & verified across panels.', 'payment');
         if (currentPath.includes('/payments') || currentPath.includes('/dashboard') || currentPath.includes('/courses') || currentPath.includes('/internships') || currentPath.includes('/registrations')) {
           reloadIfNotEditing(600);
         }
@@ -138,7 +130,6 @@
 
       case 'internship:updated':
       case 'registration:updated':
-        showSyncToast(data.message || 'Internship / Registration record synced.', 'info');
         if (currentPath.includes('/internships') || currentPath.includes('/courses') || currentPath.includes('/registrations') || currentPath.includes('/leads') || currentPath.includes('/dashboard')) {
           reloadIfNotEditing(600);
         }
@@ -147,15 +138,12 @@
       case 'referral:used':
       case 'referral:created':
       case 'referral:updated':
-      case 'referral:deleted':
-        showSyncToast(data.message || 'Referral code updated across panels.', 'info');
         if (currentPath.includes('/referrals') || currentPath.includes('/internships') || currentPath.includes('/dashboard')) {
           reloadIfNotEditing(600);
         }
         break;
 
       case 'attendance:marked':
-        showSyncToast(data.message || 'Attendance verified and synced.', 'success');
         if (currentPath.includes('/attendance') || currentPath.includes('/dashboard') || currentPath.includes('/courses')) {
           reloadIfNotEditing(600);
         }
@@ -163,7 +151,6 @@
 
       case 'offline_class:updated':
       case 'course:updated':
-        showSyncToast(data.message || 'Class schedule & trainer availability updated.', 'info');
         if (currentPath.includes('/dashboard') || currentPath.includes('/courses') || currentPath.includes('/attendance')) {
           reloadIfNotEditing(600);
         }
@@ -171,7 +158,6 @@
 
       case 'proof:uploaded':
       case 'proof:reviewed':
-        showSyncToast(data.message || 'Work proof status updated.', 'info');
         if (currentPath.includes('/dashboard') || currentPath.includes('/tasks') || currentPath.includes('/reports')) {
           reloadIfNotEditing(600);
         }
@@ -180,7 +166,6 @@
       case 'review:created':
       case 'review:acknowledged':
       case 'review:replied':
-        showSyncToast(data.message || 'Review status updated & synced.', 'info');
         if (currentPath.includes('/reviews') || currentPath.includes('/dashboard')) {
           reloadIfNotEditing(600);
         }
@@ -188,8 +173,6 @@
 
       case 'client:updated':
       case 'client:created':
-      case 'client:deleted':
-        showSyncToast(data.message || 'Client directory updated.', 'info');
         if (currentPath.includes('/clients') || currentPath.includes('/leads') || currentPath.includes('/dashboard')) {
           reloadIfNotEditing(600);
         }
@@ -197,15 +180,12 @@
 
       case 'call_report:created':
       case 'call_report:updated':
-        showSyncToast(data.message || 'Call report logged & synced to Admin Reports.', 'info');
         if (currentPath.includes('/call-reports') || currentPath.includes('/reports') || currentPath.includes('/performance') || currentPath.includes('/dashboard')) {
           reloadIfNotEditing(600);
         }
         break;
 
       case 'student:updated':
-      case 'student:deleted':
-        showSyncToast(data.message || 'Student directory updated.', 'info');
         if (currentPath.includes('/students') || currentPath.includes('/internships') || currentPath.includes('/dashboard')) {
           reloadIfNotEditing(600);
         }
@@ -213,8 +193,6 @@
 
       case 'task:updated':
       case 'task:created':
-      case 'task:deleted':
-        showSyncToast(data.message || 'Task status updated.', 'info');
         if (currentPath.includes('/tasks') || currentPath.includes('/dashboard')) {
           reloadIfNotEditing(600);
         }
@@ -241,14 +219,15 @@
 
         // Standard custom sync listeners
         const eventTypes = [
+          'notification:new',
           'registration:created', 'registration:updated',
           'payment:updated', 'payment:verified', 'payment:created',
           'internship:updated',
-          'referral:used', 'referral:created', 'referral:updated', 'referral:deleted',
+          'referral:used', 'referral:created', 'referral:updated',
           'attendance:marked', 'offline_class:updated', 'course:updated', 'proof:uploaded', 'proof:reviewed', 'review:created', 'review:acknowledged', 'review:replied',
-          'client:updated', 'client:created', 'client:deleted',
-          'call_report:created', 'call_report:updated', 'student:updated', 'student:deleted',
-          'task:updated', 'task:created', 'task:deleted'
+          'client:updated', 'client:created',
+          'call_report:created', 'call_report:updated', 'student:updated',
+          'task:updated', 'task:created'
         ];
 
         eventTypes.forEach(evtName => {

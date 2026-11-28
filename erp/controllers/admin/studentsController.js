@@ -191,6 +191,16 @@ exports.update = (req, res) => {
       message: `Student details for #${student.student_id} updated.`
     });
 
+    const Notification = require('../../models/Notification');
+    Notification.notifyStudentByDbId(id, {
+      actorUserId: req.user.id,
+      actorName: 'Admin',
+      eventType: 'student:updated',
+      title: 'Profile Updated',
+      message: `Admin updated your student profile (#${student.student_id}).`,
+      targetUrl: '/student/settings'
+    });
+
     res.json({ success: true, message: 'Student profile updated successfully.' });
   } catch (error) {
     logger.error('Student Update Error:', error);
@@ -215,12 +225,6 @@ exports.delete = (req, res) => {
       entityType: 'student',
       entityId: id,
       oldValues: student
-    });
-
-    syncService.broadcast('student:deleted', {
-      id,
-      name: `${student.first_name} ${student.last_name}`,
-      message: `Student #${student.student_id} removed.`
     });
 
     res.json({ success: true, message: 'Student deleted successfully without broken references.' });

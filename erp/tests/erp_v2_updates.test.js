@@ -8,6 +8,7 @@ const path = require('path');
 const assert = require('assert');
 const { initDb, getDb } = require('../config/database');
 const { migrate } = require('../database/migrate');
+const Notification = require('../models/Notification');
 
 function request(server, { method = 'GET', path: reqPath, headers = {} }, body = null) {
   return new Promise((resolve, reject) => {
@@ -150,6 +151,7 @@ async function runSuite() {
   const createdProofIds = [];
   const createdAttIds = [];
   const createdRefCodes = [];
+  const maxNotifIdBefore = (db.prepare('SELECT MAX(id) AS m FROM notifications').get() || {}).m || 0;
   let originalCourse1 = db.prepare('SELECT * FROM courses WHERE id = 1').get();
 
   try {
@@ -717,8 +719,210 @@ async function runSuite() {
     assert.strictEqual(empBForbidden.status, 403, 'Unassigned employee blocked from accessing another employee task document (403)');
     console.log('✅ CHECK 12 PASS: Task document upload (.xlsx/.docx/.pptx), download & in-browser preview verified');
 
-    console.log('\n🎉 ALL 12 REQUIREMENTS & RBAC CHECKS PASSED SUCCESSFULLY!\n');
+    // ---------------------------------------------------------
+    // CHECK 13: Welcome Banner Removal, Sync Capsule Removal, Mobile+Desktop Bell & Targeted Notifications
+    // ---------------------------------------------------------
+    const [freshStuDash, syncJsRes] = await Promise.all([
+      request(server, { path: '/student/dashboard', headers: { Authorization: `Bearer ${stuToken}`, 'X-Role': 'student' } }),
+      request(server, { path: '/erp-assets/js/sync-client.js' })
+    ]);
+    assert.strictEqual(freshStuDash.status, 200);
+    assert.strictEqual(syncJsRes.status, 200);
+
+    // 13a. Black welcome/offer-letter banner removed from Student dashboard
+    assert(
+      !freshStuDash.text.includes('Welcome to AROX Tech,') &&
+      !freshStuDash.text.includes('Download Offer Letter') &&
+      !directDash.text.includes('Welcome to AROX Tech,'),
+      'Black Welcome / Download Offer Letter banner cards removed from Student dashboard'
+    );
+
+    // 13b. Sync capsules removed across all 3 panels & notification bell + red dot enabled on desktop & mobile
+    for (const [label, page] of [['Admin', adminDash], ['Employee', empDash], ['Student', freshStuDash]]) {
+      assert(
+        !page.text.includes('admin-sync-capsule') &&
+        !page.text.includes('employee-sync-capsule') &&
+        !page.text.includes('student-sync-capsule') &&
+        !page.text.includes('id="admin-sync-capsule"') &&
+        !page.text.includes('class="sync-status-capsule'),
+        `${label} panel topbar removes *-sync-capsule`
+      );
+      assert(
+        page.text.includes('erp-notif-wrapper') &&
+        !page.text.includes('erp-notif-wrapper hidden md:inline-flex') &&
+        page.text.includes('erp-notif-trigger') &&
+        page.text.includes('erp-notif-dot') &&
+        !page.text.includes('.erp-topbar-right button[title="Notifications"]'),
+        `${label} panel enables erp-notif-trigger + erp-notif-dot on both desktop and mobile`
+      );
+    }
+    assert(
+      cssRes.text.includes('.erp-notif-dot') &&
+      !/@media\s*\(max-width:\s*768px\)[\s\S]*button\[title="Notifications"\]\s*\{[\s\S]*display:\s*none\s*!important/.test(cssRes.text),
+      'CSS styles .erp-notif-dot and never hides notification trigger button on mobile'
+    );
+    assert(
+      syncJsRes.text.includes('notification:new') &&
+      syncJsRes.text.includes("lowerType.endsWith(':deleted')") &&
+      !syncJsRes.text.match(/case\s+'task:created':[\s\S]*showSyncToast\(/),
+      'sync-client.js handles notification pings silently, blocks deletes/logins, and avoids alert toast spam'
+    );
+
+    // 13c. Delete and Login actions never push alert/bell notifications
+    assert.strictEqual(Notification.isBlockedAction('student:deleted'), true, 'Delete action blocked in Notification model');
+    assert.strictEqual(Notification.isBlockedAction('task:deleted'), true, 'Task delete blocked in Notification model');
+    assert.strictEqual(Notification.isBlockedAction('login'), true, 'Login blocked in Notification model');
+    assert.strictEqual(Notification.isBlockedAction('auth:login'), true, 'Auth login blocked in Notification model');
+    assert.strictEqual(Notification.isBlockedAction('task:created', { deleted: true }), true, 'Deleted flag blocked');
+
+    const tempDelAttRes = await request(server, {
+      method: 'POST',
+      path: '/api/admin/attendance',
+      headers: { Authorization: `Bearer ${adminToken}`, 'X-Role': 'admin' }
+    }, { student_id: studentRow.id, course_id: enroll.course_id, date: '2026-10-18', status: 'present', method: 'manual', remarks: 'Temp Delete Row' });
+    assert.strictEqual(tempDelAttRes.status, 200, 'Create temporary attendance row for deletion test');
+    const tempDelAttId = tempDelAttRes.json.data.id;
+    createdAttIds.push(tempDelAttId);
+
+    const notifCountBeforeSuppress = db.prepare('SELECT COUNT(*) AS c FROM notifications').get().c;
+    const syncBeforeSuppress = await request(server, { path: '/api/sync/status?since=0' });
+    const syncEventsBefore = (syncBeforeSuppress.json && syncBeforeSuppress.json.events) ? syncBeforeSuppress.json.events.length : 0;
+
+    await request(server, { method: 'POST', path: '/api/auth/login' }, {
+      email: 'student@arox.com', password: 'student', role: 'student'
+    });
+    const delTaskRes = await request(server, {
+      method: 'DELETE',
+      path: `/api/employee/tasks/${pptxTaskId}`,
+      headers: { Authorization: `Bearer ${adminToken}`, 'X-Role': 'admin' }
+    });
+    assert([200, 204].includes(delTaskRes.status), 'Task deletion endpoint succeeds cleanly');
+    const delAttRes = await request(server, {
+      method: 'DELETE',
+      path: `/api/admin/attendance/${tempDelAttId}`,
+      headers: { Authorization: `Bearer ${adminToken}`, 'X-Role': 'admin' }
+    });
+    assert([200, 204].includes(delAttRes.status), 'Attendance deletion endpoint succeeds cleanly');
+
+    const notifCountAfterSuppress = db.prepare('SELECT COUNT(*) AS c FROM notifications').get().c;
+    const syncAfterSuppress = await request(server, { path: '/api/sync/status?since=0' });
+    const addedSyncEvents = ((syncAfterSuppress.json && syncAfterSuppress.json.events) || []).slice(syncEventsBefore);
+    assert.strictEqual(notifCountAfterSuppress, notifCountBeforeSuppress, 'Login and delete operations produce zero bell notifications');
+    assert.strictEqual(
+      addedSyncEvents.filter(e => String(e.type || '').includes('delete') || String(e.type || '').includes('login')).length,
+      0,
+      'Login and delete operations produce zero delete/login sync alert broadcasts'
+    );
+
+    // 13d. Role/User-targeted unwatched notifications & click-to-read navigation (/employee/tasks, /admin/tasks, /student/attendance)
+    const targetedTaskTitle = `Targeted Task Alpha ${ts}`;
+    const targetedTaskRes = await request(server, {
+      method: 'POST',
+      path: '/api/employee/tasks',
+      headers: { Authorization: `Bearer ${adminToken}`, 'X-Role': 'admin' }
+    }, {
+      title: targetedTaskTitle,
+      description: 'Targeted notification test',
+      priority: 'high',
+      category: 'client_outreach',
+      assigned_to_ids: [empAId]
+    });
+    assert.strictEqual(targetedTaskRes.status, 200);
+    createdTaskIds.push(targetedTaskRes.json.tasks[0].id);
+
+    const [empANotifs1, empBNotifs1, adminNotifs1, stuNotifs1] = await Promise.all([
+      request(server, { path: '/api/notifications', headers: { Authorization: `Bearer ${empAToken}`, 'X-Role': 'employee' } }),
+      request(server, { path: '/api/notifications', headers: { Authorization: `Bearer ${empBToken}`, 'X-Role': 'employee' } }),
+      request(server, { path: '/api/notifications', headers: { Authorization: `Bearer ${adminToken}`, 'X-Role': 'admin' } }),
+      request(server, { path: '/api/notifications', headers: { Authorization: `Bearer ${stuToken}`, 'X-Role': 'student' } })
+    ]);
+    assert.strictEqual(empANotifs1.status, 200);
+    const alphaTaskNotif = empANotifs1.json.notifications.find(n => (n.message || '').includes(targetedTaskTitle));
+    assert(alphaTaskNotif, 'Targeted employee (Emp Alpha) receives task assignment notification');
+    assert.strictEqual(alphaTaskNotif.target_url, '/employee/tasks', 'Task notification navigates employee to /employee/tasks');
+    assert(
+      !empBNotifs1.json.notifications.some(n => (n.message || '').includes(targetedTaskTitle)),
+      'Unrelated employee (Emp Beta) does NOT receive Emp Alpha task notification'
+    );
+    assert(
+      !adminNotifs1.json.notifications.some(n => (n.message || '').includes(targetedTaskTitle)),
+      'Actor (Admin) does NOT receive self-triggered task assignment notification'
+    );
+    assert(
+      !stuNotifs1.json.notifications.some(n => (n.message || '').includes(targetedTaskTitle)),
+      'Student does NOT receive employee task assignment notification'
+    );
+
+    // Mark unwatched notification watched on click
+    const markReadRes = await request(server, {
+      method: 'POST',
+      path: `/api/notifications/${alphaTaskNotif.id}/read`,
+      headers: { Authorization: `Bearer ${empAToken}`, 'X-Role': 'employee' }
+    });
+    assert.strictEqual(markReadRes.status, 200);
+    const empANotifsAfterRead = await request(server, {
+      path: '/api/notifications',
+      headers: { Authorization: `Bearer ${empAToken}`, 'X-Role': 'employee' }
+    });
+    assert(
+      !empANotifsAfterRead.json.notifications.some(n => n.id === alphaTaskNotif.id),
+      'Clicked notification is marked watched and excluded from unwatched list'
+    );
+
+    // Employee uploads proof -> Admin receives unwatched notification linking to /admin/tasks
+    const empProof2 = buildMultipart(
+      { category: 'Daily Work Report', title: `Notif Proof ${ts}`, remarks: 'Ready for admin' },
+      { name: 'proof', filename: 'report.pdf', contentType: 'application/pdf', content: Buffer.from('%PDF-1.4\n%AROX\n%%EOF') }
+    );
+    const proofNotifRes = await request(server, {
+      method: 'POST',
+      path: '/api/employee/proofs',
+      headers: { Authorization: `Bearer ${empAToken}`, 'X-Role': 'employee', 'Content-Type': empProof2.contentType }
+    }, empProof2.body);
+    assert.strictEqual(proofNotifRes.status, 201);
+    createdProofIds.push(proofNotifRes.json.data.id);
+
+    const [adminAfterProof, empBAfterProof, stuAfterProof] = await Promise.all([
+      request(server, { path: '/api/notifications', headers: { Authorization: `Bearer ${adminToken}`, 'X-Role': 'admin' } }),
+      request(server, { path: '/api/notifications', headers: { Authorization: `Bearer ${empBToken}`, 'X-Role': 'employee' } }),
+      request(server, { path: '/api/notifications', headers: { Authorization: `Bearer ${stuToken}`, 'X-Role': 'student' } })
+    ]);
+    const adminProofNotif = adminAfterProof.json.notifications.find(n => (n.message || '').includes(`Notif Proof ${ts}`));
+    assert(adminProofNotif, 'Admin receives unwatched notification when employee uploads work proof');
+    assert.strictEqual(adminProofNotif.target_url, '/admin/tasks', 'Admin proof notification navigates to /admin/tasks');
+    assert(!empBAfterProof.json.notifications.some(n => (n.message || '').includes(`Notif Proof ${ts}`)), 'Other employee isolated from Admin proof alert');
+    assert(!stuAfterProof.json.notifications.some(n => (n.message || '').includes(`Notif Proof ${ts}`)), 'Student isolated from Admin proof alert');
+
+    // Admin updates student attendance -> targeted Student receives notification linking to /student/attendance
+    if (directStudentRow) {
+      const stuAttNotifDate = '2026-11-18';
+      const attTargetedRes = await request(server, {
+        method: 'POST',
+        path: '/api/admin/attendance',
+        headers: { Authorization: `Bearer ${adminToken}`, 'X-Role': 'admin' }
+      }, { student_id: directStudentRow.id, course_id: enroll.course_id, date: stuAttNotifDate, status: 'present', method: 'offline', remarks: `Targeted Attendance ${ts}` });
+      assert.strictEqual(attTargetedRes.status, 200);
+      createdAttIds.push(attTargetedRes.json.data.id);
+
+      const [directStuNotifs, otherStuNotifs] = await Promise.all([
+        request(server, { path: '/api/notifications', headers: { Authorization: `Bearer ${directStuToken}`, 'X-Role': 'student' } }),
+        request(server, { path: '/api/notifications', headers: { Authorization: `Bearer ${stuToken}`, 'X-Role': 'student' } })
+      ]);
+      const attNotif = directStuNotifs.json.notifications.find(n => n.event_type === 'attendance:marked' && (n.message || '').includes(stuAttNotifDate));
+      assert(attNotif, 'Targeted student receives unwatched attendance update notification');
+      assert.strictEqual(attNotif.target_url, '/student/attendance', 'Student attendance notification navigates to /student/attendance');
+      assert(
+        !otherStuNotifs.json.notifications.some(n => n.id === attNotif.id),
+        'Different student does NOT receive another student attendance notification'
+      );
+    }
+
+    console.log('✅ CHECK 13 PASS: Welcome banner removal, capsule removal, desktop/mobile bell + red dot & targeted click-to-navigate notifications verified');
+
+    console.log('\n🎉 ALL 13 REQUIREMENTS & RBAC CHECKS PASSED SUCCESSFULLY!\n');
   } finally {
+    try { db.prepare('DELETE FROM notification_reads WHERE notification_id > ?').run(maxNotifIdBefore); } catch (e) {}
+    try { db.prepare('DELETE FROM notifications WHERE id > ?').run(maxNotifIdBefore); } catch (e) {}
     // Cleanup synthetic test records and uploaded test files so DB stays pristine
     for (const pid of createdProofIds) {
       const pf = db.prepare('SELECT file_name FROM employee_proofs WHERE id = ?').get(pid);

@@ -861,17 +861,15 @@ button:hover svg.lucide-arrow-right path:last-child,
    MOBILE BREAKPOINT (max-width: 768px)
    ═══════════════════════════════════════ */
 @media (max-width: 768px) {
-  /* Hide Live Sync capsule and circular letter avatar in header on mobile */
-  .sync-status-capsule,
-  #admin-sync-capsule,
-  #employee-sync-capsule,
-  #student-sync-capsule,
-  .erp-topbar-right .sync-status-capsule,
+  /* Hide user name, role caret on mobile while keeping notification bell and profile avatar visible */
   .erp-topbar-right .erp-profile-info,
-  .erp-topbar-right .erp-profile-caret,
-  .erp-topbar-right button[title="Notifications"],
-  .erp-topbar-right > button {
+  .erp-topbar-right .erp-profile-caret {
     display: none !important;
+  }
+
+  .erp-topbar-right .erp-notif-wrapper,
+  .erp-topbar-right .erp-notif-trigger {
+    display: inline-flex !important;
   }
 
   /* Hide user name and role text on mobile */
@@ -1398,16 +1396,13 @@ button:hover svg.lucide-arrow-right path:last-child,
     padding: 0 12px;
     height: 60px;
   }
-  .sync-status-capsule,
-  #admin-sync-capsule,
-  #employee-sync-capsule,
-  #student-sync-capsule,
-  .erp-topbar-right .sync-status-capsule,
   .erp-topbar-right .erp-profile-info,
-  .erp-topbar-right .erp-profile-caret,
-  .erp-topbar-right button[title="Notifications"],
-  .erp-topbar-right > button {
+  .erp-topbar-right .erp-profile-caret {
     display: none !important;
+  }
+  .erp-topbar-right .erp-notif-wrapper,
+  .erp-topbar-right .erp-notif-trigger {
+    display: inline-flex !important;
   }
   .erp-sidebar {
     width: 280px !important;
@@ -2671,11 +2666,50 @@ button:hover svg.lucide-arrow-right path:last-child,
   }
 }
 
+.erp-notif-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.erp-notif-trigger {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  color: var(--erp-text-secondary);
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.erp-notif-trigger:hover {
+  background: #F1F5F9;
+  color: #0F172A;
+}
+
+.erp-notif-dot {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 8px;
+  height: 8px;
+  border-radius: 9999px;
+  background: #EF4444;
+  border: 1.5px solid #FFFFFF;
+  pointer-events: none;
+}
+
 .erp-notif-dropdown {
   position: absolute;
   top: calc(100% + 10px);
   right: 0;
-  width: 310px;
+  width: 320px;
   max-height: 360px;
   overflow-y: auto;
   background: #FFFFFF;
@@ -2710,26 +2744,64 @@ button:hover svg.lucide-arrow-right path:last-child,
   color: #15803D;
 }
 
+.erp-notif-status.has-unread {
+  background: #FEE2E2;
+  color: #B91C1C;
+}
+
+.erp-notif-mark-all {
+  font-size: 11px;
+  font-weight: 600;
+  color: #2563EB;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 6px;
+}
+
+.erp-notif-mark-all:hover {
+  background: #EFF6FF;
+}
+
 .erp-notif-item {
-  padding: 10px 14px;
-  border-bottom: 1px solid #F8FAFC;
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: none;
+  padding: 11px 14px;
+  border-bottom: 1px solid #F1F5F9;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.erp-notif-item:hover {
+  background: #F8FAFC;
 }
 
 .erp-notif-item:last-child {
   border-bottom: none;
 }
 
-.erp-notif-msg {
+.erp-notif-title {
   font-size: 12.5px;
-  font-weight: 600;
-  color: #1E293B;
+  font-weight: 700;
+  color: #0F172A;
+  margin-bottom: 2px;
+}
+
+.erp-notif-msg {
+  font-size: 12px;
+  font-weight: 500;
+  color: #334155;
   line-height: 1.4;
 }
 
 .erp-notif-meta {
   font-size: 11px;
   color: #64748B;
-  margin-top: 2px;
+  margin-top: 3px;
 }
 
 .erp-notif-empty {
@@ -2737,4 +2809,16 @@ button:hover svg.lucide-arrow-right path:last-child,
   text-align: center;
   font-size: 12.5px;
   color: #64748B;
+}
+
+@media (max-width: 768px) {
+  .erp-notif-dropdown {
+    position: fixed;
+    top: 62px;
+    left: 12px;
+    right: 12px;
+    width: auto;
+    max-width: 380px;
+    margin-left: auto;
+  }
 }

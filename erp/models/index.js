@@ -12,6 +12,7 @@ const EmployeeTarget = require('./EmployeeTarget');
 const Referral = require('./Referral');
 const Review = require('./Review');
 const CallReport = require('./CallReport');
+const Notification = require('./Notification');
 
 module.exports = {
   User,
@@ -27,5 +28,6 @@ module.exports = {
   EmployeeTarget,
   Referral,
   Review,
-  CallReport
+  CallReport,
+  Notification
 };

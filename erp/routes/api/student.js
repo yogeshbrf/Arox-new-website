@@ -305,6 +305,16 @@ router.post('/attendance/mark', attendanceLimiter, async (req, res) => {
       message: `${student.first_name} marked ${status} attendance for today (${todayStr}).`
     });
 
+    const Notification = require('../../models/Notification');
+    Notification.notifyAdmins({
+      actorUserId: req.user.id,
+      actorName: `${student.first_name} ${student.last_name}`.trim(),
+      eventType: 'attendance:marked',
+      title: 'Student Attendance Marked',
+      message: `${student.first_name} marked ${status} attendance for today (${todayStr}).`,
+      targetUrl: '/admin/attendance'
+    });
+
     res.json({ success: true, message: 'Attendance marked successfully!', status, method, time: timeStr, date: todayStr });
   } catch (error) {
     logger.error('Mark attendance error:', error);
@@ -387,6 +397,16 @@ router.put('/attendance/today', attendanceLimiter, async (req, res) => {
       method,
       time: saved ? saved.check_in_time : timeStr,
       message: `${student.first_name} updated today's attendance (${todayStr}) to ${status.toUpperCase()}.`
+    });
+
+    const Notification = require('../../models/Notification');
+    Notification.notifyAdmins({
+      actorUserId: req.user.id,
+      actorName: `${student.first_name} ${student.last_name}`.trim(),
+      eventType: 'attendance:marked',
+      title: 'Student Attendance Updated',
+      message: `${student.first_name} updated today's attendance (${todayStr}) to ${status.toUpperCase()}.`,
+      targetUrl: '/admin/attendance'
     });
 
     res.json({

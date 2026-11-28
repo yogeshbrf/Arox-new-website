@@ -174,8 +174,12 @@ async function runTests() {
       'Admin layout has iOS & Apple web app viewport-fit meta headers'
     );
     assert(
-      adminDash.body.includes('sync-status-capsule') && adminDash.body.includes('Live Sync'),
-      'Admin Topbar renders Apple Dynamic Island / Google Pill Live Sync capsule'
+      !adminDash.body.includes('admin-sync-capsule') &&
+      !empDash.body.includes('employee-sync-capsule') &&
+      !studentDash.body.includes('student-sync-capsule') &&
+      adminDash.body.includes('erp-notif-trigger') &&
+      adminDash.body.includes('erp-notif-dot'),
+      'All panel topbars omit *-sync-capsule and expose notification bell with unread indicator dot'
     );
     assert(
       adminDash.body.includes('erp-bottom-nav') && adminDash.body.includes('nav-pill-box'),

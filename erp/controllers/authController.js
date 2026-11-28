@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken');
 const authConfig = require('../config/auth');
 const User = require('../models/User');
 const Student = require('../models/Student');
+const Notification = require('../models/Notification');
 const logger = require('../utils/logger');
 
 const authController = {
@@ -297,6 +298,20 @@ const authController = {
             referred_by: referredBy,
             referral_code: normalizedRefCode
           });
+          if (referredBy) {
+            try {
+              Notification.createTargeted({
+                recipientUserId: referredBy,
+                recipientRole: 'employee',
+                actorUserId: user.id,
+                actorName: `${first_name} ${last_name}`.trim() || email,
+                eventType: 'referral:registered',
+                title: 'New Referred Student Registered',
+                message: `${`${first_name} ${last_name}`.trim() || email} registered using your referral code (${normalizedRefCode || rawRefCode}).`,
+                targetUrl: '/employee/students'
+              });
+            } catch (nErr) {}
+          }
         } catch (sErr) {
           logger.warn('Student profile auto-creation warning:', sErr.message);
         }

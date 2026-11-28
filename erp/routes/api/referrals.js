@@ -121,6 +121,20 @@ router.post('/', (req, res) => {
       message: `New referral code ${cleanCode} created.`
     });
 
+    if (created && created.employee_id) {
+      const Notification = require('../../models/Notification');
+      Notification.createTargeted({
+        recipientUserId: created.employee_id,
+        recipientRole: 'employee',
+        actorUserId: req.user ? req.user.id : null,
+        actorName: 'Admin',
+        eventType: 'referral:created',
+        title: 'Referral Code Assigned',
+        message: `Referral code ${cleanCode} has been linked to your employee profile.`,
+        targetUrl: '/employee/students'
+      });
+    }
+
     res.status(201).json({ success: true, message: 'Referral code created successfully.', data: created });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
@@ -176,12 +190,6 @@ router.delete('/:id', (req, res) => {
       entityType: 'referral',
       entityId: id,
       oldValues: existing
-    });
-
-    syncService.broadcast('referral:deleted', {
-      id,
-      code: existing.code,
-      message: `Referral code ${existing.code} deleted.`
     });
 
     res.json({ success: true, message: 'Referral deleted successfully.' });

@@ -473,6 +473,33 @@ const employeeController = {
         message: `Client ${client.company_name} added.`
       });
 
+      const Notification = require('../models/Notification');
+      const roleLower = String((req.user && req.user.role) || '').toLowerCase();
+      const actorName = `${req.user.first_name || ''} ${req.user.last_name || ''}`.trim() || req.user.email;
+      if (['admin', 'super_admin'].includes(roleLower)) {
+        if (client.assigned_to && Number(client.assigned_to) !== Number(req.user.id)) {
+          Notification.createTargeted({
+            recipientUserId: client.assigned_to,
+            recipientRole: 'employee',
+            actorUserId: req.user.id,
+            actorName,
+            eventType: 'client:created',
+            title: 'Client Assigned',
+            message: `${actorName} assigned client ${client.company_name} to you.`,
+            targetUrl: '/employee/clients'
+          });
+        }
+      } else {
+        Notification.notifyAdmins({
+          actorUserId: req.user.id,
+          actorName,
+          eventType: 'client:created',
+          title: 'New Client Added',
+          message: `${actorName} added client ${client.company_name}.`,
+          targetUrl: '/admin/clients'
+        });
+      }
+
       res.json({ success: true, message: 'Client added successfully!', client });
     } catch (e) {
       logger.error('createClient error:', e);
@@ -513,6 +540,30 @@ const employeeController = {
         message: `Client ${client ? client.company_name : ''} updated.`
       });
 
+      const Notification = require('../models/Notification');
+      const actorName = `${req.user.first_name || ''} ${req.user.last_name || ''}`.trim() || req.user.email;
+      if (isAdmin && client && client.assigned_to && Number(client.assigned_to) !== Number(req.user.id)) {
+        Notification.createTargeted({
+          recipientUserId: client.assigned_to,
+          recipientRole: 'employee',
+          actorUserId: req.user.id,
+          actorName,
+          eventType: 'client:updated',
+          title: 'Client Updated',
+          message: `${actorName} updated client ${client.company_name}.`,
+          targetUrl: '/employee/clients'
+        });
+      } else if (!isAdmin) {
+        Notification.notifyAdmins({
+          actorUserId: req.user.id,
+          actorName,
+          eventType: 'client:updated',
+          title: 'Client Updated',
+          message: `${actorName} updated client ${client ? client.company_name : ''}.`,
+          targetUrl: '/admin/clients'
+        });
+      }
+
       res.json({ success: true, message: 'Client updated successfully!', client });
     } catch (e) {
       logger.error('updateClient error:', e);
@@ -544,12 +595,6 @@ const employeeController = {
         entityType: 'client',
         entityId: req.params.id,
         oldValues: oldClient
-      });
-
-      syncService.broadcast('client:deleted', {
-        id: req.params.id,
-        companyName: oldClient.company_name,
-        message: `Client ${oldClient.company_name} removed.`
       });
 
       res.json({ success: true, message: 'Client deleted successfully without broken references.' });
@@ -784,6 +829,17 @@ const employeeController = {
           : `New task "${task.title}" created.`
       });
 
+      const Notification = require('../models/Notification');
+      Notification.notifyUsers(assigneeIds, {
+        recipientRole: 'employee',
+        actorUserId: req.user.id,
+        actorName: assignerName,
+        eventType: 'task:created',
+        title: 'New Task Assigned',
+        message: `${assignerName} assigned task "${task.title}" to you.`,
+        targetUrl: '/employee/tasks'
+      });
+
       res.json({
         success: true,
         message: createdTasks.length > 1
@@ -839,6 +895,30 @@ const employeeController = {
         updatedBy: req.user.full_name || req.user.email,
         timestamp: new Date().toISOString()
       });
+
+      const Notification = require('../models/Notification');
+      const actorName = `${req.user.first_name || ''} ${req.user.last_name || ''}`.trim() || req.user.email;
+      if (isAdmin && task && task.assigned_to) {
+        Notification.createTargeted({
+          recipientUserId: task.assigned_to,
+          recipientRole: 'employee',
+          actorUserId: req.user.id,
+          actorName,
+          eventType: 'task:updated',
+          title: 'Task Status Updated',
+          message: `${actorName} updated task "${task.title}" to ${status}.`,
+          targetUrl: '/employee/tasks'
+        });
+      } else if (!isAdmin && task) {
+        Notification.notifyAdmins({
+          actorUserId: req.user.id,
+          actorName,
+          eventType: 'task:updated',
+          title: 'Employee Task Progress',
+          message: `${actorName} marked "${task.title}" as ${status}.`,
+          targetUrl: '/admin/tasks'
+        });
+      }
 
       res.json({ success: true, message: `Task status updated to ${status}`, task });
     } catch (e) {
@@ -911,6 +991,30 @@ const employeeController = {
         timestamp: new Date().toISOString()
       });
 
+      const Notification = require('../models/Notification');
+      const actorName = `${req.user.first_name || ''} ${req.user.last_name || ''}`.trim() || req.user.email;
+      if (isAdmin && task && task.assigned_to) {
+        Notification.createTargeted({
+          recipientUserId: task.assigned_to,
+          recipientRole: 'employee',
+          actorUserId: req.user.id,
+          actorName,
+          eventType: 'task:updated',
+          title: 'Task Updated',
+          message: `${actorName} updated task "${task.title}".`,
+          targetUrl: '/employee/tasks'
+        });
+      } else if (!isAdmin && task) {
+        Notification.notifyAdmins({
+          actorUserId: req.user.id,
+          actorName,
+          eventType: 'task:updated',
+          title: 'Task Updated',
+          message: `${actorName} updated task "${task.title}".`,
+          targetUrl: '/admin/tasks'
+        });
+      }
+
       res.json({ success: true, message: 'Task updated successfully!', task });
     } catch (e) {
       logger.error('updateTask error:', e);
@@ -953,13 +1057,6 @@ const employeeController = {
       } catch (logErr) {
         logger.warn('Failed to log audit for deleteTask:', logErr.message);
       }
-
-      syncService.broadcast('task:deleted', {
-        id: req.params.id,
-        title: oldTask ? oldTask.title : 'Task',
-        updatedBy: req.user.full_name || req.user.email,
-        timestamp: new Date().toISOString()
-      });
 
       res.json({ success: true, message: 'Task deleted successfully!' });
     } catch (e) {
@@ -1354,6 +1451,16 @@ const employeeController = {
         category,
         title,
         message: `${empName} uploaded work proof "${title}" (${ext.toUpperCase()}).`
+      });
+
+      const Notification = require('../models/Notification');
+      Notification.notifyAdmins({
+        actorUserId: req.user.id,
+        actorName: empName,
+        eventType: 'proof:uploaded',
+        title: 'Work Proof Submitted',
+        message: `${empName} uploaded work proof "${title}" (${ext.toUpperCase()}).`,
+        targetUrl: '/admin/tasks'
       });
 
       res.status(201).json({

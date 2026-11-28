@@ -194,6 +194,16 @@ exports.update = (req, res) => {
       message: `${updated.title} schedule updated (${updated.duration}, ${updated.class_timing || 'Timing TBA'} — Class ${updated.class_available === 1 ? 'Available' : 'Unavailable'}, Trainer ${updated.trainer_available_today === 1 ? 'Available Today' : 'Unavailable Today'}).`
     });
 
+    const Notification = require('../../models/Notification');
+    Notification.notifyStudentsByCourse(updated.id, {
+      actorUserId: req.user.id,
+      actorName: 'Admin',
+      eventType: 'offline_class:updated',
+      title: 'Class Schedule Updated',
+      message: `${updated.title}: ${updated.class_timing || 'Timing updated'} · Class ${updated.class_available === 1 ? 'Available' : 'Unavailable'} · Trainer ${updated.trainer_available_today === 1 ? 'Available' : 'Unavailable'}.`,
+      targetUrl: '/student/dashboard'
+    });
+
     res.json({ success: true, message: 'Course & live class schedule updated and synced!', data: updated });
   } catch (error) {
     logger.error('Course Update Error:', error);

@@ -230,14 +230,40 @@ const registrationController = {
         { email, password: rawPassword }
       ).catch(err => logger.error('Welcome email failed:', err));
 
+      const syncService = require('../services/syncService');
+      const Notification = require('../models/Notification');
+
       if (validatedReferralCode) {
-        const syncService = require('../services/syncService');
         syncService.broadcast('referral:used', {
           code: validatedReferralCode,
           studentName: `${first_name} ${last_name}`,
           message: `Referral code ${validatedReferralCode} used by ${first_name} ${last_name}.`
         });
+
+        const refOwner = db.prepare(`
+          SELECT id as emp_id FROM users WHERE UPPER(referral_code) = UPPER(?) AND deleted_at IS NULL
+          UNION
+          SELECT employee_id as emp_id FROM referrals WHERE UPPER(code) = UPPER(?) AND employee_id IS NOT NULL
+          LIMIT 1
+        `).get(validatedReferralCode, validatedReferralCode);
+        if (refOwner && refOwner.emp_id) {
+          Notification.createTargeted({
+            recipientUserId: refOwner.emp_id,
+            recipientRole: 'employee',
+            eventType: 'referral:used',
+            title: 'Referred Student Registered',
+            message: `${first_name} ${last_name} registered using your referral code ${validatedReferralCode}.`,
+            targetUrl: '/employee/students'
+          });
+        }
       }
+
+      Notification.notifyAdmins({
+        eventType: 'registration:created',
+        title: 'New Course Registration',
+        message: `${first_name} ${last_name} registered for ${course.title}.`,
+        targetUrl: '/admin/internships'
+      });
 
       res.status(201).json({
         success: true,
@@ -516,6 +542,7 @@ const registrationController = {
 
       // Broadcast triangular sync event
       const syncService = require('../services/syncService');
+      const Notification = require('../models/Notification');
       syncService.broadcast('registration:created', {
         registrationId: result.registrationId,
         studentId: result.studentId,
@@ -525,12 +552,33 @@ const registrationController = {
         message: `New student registration: ${first_name} ${last_name} enrolled in ${courseRecord.title}${validatedReferralCode ? ` (Referral: ${validatedReferralCode})` : ''}.`
       });
 
+      Notification.notifyAdmins({
+        actorUserId: result.userId,
+        actorName: `${first_name} ${last_name}`.trim(),
+        eventType: 'registration:created',
+        title: 'New Internship Application',
+        message: `${first_name} ${last_name} enrolled in ${courseRecord.title}.`,
+        targetUrl: '/admin/internships'
+      });
+
       if (validatedReferralCode) {
         syncService.broadcast('referral:used', {
           code: validatedReferralCode,
           studentName: `${first_name} ${last_name}`,
           message: `Referral code ${validatedReferralCode} used by ${first_name} ${last_name}.`
         });
+        if (referredByEmployeeId) {
+          Notification.createTargeted({
+            recipientUserId: referredByEmployeeId,
+            recipientRole: 'employee',
+            actorUserId: result.userId,
+            actorName: `${first_name} ${last_name}`.trim(),
+            eventType: 'referral:used',
+            title: 'Referred Student Enrolled',
+            message: `${first_name} ${last_name} enrolled in ${courseRecord.title} using referral ${validatedReferralCode}.`,
+            targetUrl: '/employee/students'
+          });
+        }
       }
 
       // Send welcome email only for newly created user accounts (existing users keep their existing password)
@@ -814,7 +862,9 @@ const registrationController = {
       });
 
       // If financial amounts were updated, broadcast payment sync event
-      if (newTotal !== reg.total_amount || newPaid !== reg.paid_amount || newBalance !== reg.balance_amount) {
+      const Notification = require('../models/Notification');
+      const feeUpdated = (newTotal !== reg.total_amount || newPaid !== reg.paid_amount || newBalance !== reg.balance_amount);
+      if (feeUpdated) {
         syncService.broadcast('payment:updated', {
           id: reg.id,
           registrationId: reg.registration_id,
@@ -825,6 +875,17 @@ const registrationController = {
           message: `Payment & fee details updated for ${first_name || reg.first_name} (₹${newTotal.toLocaleString('en-IN')}).`
         });
       }
+
+      Notification.notifyStudentByDbId(reg.student_id, {
+        actorUserId: req.user ? req.user.id : null,
+        actorName: 'Admin',
+        eventType: feeUpdated ? 'payment:updated' : 'registration:updated',
+        title: feeUpdated ? 'Fee Details Updated' : 'Program Details Updated',
+        message: feeUpdated
+          ? `Your course fee ledger was updated (Balance: ₹${Number(newBalance || 0).toLocaleString('en-IN')}).`
+          : `Admin updated your registration #${reg.registration_id} details.`,
+        targetUrl: feeUpdated ? '/student/payments' : '/student/courses'
+      });
 
       syncService.broadcast('internship:updated', {
         id: reg.id,

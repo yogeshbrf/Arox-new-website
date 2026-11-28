@@ -268,6 +268,16 @@ const adminAttendanceController = {
         message: `Admin marked ${student.first_name} (${course.title}) as ${status.toUpperCase()} for ${date}.`
       });
 
+      const Notification = require('../../models/Notification');
+      Notification.notifyStudentByDbId(studentId, {
+        actorUserId: req.user.id,
+        actorName: 'Admin',
+        eventType: 'attendance:marked',
+        title: 'Attendance Updated',
+        message: `Admin marked your ${course.title} attendance for ${date} as ${status.toUpperCase()}.`,
+        targetUrl: '/student/attendance'
+      });
+
       res.json({ success: true, message: 'Attendance saved successfully.', data: saved });
     } catch (err) {
       logger.error('Admin attendance upsert error:', err);
@@ -324,6 +334,16 @@ const adminAttendanceController = {
         status,
         updatedByAdmin: true,
         message: `Admin updated attendance #${id} to ${status.toUpperCase()}.`
+      });
+
+      const Notification = require('../../models/Notification');
+      Notification.notifyStudentByDbId(existing.student_id, {
+        actorUserId: req.user.id,
+        actorName: 'Admin',
+        eventType: 'attendance:marked',
+        title: 'Attendance Updated',
+        message: `Admin updated your attendance for ${date} to ${status.toUpperCase()}.`,
+        targetUrl: '/student/attendance'
       });
 
       res.json({ success: true, message: 'Attendance record updated.', data: updated });
@@ -399,6 +419,19 @@ const adminAttendanceController = {
         message: `Admin bulk-marked ${count} attendance records as ${status.toUpperCase()} for ${date}.`
       });
 
+      const Notification = require('../../models/Notification');
+      const uniqueStudentDbIds = [...new Set(entries.map(e => parseInt(e.student_id, 10)).filter(Boolean))];
+      uniqueStudentDbIds.forEach(sid => {
+        Notification.notifyStudentByDbId(sid, {
+          actorUserId: req.user.id,
+          actorName: 'Admin',
+          eventType: 'attendance:marked',
+          title: 'Attendance Marked',
+          message: `Admin marked your attendance for ${date} as ${status.toUpperCase()}.`,
+          targetUrl: '/student/attendance'
+        });
+      });
+
       res.json({ success: true, message: `Updated attendance for ${count} enrollment(s).`, count });
     } catch (err) {
       logger.error('Admin bulk attendance error:', err);
@@ -419,12 +452,6 @@ const adminAttendanceController = {
       }
 
       db.prepare('DELETE FROM attendance WHERE id = ?').run(id);
-      syncService.broadcast('attendance:marked', {
-        studentId: existing.student_id,
-        courseId: existing.course_id,
-        deleted: true,
-        message: `Admin removed an attendance record for ${existing.date}.`
-      });
 
       res.json({ success: true, message: 'Attendance record deleted.' });
     } catch (err) {
@@ -576,6 +603,19 @@ const adminAttendanceController = {
         status: 'present',
         updatedByAdmin: true,
         message: `Admin applied 100% attendance override for ${enrollments.length} student(s).`
+      });
+
+      const Notification = require('../../models/Notification');
+      const distinctIds = [...new Set(enrollments.map(enr => enr.student_id).filter(Boolean))];
+      distinctIds.forEach(sid => {
+        Notification.notifyStudentByDbId(sid, {
+          actorUserId: req.user.id,
+          actorName: 'Admin',
+          eventType: 'attendance:marked',
+          title: '100% Attendance Granted',
+          message: 'Admin updated your attendance record to 100% Verified.',
+          targetUrl: '/student/attendance'
+        });
       });
 
       res.json({

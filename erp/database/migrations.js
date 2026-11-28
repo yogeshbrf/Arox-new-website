@@ -195,8 +195,67 @@ function runTriangularSyncMigrations(db) {
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP
       )
     `);
+
+    // Upgrade legacy notifications table if it exists without recipient_user_id
+    const existingNotifCols = db.prepare('PRAGMA table_info(notifications)').all().map(c => c.name);
+    if (existingNotifCols.length > 0 && !existingNotifCols.includes('recipient_user_id')) {
+      db.exec(`DROP TABLE IF EXISTS notifications_v2;`);
+      db.exec(`
+        CREATE TABLE notifications_v2 (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          recipient_user_id INTEGER,
+          recipient_role TEXT NOT NULL,
+          actor_user_id INTEGER,
+          actor_name TEXT,
+          event_type TEXT NOT NULL,
+          title TEXT,
+          message TEXT NOT NULL,
+          target_url TEXT NOT NULL,
+          is_read INTEGER DEFAULT 0,
+          created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        );
+      `);
+      if (existingNotifCols.includes('user_id') && existingNotifCols.includes('type')) {
+        db.exec(`
+          INSERT INTO notifications_v2 (id, recipient_user_id, recipient_role, event_type, title, message, target_url, is_read, created_at)
+          SELECT id, user_id, 'student', COALESCE(type, 'system'), COALESCE(title, ''), COALESCE(message, ''), '/student/dashboard', COALESCE(is_read, 0), COALESCE(created_at, CURRENT_TIMESTAMP)
+          FROM notifications
+          WHERE user_id IS NOT NULL;
+        `);
+      }
+      db.exec(`
+        DROP TABLE IF EXISTS notifications;
+        ALTER TABLE notifications_v2 RENAME TO notifications;
+      `);
+    }
+
+    db.exec(`
+      CREATE TABLE IF NOT EXISTS notifications (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        recipient_user_id INTEGER,
+        recipient_role TEXT NOT NULL,
+        actor_user_id INTEGER,
+        actor_name TEXT,
+        event_type TEXT NOT NULL,
+        title TEXT,
+        message TEXT NOT NULL,
+        target_url TEXT NOT NULL,
+        is_read INTEGER DEFAULT 0,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      );
+      CREATE INDEX IF NOT EXISTS idx_notifications_recipient ON notifications(recipient_user_id, recipient_role, created_at);
+
+      CREATE TABLE IF NOT EXISTS notification_reads (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        notification_id INTEGER NOT NULL,
+        user_id INTEGER NOT NULL,
+        read_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE(notification_id, user_id)
+      );
+      CREATE INDEX IF NOT EXISTS idx_notification_reads_user ON notification_reads(user_id, notification_id);
+    `);
   } catch (e) {
-    logger.warn('Could not ensure employee_proofs table:', e.message);
+    logger.warn('Could not ensure employee_proofs/notifications tables:', e.message);
   }
 
   // Upgrade attendance.method CHECK constraint to also allow 'offline' safely

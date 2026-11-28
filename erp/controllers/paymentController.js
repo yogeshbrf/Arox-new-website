@@ -239,6 +239,16 @@ const paymentController = {
         message: `New payment proof of ₹${parsedAmount.toLocaleString('en-IN')} submitted by student.`
       });
 
+      const Notification = require('../models/Notification');
+      Notification.notifyAdmins({
+        actorUserId: req.user ? req.user.id : null,
+        actorName: req.user ? `${req.user.first_name || ''} ${req.user.last_name || ''}`.trim() : 'Student',
+        eventType: 'payment:created',
+        title: 'Payment Proof Submitted',
+        message: `New payment proof of ₹${parsedAmount.toLocaleString('en-IN')} submitted for verification.`,
+        targetUrl: '/admin/payments'
+      });
+
       res.json({
         success: true,
         message: 'Payment screenshot submitted successfully! Our admin team will verify it shortly. ✅',
@@ -360,6 +370,16 @@ const paymentController = {
         status: newStatus,
         verifiedBy: verifierName,
         message: `Payment #${payment.payment_id} updated: ₹${newAmount.toLocaleString('en-IN')} (${newStatus}) by ${verifierName}.`
+      });
+
+      const Notification = require('../models/Notification');
+      Notification.notifyStudentByDbId(payment.student_id, {
+        actorUserId: user ? user.id : null,
+        actorName: verifierName,
+        eventType: 'payment:updated',
+        title: 'Payment Updated',
+        message: `Your payment #${payment.payment_id} (₹${Number(newAmount || 0).toLocaleString('en-IN')}) status is now ${newStatus}.`,
+        targetUrl: '/student/payments'
       });
 
       res.json({
@@ -485,6 +505,16 @@ const paymentController = {
           message: `Payment of ₹${Number(payment.total_amount || 0).toLocaleString('en-IN')} verified by ${verifierName}.`
         });
 
+        const Notification = require('../models/Notification');
+        Notification.notifyStudentByDbId(payment.student_id, {
+          actorUserId: verifierId,
+          actorName: verifierName,
+          eventType: 'payment:verified',
+          title: 'Payment Verified',
+          message: `Your payment of ₹${Number(payment.total_amount || 0).toLocaleString('en-IN')} was approved by ${verifierName}.`,
+          targetUrl: '/student/payments'
+        });
+
         logger.info(`Payment ${payment.payment_id} approved by ${verifierName}.`);
         return res.json({ success: true, message: `Payment approved and verified by ${verifierName}! 🎉` });
       } else {
@@ -521,6 +551,16 @@ const paymentController = {
           status: 'failed',
           verifiedBy: verifierName,
           message: `Payment #${payment.payment_id} marked as failed by ${verifierName}.`
+        });
+
+        const Notification = require('../models/Notification');
+        Notification.notifyStudentByDbId(payment.student_id, {
+          actorUserId: verifierId,
+          actorName: verifierName,
+          eventType: 'payment:updated',
+          title: 'Payment Proof Needs Action',
+          message: `Your payment #${payment.payment_id} was marked as rejected by ${verifierName}. Please re-submit.`,
+          targetUrl: '/student/payments'
         });
 
         logger.info(`Payment ${payment.payment_id} rejected by ${verifierName}.`);
@@ -626,6 +666,16 @@ const paymentController = {
         status: finalStatus,
         verifiedBy: verifierName,
         message: `Payment of ₹${parsedAmount.toLocaleString('en-IN')} (${finalStatus}) recorded by ${verifierName}.`
+      });
+
+      const Notification = require('../models/Notification');
+      Notification.notifyStudentByDbId(reg.student_id, {
+        actorUserId: req.user.id,
+        actorName: verifierName,
+        eventType: 'payment:verified',
+        title: 'Payment Recorded',
+        message: `Admin recorded a payment of ₹${parsedAmount.toLocaleString('en-IN')} (${finalStatus}) on your account.`,
+        targetUrl: '/student/payments'
       });
 
       res.json({ success: true, message: 'Payment recorded and student ledger updated.', data: { paymentId, transactionId: txnId, status: finalStatus } });

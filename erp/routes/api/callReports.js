@@ -87,6 +87,16 @@ router.post('/', (req, res) => {
       message: `${empName} logged a call with ${contact_name} (${outcome}).`
     });
 
+    const Notification = require('../../models/Notification');
+    Notification.notifyAdmins({
+      actorUserId: req.user.id,
+      actorName: empName,
+      eventType: 'call_report:created',
+      title: 'Call Report Logged',
+      message: `${empName} logged a call with ${contact_name} (${outcome}).`,
+      targetUrl: '/admin/reports'
+    });
+
     res.status(201).json({ success: true, message: 'Call report logged successfully and synced with Admin Reports! ✅', data: created });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });

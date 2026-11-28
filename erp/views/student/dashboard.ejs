@@ -72,40 +72,6 @@
   const studentRefCode = (typeof student !== 'undefined' && student && student.referral_code) ? String(student.referral_code).trim() : '';
   const registerInternshipUrl = '/apply.html?tab=internship' + (studentRefCode ? ('&ref=' + encodeURIComponent(studentRefCode)) : '');
 %>
-
-<% if (typeof latestRegistration !== 'undefined' && latestRegistration) { %>
-  <div style="background: #000000; border: 1px solid #000000; border-radius: 12px; padding: 24px; margin-bottom: 32px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; color: #FFFFFF;">
-    <div>
-      <h2 style="font-size: 20px; font-weight: 700; color: #FFFFFF; margin-bottom: 6px;">
-        Welcome to AROX Tech, <%= (typeof student !== 'undefined' && student) ? student.first_name : 'Student' %>!
-      </h2>
-      <p style="color: #CBD5E1; font-size: 14px; margin: 0;">
-        Your official documents and course materials are accessible in your portal.
-      </p>
-    </div>
-    <div>
-      <a href="/api/registrations/<%= latestRegistration.registration_id %>/offer-letter" target="_blank" class="erp-btn" style="background: #FFFFFF; color: #000000; font-weight: 700; border: none; padding: 10px 20px;">
-        <i data-lucide="download" style="color: #000000;"></i> Download Offer Letter
-      </a>
-    </div>
-  </div>
-<% } else if (!hasEnrolledCourses) { %>
-  <div style="background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%); border: 1px solid #0F172A; border-radius: 12px; padding: 24px; margin-bottom: 32px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; color: #FFFFFF;">
-    <div>
-      <h2 style="font-size: 20px; font-weight: 700; color: #FFFFFF; margin-bottom: 6px;">
-        Welcome to AROX Tech, <%= (typeof student !== 'undefined' && student) ? student.first_name : 'Student' %>!
-      </h2>
-      <p style="color: #CBD5E1; font-size: 14px; margin: 0;">
-        Your student account is active<%= studentRefCode ? (' (Referral Code: ' + studentRefCode + ' linked)') : '' %>. Register for an internship course without creating new credentials.
-      </p>
-    </div>
-    <div>
-      <a href="<%= registerInternshipUrl %>" class="erp-btn" style="background: #FFFFFF; color: #000000; font-weight: 700; border: none; padding: 11px 22px; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; border-radius: 8px;">
-        <i data-lucide="rocket" style="width: 16px; height: 16px; color: #000000;"></i> Register Internship
-      </a>
-    </div>
-  </div>
-<% } %>
 <div class="erp-grid-4">
   <!-- Enrolled Courses -->
   <div class="erp-card" style="background: #FFFFFF; border: 1px solid #E2E8F0;">

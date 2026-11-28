@@ -6,6 +6,7 @@ const { authenticate } = require('../../middleware/auth');
 const roleGuard = require('../../middleware/roleGuard');
 const adminAttendanceController = require('../../controllers/admin/attendanceController');
 const EmployeeProof = require('../../models/EmployeeProof');
+const Notification = require('../../models/Notification');
 const syncService = require('../../services/syncService');
 const logger = require('../../utils/logger');
 
@@ -60,6 +61,17 @@ router.put('/proofs/:id/review', (req, res) => {
       employeeId: existing.employee_id,
       status,
       message: `Admin marked work proof "${existing.title || existing.original_name}" as ${status}.`
+    });
+
+    Notification.createTargeted({
+      recipientUserId: existing.employee_id,
+      recipientRole: 'employee',
+      actorUserId: req.user.id,
+      actorName: `${req.user.first_name || ''} ${req.user.last_name || ''}`.trim() || 'Admin',
+      eventType: 'proof:reviewed',
+      title: 'Work Proof Reviewed',
+      message: `Admin marked work proof "${existing.title || existing.original_name}" as ${status}.`,
+      targetUrl: '/employee/dashboard'
     });
 
     res.json({ success: true, message: 'Proof status updated.', data: updated });

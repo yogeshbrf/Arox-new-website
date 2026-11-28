@@ -109,6 +109,7 @@ app.use('/api/student', require('./routes/api/student'));
 app.use('/api/admin', require('./routes/api/admin'));
 app.use('/api/employee', require('./routes/api/employee'));
 app.use('/api/sync', require('./routes/api/sync'));
+app.use('/api/notifications', require('./routes/api/notifications'));
 app.use('/api/referrals', require('./routes/api/referrals'));
 app.use('/api/reviews', require('./routes/api/reviews'));
 app.use('/api/call-reports', require('./routes/api/callReports'));

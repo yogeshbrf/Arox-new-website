@@ -75,17 +75,6 @@
   <!-- Custom CSS -->
   <link rel="stylesheet" href="/erp-assets/css/erp-theme.css?v=4.1">
 
-  <style>
-    @media (max-width: 768px) {
-      .sync-status-capsule,
-      #student-sync-capsule,
-      .erp-topbar-right .sync-status-capsule,
-      .erp-topbar-right button[title="Notifications"] {
-        display: none !important;
-      }
-    }
-  </style>
-
   <!-- Favicon -->
   <link rel="icon" type="image/svg+xml" href="/erp-assets/favicon.svg">
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
@@ -196,23 +185,21 @@
         </div>
 
         <div class="erp-topbar-right">
-          <!-- Apple Dynamic / Google Live Sync Capsule -->
-          <div class="sync-status-capsule hidden md:inline-flex" id="student-sync-capsule" title="Triangular Sync Online across all panels">
-            <span class="sync-dot"></span>
-            <span>Live Sync</span>
-          </div>
-
-          <div class="erp-notif-wrapper hidden md:inline-flex" style="position: relative;">
-            <button type="button" class="erp-notif-trigger" style="background: transparent; border: none; cursor: pointer; color: var(--erp-text-secondary); padding: 6px; border-radius: 8px;" title="Notifications" aria-haspopup="true" aria-expanded="false">
+          <div class="erp-notif-wrapper" data-user-id="<%= (typeof user !== 'undefined' && user && user.id) ? user.id : '' %>" data-user-role="<%= (typeof user !== 'undefined' && user && user.role) ? user.role : 'student' %>">
+            <button type="button" class="erp-notif-trigger" title="Notifications" aria-label="Notifications" aria-haspopup="true" aria-expanded="false">
               <i data-lucide="bell" style="width: 20px; height: 20px;"></i>
+              <span class="erp-notif-dot" style="display: none;" aria-hidden="true"></span>
             </button>
-            <div class="erp-notif-dropdown" aria-label="Live ERP Notifications">
+            <div class="erp-notif-dropdown" aria-label="Notifications">
               <div class="erp-notif-header">
-                <span>Live ERP Activity</span>
-                <span class="erp-notif-status">Synced</span>
+                <span>Notifications</span>
+                <div style="display: flex; align-items: center; gap: 6px;">
+                  <span class="erp-notif-status">0 Unwatched</span>
+                  <button type="button" class="erp-notif-mark-all" style="display: none;">Clear</button>
+                </div>
               </div>
               <div class="erp-notif-list">
-                <div class="erp-notif-empty">Loading notifications...</div>
+                <div class="erp-notif-empty">No unwatched notifications.</div>
               </div>
             </div>
           </div>
